@@ -15,7 +15,9 @@ import javax.inject.Inject
 /** ポケモン詳細画面のUI状態。 */
 sealed interface PokemonDetailUiState {
     data object Loading : PokemonDetailUiState
+
     data class Success(val detail: PokemonDetail) : PokemonDetailUiState
+
     data class Error(val message: String) : PokemonDetailUiState
 }
 
@@ -26,29 +28,31 @@ sealed interface PokemonDetailUiState {
  * ポケモン名は [SavedStateHandle] からナビゲーション引数として取得する。
  */
 @HiltViewModel
-class PokemonDetailViewModel @Inject constructor(
-    private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+class PokemonDetailViewModel
+    @Inject
+    constructor(
+        private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
+        savedStateHandle: SavedStateHandle,
+    ) : ViewModel() {
+        private val pokemonName: String = checkNotNull(savedStateHandle["name"])
 
-    private val pokemonName: String = checkNotNull(savedStateHandle["name"])
+        var uiState by mutableStateOf<PokemonDetailUiState>(PokemonDetailUiState.Loading)
+            private set
 
-    var uiState by mutableStateOf<PokemonDetailUiState>(PokemonDetailUiState.Loading)
-        private set
+        init {
+            loadDetail()
+        }
 
-    init {
-        loadDetail()
-    }
-
-    private fun loadDetail() {
-        viewModelScope.launch {
-            uiState = PokemonDetailUiState.Loading
-            uiState = try {
-                val detail = getPokemonDetailUseCase(pokemonName)
-                PokemonDetailUiState.Success(detail)
-            } catch (e: Exception) {
-                PokemonDetailUiState.Error(e.message ?: "Unknown error")
+        private fun loadDetail() {
+            viewModelScope.launch {
+                uiState = PokemonDetailUiState.Loading
+                uiState =
+                    try {
+                        val detail = getPokemonDetailUseCase(pokemonName)
+                        PokemonDetailUiState.Success(detail)
+                    } catch (e: Exception) {
+                        PokemonDetailUiState.Error(e.message ?: "Unknown error")
+                    }
             }
         }
     }
-}

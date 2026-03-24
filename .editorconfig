@@ -1,0 +1,15 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.kt]
+# パッケージ名にアンダースコアを許容（プロジェクトの命名規則に合わせる）
+ktlint_standard_package-name = disabled
+# @Composable 関数は Compose の慣習に従い PascalCase を許容する
+ktlint_function_naming_ignore_when_annotated_with = Composable

@@ -41,40 +41,46 @@ fun PokemonListScreen(
         when (val state = viewModel.uiState) {
             is PokemonListUiState.Loading -> LoadingIndicator()
 
-            is PokemonListUiState.Error -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("Error: ${state.message}")
-            }
-
-            is PokemonListUiState.Success -> LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = padding,
-            ) {
-                items(state.pokemons) { pokemon ->
-                    PokemonCard(
-                        pokemon = pokemon,
-                        onClick = { onPokemonClick(pokemon.name) },
-                    )
+            is PokemonListUiState.Error ->
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("Error: ${state.message}")
                 }
-            }
+
+            is PokemonListUiState.Success ->
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = padding,
+                ) {
+                    items(state.pokemons) { pokemon ->
+                        PokemonCard(
+                            pokemon = pokemon,
+                            onClick = { onPokemonClick(pokemon.name) },
+                        )
+                    }
+                }
         }
     }
 }
 
 /** ポケモン一覧の各カードコンポーネント。 */
 @Composable
-private fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
+private fun PokemonCard(
+    pokemon: Pokemon,
+    onClick: () -> Unit,
+) {
     Card(
         onClick = onClick,
         modifier = Modifier.padding(8.dp),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
         ) {
             AsyncImage(
                 model = pokemon.imageUrl,

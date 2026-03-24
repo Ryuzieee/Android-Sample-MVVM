@@ -12,7 +12,6 @@ import retrofit2.http.Query
  * ベースURL: https://pokeapi.co/api/v2/
  */
 interface PokeApiService {
-
     @GET("pokemon")
     suspend fun getPokemonList(
         @Query("limit") limit: Int,
@@ -20,5 +19,7 @@ interface PokeApiService {
     ): PokemonListResponse
 
     @GET("pokemon/{name}")
-    suspend fun getPokemonDetail(@Path("name") name: String): PokemonDetailResponse
+    suspend fun getPokemonDetail(
+        @Path("name") name: String,
+    ): PokemonDetailResponse
 }

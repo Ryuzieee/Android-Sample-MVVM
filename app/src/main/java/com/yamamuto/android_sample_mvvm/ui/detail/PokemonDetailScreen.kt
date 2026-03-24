@@ -59,36 +59,43 @@ fun PokemonDetailScreen(
         when (val state = viewModel.uiState) {
             is PokemonDetailUiState.Loading -> LoadingIndicator()
 
-            is PokemonDetailUiState.Error -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("Error: ${state.message}")
-            }
+            is PokemonDetailUiState.Error ->
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("Error: ${state.message}")
+                }
 
-            is PokemonDetailUiState.Success -> PokemonDetailContent(
-                detail = state.detail,
-                modifier = Modifier.padding(padding),
-            )
+            is PokemonDetailUiState.Success ->
+                PokemonDetailContent(
+                    detail = state.detail,
+                    modifier = Modifier.padding(padding),
+                )
         }
     }
 }
 
 /** ポケモン詳細のコンテンツ部分。スクロール可能なレイアウトで情報を縦並びに表示する。 */
 @Composable
-private fun PokemonDetailContent(detail: PokemonDetail, modifier: Modifier = Modifier) {
+private fun PokemonDetailContent(
+    detail: PokemonDetail,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
             model = detail.imageUrl,
             contentDescription = detail.name,
-            modifier = Modifier
-                .size(200.dp)
-                .padding(top = 16.dp),
+            modifier =
+                Modifier
+                    .size(200.dp)
+                    .padding(top = 16.dp),
         )
 
         Text(
@@ -121,16 +128,18 @@ private fun PokemonDetailContent(detail: PokemonDetail, modifier: Modifier = Mod
         Text(
             text = "Base Stats",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 16.dp, bottom = 8.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp, bottom = 8.dp),
         )
 
         detail.stats.forEach { stat ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(

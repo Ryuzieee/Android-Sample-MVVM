@@ -13,8 +13,10 @@ import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 class PokemonRepositoryImpl(
     private val dataSource: PokemonRemoteDataSource,
 ) : PokemonRepository {
-
-    override suspend fun getPokemonList(limit: Int, offset: Int): List<Pokemon> =
+    override suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+    ): List<Pokemon> =
         dataSource.getPokemonList(limit, offset).results.map { dto ->
             Pokemon(name = dto.name, url = dto.url)
         }

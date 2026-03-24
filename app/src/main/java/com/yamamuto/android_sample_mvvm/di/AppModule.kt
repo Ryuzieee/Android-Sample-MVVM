@@ -23,7 +23,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
@@ -44,16 +43,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePokeApiService(retrofit: Retrofit): PokeApiService =
-        retrofit.create(PokeApiService::class.java)
+    fun providePokeApiService(retrofit: Retrofit): PokeApiService = retrofit.create(PokeApiService::class.java)
 
     @Provides
     @Singleton
-    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource =
-        PokemonRemoteDataSource(api)
+    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource = PokemonRemoteDataSource(api)
 
     @Provides
     @Singleton
-    fun providePokemonRepository(dataSource: PokemonRemoteDataSource): PokemonRepository =
-        PokemonRepositoryImpl(dataSource)
+    fun providePokemonRepository(dataSource: PokemonRemoteDataSource): PokemonRepository = PokemonRepositoryImpl(dataSource)
 }

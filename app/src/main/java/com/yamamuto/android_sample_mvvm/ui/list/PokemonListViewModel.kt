@@ -14,7 +14,9 @@ import javax.inject.Inject
 /** ポケモン一覧画面のUI状態。 */
 sealed interface PokemonListUiState {
     data object Loading : PokemonListUiState
+
     data class Success(val pokemons: List<Pokemon>) : PokemonListUiState
+
     data class Error(val message: String) : PokemonListUiState
 }
 
@@ -24,26 +26,28 @@ sealed interface PokemonListUiState {
  * [GetPokemonListUseCase] を通じてポケモン一覧を取得し、[PokemonListUiState] として公開する。
  */
 @HiltViewModel
-class PokemonListViewModel @Inject constructor(
-    private val getPokemonListUseCase: GetPokemonListUseCase,
-) : ViewModel() {
+class PokemonListViewModel
+    @Inject
+    constructor(
+        private val getPokemonListUseCase: GetPokemonListUseCase,
+    ) : ViewModel() {
+        var uiState by mutableStateOf<PokemonListUiState>(PokemonListUiState.Loading)
+            private set
 
-    var uiState by mutableStateOf<PokemonListUiState>(PokemonListUiState.Loading)
-        private set
+        init {
+            loadPokemonList()
+        }
 
-    init {
-        loadPokemonList()
-    }
-
-    private fun loadPokemonList() {
-        viewModelScope.launch {
-            uiState = PokemonListUiState.Loading
-            uiState = try {
-                val pokemons = getPokemonListUseCase(limit = 20)
-                PokemonListUiState.Success(pokemons)
-            } catch (e: Exception) {
-                PokemonListUiState.Error(e.message ?: "Unknown error")
+        private fun loadPokemonList() {
+            viewModelScope.launch {
+                uiState = PokemonListUiState.Loading
+                uiState =
+                    try {
+                        val pokemons = getPokemonListUseCase(limit = 20)
+                        PokemonListUiState.Success(pokemons)
+                    } catch (e: Exception) {
+                        PokemonListUiState.Error(e.message ?: "Unknown error")
+                    }
             }
         }
     }
-}

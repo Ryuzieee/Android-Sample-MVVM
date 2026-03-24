@@ -9,9 +9,13 @@ import javax.inject.Inject
  *
  * 1ユースケース = 1メソッドの原則に基づき、[invoke] のみを公開する。
  */
-class GetPokemonListUseCase @Inject constructor(
-    private val repository: PokemonRepository,
-) {
-    suspend operator fun invoke(limit: Int = 20, offset: Int = 0): List<Pokemon> =
-        repository.getPokemonList(limit, offset)
-}
+class GetPokemonListUseCase
+    @Inject
+    constructor(
+        private val repository: PokemonRepository,
+    ) {
+        suspend operator fun invoke(
+            limit: Int = 20,
+            offset: Int = 0,
+        ): List<Pokemon> = repository.getPokemonList(limit, offset)
+    }

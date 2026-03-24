@@ -10,6 +10,10 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
  * ドメイン層がデータソースに依存しない設計を実現する。
  */
 interface PokemonRepository {
-    suspend fun getPokemonList(limit: Int, offset: Int): List<Pokemon>
+    suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+    ): List<Pokemon>
+
     suspend fun getPokemonDetail(name: String): PokemonDetail
 }
