@@ -7,6 +7,11 @@ import androidx.navigation.compose.rememberNavController
 import com.yamamuto.android_sample_mvvm.ui.detail.PokemonDetailScreen
 import com.yamamuto.android_sample_mvvm.ui.list.PokemonListScreen
 
+/**
+ * アプリ全体のナビゲーショングラフ。
+ *
+ * 画面遷移の定義と各画面へのルーティングをまとめて管理する。
+ */
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()

@@ -2,8 +2,16 @@ package com.yamamuto.android_sample_mvvm.domain.usecase
 
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
+import javax.inject.Inject
 
-class GetPokemonDetailUseCase(private val repository: PokemonRepository) {
+/**
+ * ポケモン詳細を取得するユースケース。
+ *
+ * 1ユースケース = 1メソッドの原則に基づき、[invoke] のみを公開する。
+ */
+class GetPokemonDetailUseCase @Inject constructor(
+    private val repository: PokemonRepository,
+) {
     suspend operator fun invoke(name: String): PokemonDetail =
         repository.getPokemonDetail(name)
 }

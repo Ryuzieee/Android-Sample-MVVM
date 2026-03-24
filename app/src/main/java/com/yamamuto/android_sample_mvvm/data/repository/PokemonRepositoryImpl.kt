@@ -5,6 +5,11 @@ import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 
+/**
+ * [PokemonRepository] の実装クラス。
+ *
+ * [PokemonRemoteDataSource] から取得したDTOをドメインモデルに変換して返す。
+ */
 class PokemonRepositoryImpl(
     private val dataSource: PokemonRemoteDataSource,
 ) : PokemonRepository {

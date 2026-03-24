@@ -2,6 +2,11 @@ package com.yamamuto.android_sample_mvvm.data.api.dto
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * ポケモン詳細APIレスポンスのDTO。
+ *
+ * ドメインモデルへのマッピングは [PokemonRepositoryImpl] で行う。
+ */
 data class PokemonDetailResponse(
     val id: Int,
     val name: String,
@@ -12,6 +17,7 @@ data class PokemonDetailResponse(
     val stats: List<StatSlot>,
 ) {
     data class TypeSlot(val type: TypeInfo)
+
     data class TypeInfo(val name: String)
 
     data class Sprites(val other: Other) {
@@ -30,5 +36,6 @@ data class PokemonDetailResponse(
         @SerializedName("base_stat") val baseStat: Int,
         val stat: StatInfo,
     )
+
     data class StatInfo(val name: String)
 }

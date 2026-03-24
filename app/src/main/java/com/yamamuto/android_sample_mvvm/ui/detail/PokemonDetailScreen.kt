@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,19 +26,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 
+/**
+ * ポケモン詳細画面。
+ *
+ * 公式アートワーク・タイプ・基本ステータスを表示する。
+ * ポケモン名はナビゲーション引数から [PokemonDetailViewModel] が取得する。
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonDetailScreen(
     pokemonName: String,
     onBack: () -> Unit,
-    viewModel: PokemonDetailViewModel = viewModel(
-        key = pokemonName,
-        factory = PokemonDetailViewModel.factory(pokemonName),
-    ),
+    viewModel: PokemonDetailViewModel = hiltViewModel(),
 ) {
     Scaffold(
         topBar = {
@@ -54,12 +57,7 @@ fun PokemonDetailScreen(
         },
     ) { padding ->
         when (val state = viewModel.uiState) {
-            is PokemonDetailUiState.Loading -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
+            is PokemonDetailUiState.Loading -> LoadingIndicator()
 
             is PokemonDetailUiState.Error -> Box(
                 Modifier.fillMaxSize(),
@@ -76,6 +74,7 @@ fun PokemonDetailScreen(
     }
 }
 
+/** ポケモン詳細のコンテンツ部分。スクロール可能なレイアウトで情報を縦並びに表示する。 */
 @Composable
 private fun PokemonDetailContent(detail: PokemonDetail, modifier: Modifier = Modifier) {
     Column(
@@ -92,7 +91,11 @@ private fun PokemonDetailContent(detail: PokemonDetail, modifier: Modifier = Mod
                 .padding(top = 16.dp),
         )
 
-        Text("#${detail.id}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
+        Text(
+            text = "#${detail.id}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
         Text(
             text = detail.name.replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.headlineMedium,

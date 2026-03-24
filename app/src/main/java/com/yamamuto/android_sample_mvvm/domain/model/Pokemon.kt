@@ -1,5 +1,10 @@
 package com.yamamuto.android_sample_mvvm.domain.model
 
+/**
+ * ポケモンの一覧表示に必要な最小限のデータを表すドメインモデル。
+ *
+ * [id] や [imageUrl] は [url] から導出されるプロパティ。
+ */
 data class Pokemon(
     val name: String,
     val url: String,

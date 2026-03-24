@@ -6,6 +6,11 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+/**
+ * PokeAPI の REST エンドポイント定義。
+ *
+ * ベースURL: https://pokeapi.co/api/v2/
+ */
 interface PokeApiService {
 
     @GET("pokemon")
