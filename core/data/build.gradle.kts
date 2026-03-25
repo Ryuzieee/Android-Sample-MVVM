@@ -2,6 +2,8 @@ plugins {
     id("convention.android.library")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -16,4 +18,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.paging.runtime)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }
