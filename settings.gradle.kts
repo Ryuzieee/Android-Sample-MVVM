@@ -27,3 +27,4 @@ rootProject.name = "Android-Sample-MVVM"
 include(":app")
 include(":core:domain")
 include(":core:data")
+include(":core:ui")
