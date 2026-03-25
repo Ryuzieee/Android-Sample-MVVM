@@ -4,9 +4,8 @@ package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
 import com.yamamuto.android_sample_mvvm.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -22,13 +21,13 @@ import javax.inject.Inject
 /**
  * 検索画面のViewModel。
  *
- * クエリ入力に 500ms のデバウンスを適用し、[GetPokemonDetailUseCase] でポケモンを検索する。
+ * クエリ入力に 500ms のデバウンスを適用し、[SearchPokemonUseCase] でポケモン名をあいまい検索する。
  */
 @HiltViewModel
 class SearchViewModel
     @Inject
     constructor(
-        private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
+        private val searchPokemonUseCase: SearchPokemonUseCase,
     ) : BaseViewModel<SearchUiState>(SearchUiState()) {
         init {
             load()
@@ -36,6 +35,17 @@ class SearchViewModel
 
         fun onQueryChange(newQuery: String) {
             updateState { it.copy(query = newQuery) }
+        }
+
+        /** エラー後の再検索。[distinctUntilChanged] をバイパスして直接実行する。 */
+        fun retrySearch() {
+            val query = currentState.query
+            if (query.isBlank()) return
+            viewModelScope.launch {
+                updateState { it.copy(result = UiState.Loading) }
+                val result = fetchResults(query)
+                updateState { it.copy(result = result) }
+            }
         }
 
         private fun load() {
@@ -49,22 +59,29 @@ class SearchViewModel
             }
         }
 
-        private fun search(query: String): Flow<UiState<PokemonDetail>?> {
+        private fun search(query: String): Flow<UiState<List<String>>?> {
             if (query.isBlank()) return flowOf(null)
             return flow {
                 emit(UiState.Loading)
-                emit(
-                    runCatching { getPokemonDetailUseCase(query.lowercase().trim()) }
-                        .fold(
-                            onSuccess = { UiState.Success(it) },
-                            onFailure = { e ->
-                                UiState.Error(
-                                    message = e.message ?: "エラーが発生しました",
-                                    isNetworkError = e is AppException.Network,
-                                )
-                            },
-                        ),
-                )
+                emit(fetchResults(query))
             }
         }
+
+        private suspend fun fetchResults(query: String): UiState<List<String>> =
+            runCatching { searchPokemonUseCase(query) }
+                .fold(
+                    onSuccess = { names ->
+                        if (names.isEmpty()) {
+                            UiState.Error(message = "「$query」に一致するポケモンは見つかりませんでした")
+                        } else {
+                            UiState.Success(names)
+                        }
+                    },
+                    onFailure = { e ->
+                        UiState.Error(
+                            message = e.message ?: "エラーが発生しました",
+                            isNetworkError = e is AppException.Network,
+                        )
+                    },
+                )
     }

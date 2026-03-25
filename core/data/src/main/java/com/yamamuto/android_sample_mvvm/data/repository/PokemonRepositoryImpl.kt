@@ -30,6 +30,7 @@ class PokemonRepositoryImpl(
     private val dataSource: PokemonRemoteDataSource,
     private val dao: PokemonDao,
 ) : PokemonRepository {
+    private var cachedPokemonNames: List<String>? = null
     override fun getPokemonPagingData(): Flow<PagingData<Pokemon>> =
         Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
@@ -59,6 +60,13 @@ class PokemonRepositoryImpl(
             dao.insertPokemonDetail(detail.toEntity())
             detail
         }
+    }
+
+    override suspend fun searchPokemonNames(query: String): List<String> {
+        val names = cachedPokemonNames ?: wrapException {
+            dataSource.getPokemonList(limit = 2000, offset = 0).results.map { it.name }
+        }.also { cachedPokemonNames = it }
+        return names.filter { it.contains(query.trim(), ignoreCase = true) }
     }
 
     private fun PokemonDetailEntity.toDomain(): PokemonDetail =
