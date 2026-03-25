@@ -38,16 +38,18 @@ class PokemonListViewModel
             loadPokemonList()
         }
 
+        fun retry() {
+            loadPokemonList()
+        }
+
         private fun loadPokemonList() {
             viewModelScope.launch {
                 _uiState.value = PokemonListUiState.Loading
                 _uiState.value =
-                    try {
-                        val pokemons = getPokemonListUseCase(limit = 20)
-                        PokemonListUiState.Success(pokemons)
-                    } catch (e: Exception) {
-                        PokemonListUiState.Error(e.message ?: "Unknown error")
-                    }
+                    runCatching { getPokemonListUseCase(limit = 20) }.fold(
+                        onSuccess = { PokemonListUiState.Success(it) },
+                        onFailure = { PokemonListUiState.Error(it.message ?: "Unknown error") },
+                    )
             }
         }
     }
