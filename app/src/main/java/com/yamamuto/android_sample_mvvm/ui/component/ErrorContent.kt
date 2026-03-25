@@ -15,12 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-/** エラー表示とリトライボタンを備えた共通コンポーネント。 */
+/**
+ * エラー表示とリトライボタンを備えた共通コンポーネント。
+ *
+ * [isNetworkError] が true の場合はオフライン用のメッセージを表示する。
+ */
 @Composable
 fun ErrorContent(
     message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    isNetworkError: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -28,11 +33,19 @@ fun ErrorContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = message,
+            text = if (isNetworkError) "ネットワークに接続できません" else message,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         )
+        if (isNetworkError) {
+            Text(
+                text = "接続を確認してリトライしてください",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
             Text("リトライ")

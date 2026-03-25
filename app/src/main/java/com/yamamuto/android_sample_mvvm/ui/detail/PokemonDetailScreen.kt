@@ -65,6 +65,7 @@ fun PokemonDetailScreen(
                 ErrorContent(
                     message = state.message,
                     onRetry = viewModel::retry,
+                    isNetworkError = state.isNetworkError,
                     modifier = Modifier.padding(padding),
                 )
 
