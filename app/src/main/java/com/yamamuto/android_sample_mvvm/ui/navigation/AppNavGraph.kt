@@ -1,33 +1,45 @@
 package com.yamamuto.android_sample_mvvm.ui.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.yamamuto.android_sample_mvvm.ui.detail.PokemonDetailScreen
-import com.yamamuto.android_sample_mvvm.ui.list.PokemonListScreen
+import com.yamamuto.android_sample_mvvm.ui.detail.pokemonDetailScreen
+import com.yamamuto.android_sample_mvvm.ui.list.pokemonListScreen
 
 /**
  * アプリ全体のナビゲーショングラフ。
  *
  * 画面遷移の定義と各画面へのルーティングをまとめて管理する。
+ * iOSライクな横スライドアニメーションをデフォルトとして適用する。
  */
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "pokemon_list") {
-        composable("pokemon_list") {
-            PokemonListScreen(
-                onPokemonClick = { name -> navController.navigate("pokemon_detail/$name") },
-            )
-        }
-        composable("pokemon_detail/{name}") { backStackEntry ->
-            val name = backStackEntry.arguments?.getString("name") ?: return@composable
-            PokemonDetailScreen(
-                pokemonName = name,
-                onBack = { navController.popBackStack() },
-            )
-        }
+    NavHost(
+        navController = navController,
+        startDestination = PokemonListRoute,
+        enterTransition = {
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(350))
+        },
+        exitTransition = {
+            slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(350))
+        },
+        popEnterTransition = {
+            slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(350))
+        },
+        popExitTransition = {
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(350))
+        },
+    ) {
+        pokemonListScreen(
+            onPokemonClick = { name -> navController.navigate(PokemonDetailRoute(name)) },
+        )
+        pokemonDetailScreen(
+            onBack = { navController.popBackStack() },
+        )
     }
 }

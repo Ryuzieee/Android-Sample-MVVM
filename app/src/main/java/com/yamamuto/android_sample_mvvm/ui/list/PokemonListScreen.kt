@@ -1,6 +1,5 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
+import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 
 /**
@@ -45,12 +45,11 @@ fun PokemonListScreen(
             is PokemonListUiState.Loading -> LoadingIndicator()
 
             is PokemonListUiState.Error ->
-                Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("Error: ${state.message}")
-                }
+                ErrorContent(
+                    message = state.message,
+                    onRetry = viewModel::retry,
+                    modifier = Modifier.padding(padding),
+                )
 
             is PokemonListUiState.Success ->
                 LazyVerticalGrid(

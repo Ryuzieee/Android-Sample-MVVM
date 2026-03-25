@@ -1,9 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 
 /**
@@ -63,12 +62,11 @@ fun PokemonDetailScreen(
             is PokemonDetailUiState.Loading -> LoadingIndicator()
 
             is PokemonDetailUiState.Error ->
-                Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("Error: ${state.message}")
-                }
+                ErrorContent(
+                    message = state.message,
+                    onRetry = viewModel::retry,
+                    modifier = Modifier.padding(padding),
+                )
 
             is PokemonDetailUiState.Success ->
                 PokemonDetailContent(

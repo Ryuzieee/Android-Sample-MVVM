@@ -8,10 +8,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 /**
@@ -25,6 +27,13 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
+    fun provideJson(): Json =
+        Json {
+            ignoreUnknownKeys = true
+        }
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(
@@ -34,11 +43,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
+    fun provideRetrofit(
+        client: OkHttpClient,
+        json: Json,
+    ): Retrofit =
         Retrofit.Builder()
             .baseUrl("https://pokeapi.co/api/v2/")
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
     @Provides

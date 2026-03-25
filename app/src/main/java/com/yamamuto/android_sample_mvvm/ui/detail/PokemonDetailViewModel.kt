@@ -43,16 +43,18 @@ class PokemonDetailViewModel
             loadDetail()
         }
 
+        fun retry() {
+            loadDetail()
+        }
+
         private fun loadDetail() {
             viewModelScope.launch {
                 _uiState.value = PokemonDetailUiState.Loading
                 _uiState.value =
-                    try {
-                        val detail = getPokemonDetailUseCase(pokemonName)
-                        PokemonDetailUiState.Success(detail)
-                    } catch (e: Exception) {
-                        PokemonDetailUiState.Error(e.message ?: "Unknown error")
-                    }
+                    runCatching { getPokemonDetailUseCase(pokemonName) }.fold(
+                        onSuccess = { PokemonDetailUiState.Success(it) },
+                        onFailure = { PokemonDetailUiState.Error(it.message ?: "Unknown error") },
+                    )
             }
         }
     }
