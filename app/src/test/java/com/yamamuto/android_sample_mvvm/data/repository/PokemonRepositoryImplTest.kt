@@ -3,8 +3,9 @@ package com.yamamuto.android_sample_mvvm.data.repository
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonDetailResponse
-import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonListResponse
+import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -29,25 +30,11 @@ class PokemonRepositoryImplTest {
     }
 
     @Test
-    fun `getPokemonList はDTOをドメインモデルに正しく変換する`() =
-        runTest {
-            coEvery { dataSource.getPokemonList(20, 0) } returns fakePokemonListResponse
-
-            val result = repository.getPokemonList(20, 0)
-
-            assertEquals(1, result.size)
-            assertEquals("bulbasaur", result[0].name)
-            assertEquals(1, result[0].id)
-            assertEquals(
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-                result[0].imageUrl,
-            )
-        }
-
-    @Test
     fun `getPokemonDetail はDTOをドメインモデルに正しく変換する`() =
         runTest {
+            coEvery { dao.getPokemonDetail("bulbasaur") } returns null
             coEvery { dataSource.getPokemonDetail("bulbasaur") } returns fakePokemonDetailResponse
+            coEvery { dao.insertPokemonDetail(any()) } just Runs
 
             val result = repository.getPokemonDetail("bulbasaur")
 

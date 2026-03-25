@@ -27,16 +27,6 @@ class PokemonRepositoryImpl(
     private val dataSource: PokemonRemoteDataSource,
     private val dao: PokemonDao,
 ) : PokemonRepository {
-    override suspend fun getPokemonList(
-        limit: Int,
-        offset: Int,
-    ): List<Pokemon> =
-        wrapException {
-            dataSource.getPokemonList(limit, offset).results.map { dto ->
-                Pokemon(name = dto.name, url = dto.url)
-            }
-        }
-
     override fun getPokemonPagingData(): Flow<PagingData<Pokemon>> =
         Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),

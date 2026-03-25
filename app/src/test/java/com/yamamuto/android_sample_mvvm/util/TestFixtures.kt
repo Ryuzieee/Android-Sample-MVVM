@@ -1,8 +1,6 @@
 package com.yamamuto.android_sample_mvvm.util
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDto
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 
@@ -31,17 +29,6 @@ object TestFixtures {
                 listOf(
                     PokemonDetail.Stat(name = "hp", value = 45),
                     PokemonDetail.Stat(name = "attack", value = 49),
-                ),
-        )
-
-    val fakePokemonListResponse =
-        PokemonListResponse(
-            results =
-                listOf(
-                    PokemonDto(
-                        name = "bulbasaur",
-                        url = "https://pokeapi.co/api/v2/pokemon/1/",
-                    ),
                 ),
         )
 

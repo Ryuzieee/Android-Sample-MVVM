@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.navigation.NavGraphBuilder
