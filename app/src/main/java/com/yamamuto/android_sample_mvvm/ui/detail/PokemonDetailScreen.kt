@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 
@@ -59,9 +60,9 @@ fun PokemonDetailScreen(
     ) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         when (val state = uiState) {
-            is PokemonDetailUiState.Loading -> LoadingIndicator()
+            is UiState.Loading -> LoadingIndicator()
 
-            is PokemonDetailUiState.Error ->
+            is UiState.Error ->
                 ErrorContent(
                     message = state.message,
                     onRetry = viewModel::retry,
@@ -69,9 +70,9 @@ fun PokemonDetailScreen(
                     modifier = Modifier.padding(padding),
                 )
 
-            is PokemonDetailUiState.Success ->
+            is UiState.Success ->
                 PokemonDetailContent(
-                    detail = state.detail,
+                    detail = state.data,
                     modifier = Modifier.padding(padding),
                 )
         }

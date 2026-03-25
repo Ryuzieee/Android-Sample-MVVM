@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonDetail
@@ -45,8 +46,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem()
-                assertTrue(state is PokemonDetailUiState.Success)
-                assertEquals(fakePokemonDetail, (state as PokemonDetailUiState.Success).detail)
+                assertTrue(state is UiState.Success)
+                assertEquals(fakePokemonDetail, (state as UiState.Success).data)
             }
         }
 
@@ -59,8 +60,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem()
-                assertTrue(state is PokemonDetailUiState.Error)
-                assertEquals("Not found", (state as PokemonDetailUiState.Error).message)
+                assertTrue(state is UiState.Error)
+                assertEquals("Not found", (state as UiState.Error).message)
             }
         }
 
@@ -73,9 +74,9 @@ class PokemonDetailViewModelTest {
             val viewModel = createViewModel("charizard")
 
             viewModel.uiState.test {
-                val state = awaitItem() as PokemonDetailUiState.Success
-                assertEquals("charizard", state.detail.name)
-                assertEquals(6, state.detail.id)
+                val state = awaitItem() as UiState.Success
+                assertEquals("charizard", state.data.name)
+                assertEquals(6, state.data.id)
             }
         }
 
@@ -87,13 +88,13 @@ class PokemonDetailViewModelTest {
             val viewModel = createViewModel("bulbasaur")
 
             viewModel.uiState.test {
-                assertTrue(awaitItem() is PokemonDetailUiState.Error)
+                assertTrue(awaitItem() is UiState.Error)
 
                 coEvery { useCase("bulbasaur") } returns fakePokemonDetail
                 viewModel.retry()
 
                 val retried = awaitItem()
-                assertTrue(retried is PokemonDetailUiState.Success)
+                assertTrue(retried is UiState.Success)
             }
         }
 }
