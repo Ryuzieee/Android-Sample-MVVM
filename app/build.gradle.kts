@@ -76,6 +76,8 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:list"))
     implementation(project(":feature:detail"))
+    implementation(project(":feature:search"))
+    implementation(project(":feature:favorites"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

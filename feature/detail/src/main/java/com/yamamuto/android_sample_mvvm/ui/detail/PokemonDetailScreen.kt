@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +38,8 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonNameText
 import com.yamamuto.android_sample_mvvm.ui.util.ObserveAsEvents
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import kotlinx.coroutines.launch
@@ -44,7 +48,7 @@ import kotlinx.coroutines.launch
  * ポケモン詳細画面。
  *
  * 公式アートワーク・タイプ・基本ステータスを表示する。
- * ポケモン名はナビゲーション引数から [PokemonDetailViewModel] が取得する。
+ * TopAppBar のハートアイコンでお気に入りトグルが可能。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +59,7 @@ fun PokemonDetailScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -67,10 +72,24 @@ fun PokemonDetailScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(pokemonName.replaceFirstChar { it.uppercase() }) },
+                title = {
+                    PokemonNameText(
+                        name = pokemonName,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = viewModel::toggleFavorite) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (isFavorite) "お気に入りから削除" else "お気に入りに追加",
+                            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                        )
                     }
                 },
             )
@@ -119,13 +138,9 @@ private fun PokemonDetailContent(
                     .padding(top = 16.dp),
         )
 
-        Text(
-            text = "#${detail.id}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline,
-        )
-        Text(
-            text = detail.name.replaceFirstChar { it.uppercase() },
+        PokemonIdText(id = detail.id)
+        PokemonNameText(
+            name = detail.name,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 4.dp),
         )
@@ -156,29 +171,38 @@ private fun PokemonDetailContent(
         )
 
         detail.stats.forEach { stat ->
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stat.name,
-                    modifier = Modifier.width(110.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-                LinearProgressIndicator(
-                    progress = { stat.value / 255f },
-                    modifier = Modifier.weight(1f),
-                )
-                Text(
-                    text = "${stat.value}",
-                    modifier = Modifier.width(36.dp),
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
+            StatRow(stat = stat)
         }
+    }
+}
+
+/** ステータス名・プログレスバー・数値を横並びで表示する行コンポーネント。 */
+@Composable
+private fun StatRow(
+    stat: PokemonDetail.Stat,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stat.name,
+            modifier = Modifier.width(110.dp),
+            style = MaterialTheme.typography.bodySmall,
+        )
+        LinearProgressIndicator(
+            progress = { stat.value / 255f },
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = "${stat.value}",
+            modifier = Modifier.width(36.dp),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }

@@ -3,11 +3,17 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonDetail
 import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.Runs
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -25,15 +31,23 @@ class PokemonDetailViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var useCase: GetPokemonDetailUseCase
+    private lateinit var getIsFavoriteUseCase: GetIsFavoriteUseCase
+    private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
 
     @Before
     fun setUp() {
         useCase = mockk()
+        getIsFavoriteUseCase = mockk()
+        toggleFavoriteUseCase = mockk()
+        every { getIsFavoriteUseCase(any()) } returns flowOf(false)
+        coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
         PokemonDetailViewModel(
             getPokemonDetailUseCase = useCase,
+            getIsFavoriteUseCase = getIsFavoriteUseCase,
+            toggleFavoriteUseCase = toggleFavoriteUseCase,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
 

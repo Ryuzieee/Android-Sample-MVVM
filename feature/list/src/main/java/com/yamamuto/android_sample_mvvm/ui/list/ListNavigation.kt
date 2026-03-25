@@ -11,8 +11,16 @@ import kotlinx.serialization.Serializable
 data object PokemonListRoute
 
 /** ポケモン一覧画面のナビゲーション定義。 */
-fun NavGraphBuilder.pokemonListScreen(onPokemonClick: (String) -> Unit) {
+fun NavGraphBuilder.pokemonListScreen(
+    onPokemonClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
+) {
     composable<PokemonListRoute> {
-        PokemonListScreen(onPokemonClick = onPokemonClick)
+        PokemonListScreen(
+            onPokemonClick = onPokemonClick,
+            onSearchClick = onSearchClick,
+            onFavoritesClick = onFavoritesClick,
+        )
     }
 }

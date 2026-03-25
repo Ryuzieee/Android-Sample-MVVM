@@ -1,15 +1,18 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,23 +27,39 @@ import coil3.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonNameText
 
 /**
  * ポケモン一覧画面。
  *
  * PokeAPI から取得したポケモンをグリッド形式で表示する。
- * Paging 3 による無限スクロールに対応。
+ * Paging 3 による無限スクロールに対応。TopAppBar から検索・お気に入りへ遷移できる。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(
     onPokemonClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
     viewModel: PokemonListViewModel = hiltViewModel(),
 ) {
     val pagingItems = viewModel.pokemonPagingFlow.collectAsLazyPagingItems()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Pokédex") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Pokédex") },
+                actions = {
+                    IconButton(onClick = onSearchClick) {
+                        Icon(Icons.Filled.Search, contentDescription = "検索")
+                    }
+                    IconButton(onClick = onFavoritesClick) {
+                        Icon(Icons.Filled.Favorite, contentDescription = "お気に入り")
+                    }
+                },
+            )
+        },
     ) { padding ->
         when (pagingItems.loadState.refresh) {
             is LoadState.Loading -> LoadingIndicator()
@@ -69,16 +88,7 @@ fun PokemonListScreen(
                     }
 
                     if (pagingItems.loadState.append is LoadState.Loading) {
-                        item {
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                androidx.compose.material3.CircularProgressIndicator()
-                            }
-                        }
+                        item { LoadingIndicator() }
                     }
                 }
         }
@@ -107,16 +117,11 @@ private fun PokemonCard(
                 contentDescription = pokemon.name,
                 modifier = Modifier.size(80.dp),
             )
-            Text(
-                text = pokemon.name.replaceFirstChar { it.uppercase() },
-                style = MaterialTheme.typography.bodyMedium,
+            PokemonNameText(
+                name = pokemon.name,
                 modifier = Modifier.padding(top = 4.dp),
             )
-            Text(
-                text = "#${pokemon.id}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
+            PokemonIdText(id = pokemon.id)
         }
     }
 }

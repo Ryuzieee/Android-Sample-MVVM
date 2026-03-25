@@ -6,9 +6,9 @@ PokeAPI を使ったポケモン図鑑アプリ。マルチモジュール構成
 
 ## 画面
 
-| 一覧画面 | 詳細画面 |
-|---------|---------|
-| ポケモンを2列グリッドで無限スクロール表示 | タイプ・ステータス・高さ・重さをスクロール表示 |
+| 一覧画面 | 詳細画面 | 検索画面 | お気に入り画面 |
+|---------|---------|---------|------------|
+| ポケモンを2列グリッドで無限スクロール表示 | タイプ・ステータス・高さ・重さをスクロール表示。♡ アイコンでお気に入りトグル | ポケモン名でリアルタイム検索（500ms デバウンス） | お気に入り登録ポケモンを2列グリッドで表示 |
 
 ---
 
@@ -42,17 +42,18 @@ PokeAPI を使ったポケモン図鑑アプリ。マルチモジュール構成
 Clean Architecture + MVVM をベースにマルチモジュール構成を採用。
 
 ```
-┌─────────────────────────────────────┐
-│              app                     │  ナビゲーション・DI エントリポイント
-├──────────────┬──────────────────────┤
-│  feature:list │  feature:detail      │  画面単位の機能モジュール
-├──────────────┴──────────────────────┤
-│  core:ui                             │  共通 Compose コンポーネント・テーマ
-├─────────────────────────────────────┤
-│  core:data                           │  Repository 実装・API・Room
-├─────────────────────────────────────┤
-│  core:domain                         │  ビジネスロジック（Android 非依存）
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                        app                            │  ナビゲーション・DI エントリポイント
+├────────────┬────────────┬─────────────┬──────────────┤
+│ feature:   │ feature:   │ feature:    │ feature:     │  画面単位の機能モジュール
+│   list     │   detail   │   search    │   favorites  │
+├────────────┴────────────┴─────────────┴──────────────┤
+│  core:ui                                              │  共通 Compose コンポーネント・テーマ
+├──────────────────────────────────────────────────────┤
+│  core:data                                            │  Repository 実装・API・Room
+├──────────────────────────────────────────────────────┤
+│  core:domain                                          │  ビジネスロジック（Android 非依存）
+└──────────────────────────────────────────────────────┘
 ```
 
 ### レイヤー詳細
@@ -72,10 +73,13 @@ Clean Architecture + MVVM をベースにマルチモジュール構成を採用
 - `LoadingIndicator`, `ErrorContent` など再利用可能な Compose コンポーネント
 - Material3 テーマ定義
 
-#### `feature:list` / `feature:detail`
+#### `feature:list` / `feature:detail` / `feature:search` / `feature:favorites`
 - `ViewModel` → `UseCase` → `Repository` の一方向データフロー
 - UI 状態は `StateFlow<UiState<T>>` で管理
 - 一度きりのイベント（Snackbar 等）は `Channel` + `ObserveAsEvents` で管理
+- `feature:search`: クエリの `debounce(500ms)` + `flatMapLatest` でリアルタイム検索
+- `feature:favorites`: `StateFlow<List<Favorite>>` を Room の Flow から `stateIn` で公開
+- `feature:detail`: `isFavorite` を `flatMapLatest` で詳細ロード後に DB 監視開始
 
 ### データフロー
 
@@ -104,7 +108,9 @@ Android-Sample-MVVM/
 │   └── ui/                     # 共通 UI
 ├── feature/
 │   ├── list/                   # ポケモン一覧画面
-│   └── detail/                 # ポケモン詳細画面
+│   ├── detail/                 # ポケモン詳細画面（お気に入りトグル含む）
+│   ├── search/                 # ポケモン検索画面
+│   └── favorites/              # お気に入り一覧画面
 └── build-logic/
     └── convention/             # Convention Plugins
 ```

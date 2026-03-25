@@ -8,13 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.yamamuto.android_sample_mvvm.feature.list"
-
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
+    namespace = "com.yamamuto.android_sample_mvvm.feature.favorites"
 }
 
 dependencies {
@@ -27,19 +21,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.paging.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     ksp(libs.hilt.compiler)
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.turbine)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.androidx.core.testing)
-    testImplementation(libs.androidx.paging.testing)
 }

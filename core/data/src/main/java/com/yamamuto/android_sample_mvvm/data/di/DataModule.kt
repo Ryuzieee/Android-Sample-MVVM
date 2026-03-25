@@ -5,8 +5,11 @@ import androidx.room.Room
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.PokemonDatabase
+import com.yamamuto.android_sample_mvvm.data.local.dao.FavoriteDao
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
+import com.yamamuto.android_sample_mvvm.data.repository.FavoriteRepositoryImpl
 import com.yamamuto.android_sample_mvvm.data.repository.PokemonRepositoryImpl
+import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import dagger.Module
 import dagger.Provides
@@ -39,6 +42,10 @@ object DataModule {
 
     @Provides
     @Singleton
+    fun provideFavoriteDao(database: PokemonDatabase): FavoriteDao = database.favoriteDao()
+
+    @Provides
+    @Singleton
     fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource = PokemonRemoteDataSource(api)
 
     @Provides
@@ -47,4 +54,8 @@ object DataModule {
         dataSource: PokemonRemoteDataSource,
         dao: PokemonDao,
     ): PokemonRepository = PokemonRepositoryImpl(dataSource, dao)
+
+    @Provides
+    @Singleton
+    fun provideFavoriteRepository(dao: FavoriteDao): FavoriteRepository = FavoriteRepositoryImpl(dao)
 }
