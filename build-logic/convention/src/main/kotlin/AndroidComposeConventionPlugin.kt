@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.CommonExtension
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.Plugin
@@ -19,13 +17,8 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
-            val androidExtension: CommonExtension<*, *, *, *, *, *>? =
-                extensions.findByType<LibraryExtension>()
-                    ?: extensions.findByType<BaseAppModuleExtension>()
-
-            androidExtension?.buildFeatures {
-                compose = true
-            }
+            extensions.findByType<LibraryExtension>()?.buildFeatures { compose = true }
+            extensions.findByType<BaseAppModuleExtension>()?.buildFeatures { compose = true }
 
             extensions.configure<ComposeCompilerGradlePluginExtension> {
                 val stabilityFile = rootProject.file("compose-stability.conf")

@@ -19,13 +19,19 @@ data class PokemonDetailResponse(
     val stats: List<StatSlot>,
 ) {
     @Serializable
-    data class TypeSlot(val type: TypeInfo)
+    data class TypeSlot(
+        val type: TypeInfo,
+    )
 
     @Serializable
-    data class TypeInfo(val name: String)
+    data class TypeInfo(
+        val name: String,
+    )
 
     @Serializable
-    data class Sprites(val other: Other) {
+    data class Sprites(
+        val other: Other,
+    ) {
         @Serializable
         data class Other(
             @SerialName("official-artwork")
@@ -46,5 +52,7 @@ data class PokemonDetailResponse(
     )
 
     @Serializable
-    data class StatInfo(val name: String)
+    data class StatInfo(
+        val name: String,
+    )
 }

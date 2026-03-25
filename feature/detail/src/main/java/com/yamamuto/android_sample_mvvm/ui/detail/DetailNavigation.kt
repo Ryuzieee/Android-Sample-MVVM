@@ -9,7 +9,9 @@ import kotlinx.serialization.Serializable
 
 /** ポケモン詳細画面のルート定義。各 feature モジュールがルートを自己管理する。 */
 @Serializable
-data class PokemonDetailRoute(val name: String)
+data class PokemonDetailRoute(
+    val name: String,
+)
 
 /** ポケモン詳細画面のナビゲーション定義。 */
 fun NavGraphBuilder.pokemonDetailScreen(onBack: () -> Unit) {

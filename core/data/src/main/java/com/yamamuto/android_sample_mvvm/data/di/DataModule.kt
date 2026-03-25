@@ -28,7 +28,8 @@ object DataModule {
     fun provideDatabase(
         @ApplicationContext context: Context,
     ): PokemonDatabase =
-        Room.databaseBuilder(context, PokemonDatabase::class.java, "pokemon.db")
+        Room
+            .databaseBuilder(context, PokemonDatabase::class.java, "pokemon.db")
             .fallbackToDestructiveMigration()
             .build()
 

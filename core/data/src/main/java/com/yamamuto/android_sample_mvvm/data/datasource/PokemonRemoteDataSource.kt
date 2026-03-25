@@ -9,7 +9,9 @@ import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
  *
  * APIの呼び出しのみを担当し、データ変換は行わない。
  */
-class PokemonRemoteDataSource(private val api: PokeApiService) {
+class PokemonRemoteDataSource(
+    private val api: PokeApiService,
+) {
     suspend fun getPokemonList(
         limit: Int,
         offset: Int,
