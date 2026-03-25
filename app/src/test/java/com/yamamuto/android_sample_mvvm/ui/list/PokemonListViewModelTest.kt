@@ -45,7 +45,7 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val state = viewModel.uiState
+            val state = viewModel.uiState.value
             assertTrue(state is PokemonListUiState.Success)
             assertEquals(fakePokemonList, (state as PokemonListUiState.Success).pokemons)
         }
@@ -57,7 +57,7 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val state = viewModel.uiState
+            val state = viewModel.uiState.value
             assertTrue(state is PokemonListUiState.Error)
             assertEquals("Network error", (state as PokemonListUiState.Error).message)
         }
@@ -69,7 +69,7 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val state = viewModel.uiState
+            val state = viewModel.uiState.value
             assertTrue(state is PokemonListUiState.Success)
             assertEquals(emptyList<Nothing>(), (state as PokemonListUiState.Success).pokemons)
         }

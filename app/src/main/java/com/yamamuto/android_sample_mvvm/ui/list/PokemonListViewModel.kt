@@ -1,13 +1,13 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,8 +31,8 @@ class PokemonListViewModel
     constructor(
         private val getPokemonListUseCase: GetPokemonListUseCase,
     ) : ViewModel() {
-        var uiState by mutableStateOf<PokemonListUiState>(PokemonListUiState.Loading)
-            private set
+        private val _uiState = MutableStateFlow<PokemonListUiState>(PokemonListUiState.Loading)
+        val uiState: StateFlow<PokemonListUiState> = _uiState.asStateFlow()
 
         init {
             loadPokemonList()
@@ -40,8 +40,8 @@ class PokemonListViewModel
 
         private fun loadPokemonList() {
             viewModelScope.launch {
-                uiState = PokemonListUiState.Loading
-                uiState =
+                _uiState.value = PokemonListUiState.Loading
+                _uiState.value =
                     try {
                         val pokemons = getPokemonListUseCase(limit = 20)
                         PokemonListUiState.Success(pokemons)
