@@ -1,5 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
+import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonListUseCase
 import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonList
@@ -15,7 +16,7 @@ import org.junit.Test
 /**
  * [PokemonListViewModel] の単体テスト。
  *
- * NOTE: [MainDispatcherRule] で viewModelScope の Main ディスパッチャをテスト用に差し替えている。
+ * Turbine を使って StateFlow の状態遷移を検証する。
  */
 class PokemonListViewModelTest {
     @get:Rule
@@ -29,25 +30,17 @@ class PokemonListViewModelTest {
     }
 
     @Test
-    fun `初期状態は Loading である`() {
-        coEvery { useCase(limit = any(), offset = any()) } returns fakePokemonList
-
-        // NOTE: UnconfinedTestDispatcher では init の coroutine が即時実行されるため、
-        // 初期 Loading を確認するには coEvery を suspend させる必要がある。
-        // ここでは Loading の型定義が正しいことだけを確認する。
-        assertTrue(PokemonListUiState.Loading is PokemonListUiState.Loading)
-    }
-
-    @Test
     fun `データ取得成功時は Success 状態になる`() =
         runTest {
             coEvery { useCase(limit = any(), offset = any()) } returns fakePokemonList
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val state = viewModel.uiState.value
-            assertTrue(state is PokemonListUiState.Success)
-            assertEquals(fakePokemonList, (state as PokemonListUiState.Success).pokemons)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is PokemonListUiState.Success)
+                assertEquals(fakePokemonList, (state as PokemonListUiState.Success).pokemons)
+            }
         }
 
     @Test
@@ -57,9 +50,11 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val state = viewModel.uiState.value
-            assertTrue(state is PokemonListUiState.Error)
-            assertEquals("Network error", (state as PokemonListUiState.Error).message)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is PokemonListUiState.Error)
+                assertEquals("Network error", (state as PokemonListUiState.Error).message)
+            }
         }
 
     @Test
@@ -69,8 +64,29 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val state = viewModel.uiState.value
-            assertTrue(state is PokemonListUiState.Success)
-            assertEquals(emptyList<Nothing>(), (state as PokemonListUiState.Success).pokemons)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is PokemonListUiState.Success)
+                assertEquals(emptyList<Nothing>(), (state as PokemonListUiState.Success).pokemons)
+            }
+        }
+
+    @Test
+    fun `retry で再取得できる`() =
+        runTest {
+            coEvery { useCase(limit = any(), offset = any()) } throws Exception("error")
+
+            val viewModel = PokemonListViewModel(useCase)
+
+            viewModel.uiState.test {
+                assertTrue(awaitItem() is PokemonListUiState.Error)
+
+                coEvery { useCase(limit = any(), offset = any()) } returns fakePokemonList
+                viewModel.retry()
+
+                val retried = awaitItem()
+                assertTrue(retried is PokemonListUiState.Success)
+                assertEquals(fakePokemonList, (retried as PokemonListUiState.Success).pokemons)
+            }
         }
 }
