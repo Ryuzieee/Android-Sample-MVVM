@@ -1,14 +1,15 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
-import app.cash.turbine.test
+import androidx.paging.PagingData
+import androidx.paging.testing.asSnapshot
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonListUseCase
 import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonList
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +17,7 @@ import org.junit.Test
 /**
  * [PokemonListViewModel] の単体テスト。
  *
- * Turbine を使って StateFlow の状態遷移を検証する。
+ * Paging のデータ取得をテストする。
  */
 class PokemonListViewModelTest {
     @get:Rule
@@ -30,63 +31,25 @@ class PokemonListViewModelTest {
     }
 
     @Test
-    fun `データ取得成功時は Success 状態になる`() =
+    fun `Paging でポケモン一覧を取得できる`() =
         runTest {
-            coEvery { useCase(limit = any(), offset = any()) } returns fakePokemonList
+            every { useCase() } returns flowOf(PagingData.from(fakePokemonList))
 
             val viewModel = PokemonListViewModel(useCase)
 
-            viewModel.uiState.test {
-                val state = awaitItem()
-                assertTrue(state is PokemonListUiState.Success)
-                assertEquals(fakePokemonList, (state as PokemonListUiState.Success).pokemons)
-            }
+            val items = viewModel.pokemonPagingFlow.asSnapshot()
+            assertEquals(fakePokemonList.size, items.size)
+            assertEquals("bulbasaur", items[0].name)
         }
 
     @Test
-    fun `データ取得失敗時は Error 状態になる`() =
+    fun `空リストの場合は空のPagingDataになる`() =
         runTest {
-            coEvery { useCase(limit = any(), offset = any()) } throws Exception("Network error")
+            every { useCase() } returns flowOf(PagingData.from(emptyList()))
 
             val viewModel = PokemonListViewModel(useCase)
 
-            viewModel.uiState.test {
-                val state = awaitItem()
-                assertTrue(state is PokemonListUiState.Error)
-                assertEquals("Network error", (state as PokemonListUiState.Error).message)
-            }
-        }
-
-    @Test
-    fun `空リストが返った場合は空の Success 状態になる`() =
-        runTest {
-            coEvery { useCase(limit = any(), offset = any()) } returns emptyList()
-
-            val viewModel = PokemonListViewModel(useCase)
-
-            viewModel.uiState.test {
-                val state = awaitItem()
-                assertTrue(state is PokemonListUiState.Success)
-                assertEquals(emptyList<Nothing>(), (state as PokemonListUiState.Success).pokemons)
-            }
-        }
-
-    @Test
-    fun `retry で再取得できる`() =
-        runTest {
-            coEvery { useCase(limit = any(), offset = any()) } throws Exception("error")
-
-            val viewModel = PokemonListViewModel(useCase)
-
-            viewModel.uiState.test {
-                assertTrue(awaitItem() is PokemonListUiState.Error)
-
-                coEvery { useCase(limit = any(), offset = any()) } returns fakePokemonList
-                viewModel.retry()
-
-                val retried = awaitItem()
-                assertTrue(retried is PokemonListUiState.Success)
-                assertEquals(fakePokemonList, (retried as PokemonListUiState.Success).pokemons)
-            }
+            val items = viewModel.pokemonPagingFlow.asSnapshot()
+            assertEquals(0, items.size)
         }
 }

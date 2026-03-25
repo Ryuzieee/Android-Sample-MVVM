@@ -2,54 +2,25 @@ package com.yamamuto.android_sample_mvvm.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-
-/** ポケモン一覧画面のUI状態。 */
-sealed interface PokemonListUiState {
-    data object Loading : PokemonListUiState
-
-    data class Success(val pokemons: List<Pokemon>) : PokemonListUiState
-
-    data class Error(val message: String) : PokemonListUiState
-}
 
 /**
  * ポケモン一覧画面のViewModel。
  *
- * [GetPokemonListUseCase] を通じてポケモン一覧を取得し、[PokemonListUiState] として公開する。
+ * [GetPokemonListUseCase] を通じてポケモン一覧を Paging で取得する。
  */
 @HiltViewModel
 class PokemonListViewModel
     @Inject
     constructor(
-        private val getPokemonListUseCase: GetPokemonListUseCase,
+        getPokemonListUseCase: GetPokemonListUseCase,
     ) : ViewModel() {
-        private val _uiState = MutableStateFlow<PokemonListUiState>(PokemonListUiState.Loading)
-        val uiState: StateFlow<PokemonListUiState> = _uiState.asStateFlow()
-
-        init {
-            loadPokemonList()
-        }
-
-        fun retry() {
-            loadPokemonList()
-        }
-
-        private fun loadPokemonList() {
-            viewModelScope.launch {
-                _uiState.value = PokemonListUiState.Loading
-                _uiState.value =
-                    runCatching { getPokemonListUseCase(limit = 20) }.fold(
-                        onSuccess = { PokemonListUiState.Success(it) },
-                        onFailure = { PokemonListUiState.Error(it.message ?: "Unknown error") },
-                    )
-            }
-        }
+        val pokemonPagingFlow: Flow<PagingData<Pokemon>> =
+            getPokemonListUseCase().cachedIn(viewModelScope)
     }

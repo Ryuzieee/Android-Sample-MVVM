@@ -1,7 +1,9 @@
 package com.yamamuto.android_sample_mvvm.domain.repository
 
+import androidx.paging.PagingData
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import kotlinx.coroutines.flow.Flow
 
 /**
  * ポケモンデータへのアクセスを抽象化するリポジトリインターフェース。
@@ -14,6 +16,8 @@ interface PokemonRepository {
         limit: Int,
         offset: Int,
     ): List<Pokemon>
+
+    fun getPokemonPagingData(): Flow<PagingData<Pokemon>>
 
     suspend fun getPokemonDetail(name: String): PokemonDetail
 }
