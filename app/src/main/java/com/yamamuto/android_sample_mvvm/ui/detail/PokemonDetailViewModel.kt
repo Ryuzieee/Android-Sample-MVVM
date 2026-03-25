@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /** ポケモン詳細画面のUI状態。 */
@@ -55,6 +56,7 @@ class PokemonDetailViewModel
                     runCatching { getPokemonDetailUseCase(pokemonName) }.fold(
                         onSuccess = { PokemonDetailUiState.Success(it) },
                         onFailure = { e ->
+                            Timber.e(e, "Failed to load detail: $pokemonName")
                             PokemonDetailUiState.Error(
                                 message = e.message ?: "不明なエラーが発生しました",
                                 isNetworkError = e is AppException.Network,
