@@ -19,15 +19,38 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        }
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        }
+        create("prod") {
+            dimension = "environment"
         }
     }
     compileOptions {

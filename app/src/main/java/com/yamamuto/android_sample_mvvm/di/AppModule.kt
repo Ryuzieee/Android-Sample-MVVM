@@ -1,5 +1,6 @@
 package com.yamamuto.android_sample_mvvm.di
 
+import com.yamamuto.android_sample_mvvm.BuildConfig
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.repository.PokemonRepositoryImpl
@@ -48,7 +49,7 @@ object AppModule {
         json: Json,
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://pokeapi.co/api/v2/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
