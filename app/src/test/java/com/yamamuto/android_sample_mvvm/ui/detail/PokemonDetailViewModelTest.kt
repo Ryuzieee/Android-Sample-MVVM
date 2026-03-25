@@ -1,6 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonDetail
@@ -16,7 +17,7 @@ import org.junit.Test
 /**
  * [PokemonDetailViewModel] の単体テスト。
  *
- * NOTE: [SavedStateHandle] にナビゲーション引数 "name" を直接渡してインスタンスを生成する。
+ * Turbine を使って StateFlow の状態遷移を検証する。
  */
 class PokemonDetailViewModelTest {
     @get:Rule
@@ -42,9 +43,11 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            val state = viewModel.uiState.value
-            assertTrue(state is PokemonDetailUiState.Success)
-            assertEquals(fakePokemonDetail, (state as PokemonDetailUiState.Success).detail)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is PokemonDetailUiState.Success)
+                assertEquals(fakePokemonDetail, (state as PokemonDetailUiState.Success).detail)
+            }
         }
 
     @Test
@@ -54,9 +57,11 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            val state = viewModel.uiState.value
-            assertTrue(state is PokemonDetailUiState.Error)
-            assertEquals("Not found", (state as PokemonDetailUiState.Error).message)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is PokemonDetailUiState.Error)
+                assertEquals("Not found", (state as PokemonDetailUiState.Error).message)
+            }
         }
 
     @Test
@@ -67,8 +72,28 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("charizard")
 
-            val state = viewModel.uiState.value as PokemonDetailUiState.Success
-            assertEquals("charizard", state.detail.name)
-            assertEquals(6, state.detail.id)
+            viewModel.uiState.test {
+                val state = awaitItem() as PokemonDetailUiState.Success
+                assertEquals("charizard", state.detail.name)
+                assertEquals(6, state.detail.id)
+            }
+        }
+
+    @Test
+    fun `retry で再取得できる`() =
+        runTest {
+            coEvery { useCase("bulbasaur") } throws Exception("error")
+
+            val viewModel = createViewModel("bulbasaur")
+
+            viewModel.uiState.test {
+                assertTrue(awaitItem() is PokemonDetailUiState.Error)
+
+                coEvery { useCase("bulbasaur") } returns fakePokemonDetail
+                viewModel.retry()
+
+                val retried = awaitItem()
+                assertTrue(retried is PokemonDetailUiState.Success)
+            }
         }
 }

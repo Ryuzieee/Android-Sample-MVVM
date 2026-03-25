@@ -1,10 +1,12 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
+import androidx.paging.PagingData
+import androidx.paging.testing.asSnapshot
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonList
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -22,32 +24,13 @@ class GetPokemonListUseCaseTest {
     }
 
     @Test
-    fun `デフォルト引数でリポジトリを呼び出し結果を返す`() =
+    fun `PagingData を返す`() =
         runTest {
-            coEvery { repository.getPokemonList(limit = 20, offset = 0) } returns fakePokemonList
+            every { repository.getPokemonPagingData() } returns flowOf(PagingData.from(fakePokemonList))
 
-            val result = useCase()
+            val items = useCase().asSnapshot()
 
-            assertEquals(fakePokemonList, result)
-            coVerify(exactly = 1) { repository.getPokemonList(limit = 20, offset = 0) }
-        }
-
-    @Test
-    fun `指定した引数でリポジトリを呼び出す`() =
-        runTest {
-            coEvery { repository.getPokemonList(limit = 10, offset = 20) } returns fakePokemonList
-
-            val result = useCase(limit = 10, offset = 20)
-
-            assertEquals(fakePokemonList, result)
-            coVerify(exactly = 1) { repository.getPokemonList(limit = 10, offset = 20) }
-        }
-
-    @Test(expected = Exception::class)
-    fun `リポジトリが例外をスローした場合は例外を伝播する`() =
-        runTest {
-            coEvery { repository.getPokemonList(any(), any()) } throws Exception("Network error")
-
-            useCase()
+            assertEquals(fakePokemonList.size, items.size)
+            assertEquals("bulbasaur", items[0].name)
         }
 }

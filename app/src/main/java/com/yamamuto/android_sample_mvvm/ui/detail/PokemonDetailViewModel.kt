@@ -3,6 +3,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,7 @@ sealed interface PokemonDetailUiState {
 
     data class Success(val detail: PokemonDetail) : PokemonDetailUiState
 
-    data class Error(val message: String) : PokemonDetailUiState
+    data class Error(val message: String, val isNetworkError: Boolean = false) : PokemonDetailUiState
 }
 
 /**
@@ -53,7 +54,12 @@ class PokemonDetailViewModel
                 _uiState.value =
                     runCatching { getPokemonDetailUseCase(pokemonName) }.fold(
                         onSuccess = { PokemonDetailUiState.Success(it) },
-                        onFailure = { PokemonDetailUiState.Error(it.message ?: "Unknown error") },
+                        onFailure = { e ->
+                            PokemonDetailUiState.Error(
+                                message = e.message ?: "不明なエラーが発生しました",
+                                isNetworkError = e is AppException.Network,
+                            )
+                        },
                     )
             }
         }
