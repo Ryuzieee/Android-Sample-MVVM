@@ -7,12 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-/**
- * アプリ共通ローディングインジケーター
- *
- * 画面全体の中央にスピナーを表示する。
- * データ取得中など、処理待ち状態で使用する。
- */
+/** 画面全体の中央にスピナーを表示するローディングインジケーター。 */
 @Composable
 fun LoadingIndicator(modifier: Modifier = Modifier) {
     Box(

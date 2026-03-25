@@ -7,7 +7,6 @@ import timber.log.Timber
  * Timber の初期化を行うユーティリティ。
  *
  * Debug ビルドのみ [Timber.DebugTree] を植える。
- * Release ビルドではログを出力しない。
  */
 object TimberInitializer {
     fun init() {

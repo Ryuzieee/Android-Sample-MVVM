@@ -6,11 +6,7 @@ import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/**
- * ポケモン一覧を取得するユースケース。
- *
- * Paging 対応の [Flow] を返す。
- */
+/** ポケモン一覧を取得するユースケース。 */
 class GetPokemonListUseCase
     @Inject
     constructor(

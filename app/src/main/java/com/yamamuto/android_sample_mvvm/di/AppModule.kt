@@ -14,11 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
-/**
- * ネットワーク層の依存関係を定義する Hilt モジュール。
- *
- * OkHttp / Retrofit / PokeApiService のインスタンス生成を管理する。
- */
+/** ネットワーク層の依存関係を定義する Hilt モジュール。 */
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {

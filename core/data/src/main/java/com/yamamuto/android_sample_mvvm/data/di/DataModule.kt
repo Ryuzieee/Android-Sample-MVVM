@@ -18,11 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-/**
- * データ層の依存関係を定義する Hilt モジュール。
- *
- * Room / DataSource / Repository のインスタンス生成を管理する。
- */
+/** データ層の依存関係を定義する Hilt モジュール。 */
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {

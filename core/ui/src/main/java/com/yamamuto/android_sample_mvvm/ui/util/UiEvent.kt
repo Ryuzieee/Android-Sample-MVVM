@@ -16,10 +16,8 @@ import kotlinx.coroutines.withContext
  * と組み合わせて使用する。
  */
 sealed interface UiEvent {
-    /** SnackBar を表示するイベント。 */
     data class ShowSnackbar(val message: String) : UiEvent
 
-    /** 画面を戻るイベント。 */
     data object NavigateBack : UiEvent
 }
 

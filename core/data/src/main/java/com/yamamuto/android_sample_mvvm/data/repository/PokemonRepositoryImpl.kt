@@ -1,3 +1,5 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.data.repository
 
 import androidx.paging.Pager
@@ -12,6 +14,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.InternalSerializationApi
 import retrofit2.HttpException
 import java.io.IOException
 

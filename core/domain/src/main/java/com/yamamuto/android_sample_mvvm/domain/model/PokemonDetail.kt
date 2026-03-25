@@ -1,10 +1,6 @@
 package com.yamamuto.android_sample_mvvm.domain.model
 
-/**
- * ポケモン詳細画面で表示するデータを表すドメインモデル。
- *
- * ステータス情報は [Stat] のリストとして保持する。
- */
+/** ポケモン詳細画面で表示するデータを表すドメインモデル。 */
 data class PokemonDetail(
     val id: Int,
     val name: String,

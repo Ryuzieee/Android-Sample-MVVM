@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
-/** ポケモン詳細画面のルート定義。各 feature モジュールがルートを自己管理する。 */
+/** ポケモン詳細画面のルート定義。 */
 @Serializable
 data class PokemonDetailRoute(
     val name: String,

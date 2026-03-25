@@ -1,8 +1,11 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.data.datasource
 
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
+import kotlinx.serialization.InternalSerializationApi
 
 /**
  * PokeAPI からデータを取得するリモートデータソース。

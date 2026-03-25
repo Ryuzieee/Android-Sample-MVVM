@@ -110,7 +110,6 @@ fun SearchScreen(
     }
 }
 
-/** 検索前のアイドル状態を表示するコンテンツ。 */
 @Composable
 private fun SearchIdleContent(modifier: Modifier = Modifier) {
     Column(
@@ -126,7 +125,6 @@ private fun SearchIdleContent(modifier: Modifier = Modifier) {
     }
 }
 
-/** 検索結果のポケモンカードコンポーネント。タップで詳細画面へ遷移する。 */
 @Composable
 private fun SearchResultContent(
     detail: PokemonDetail,

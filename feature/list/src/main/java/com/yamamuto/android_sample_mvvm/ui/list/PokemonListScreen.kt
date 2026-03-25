@@ -95,7 +95,6 @@ fun PokemonListScreen(
     }
 }
 
-/** ポケモン一覧の各カードコンポーネント。 */
 @Composable
 private fun PokemonCard(
     pokemon: Pokemon,

@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
-/** ポケモン一覧画面のルート定義。各 feature モジュールがルートを自己管理する。 */
+/** ポケモン一覧画面のルート定義。 */
 @Serializable
 data object PokemonListRoute
 

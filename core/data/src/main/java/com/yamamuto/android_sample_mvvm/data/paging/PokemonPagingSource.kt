@@ -1,9 +1,12 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
+import kotlinx.serialization.InternalSerializationApi
 
 /**
  * ポケモン一覧の Paging データソース。

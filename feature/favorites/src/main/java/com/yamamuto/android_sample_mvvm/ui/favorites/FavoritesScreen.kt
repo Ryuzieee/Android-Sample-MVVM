@@ -31,12 +31,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.Favorite
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonNameText
 
-/**
- * お気に入り一覧画面。
- *
- * Room に保存されたお気に入りポケモンをグリッド形式で表示する。
- * お気に入りが空の場合は空状態メッセージを表示する。
- */
+/** お気に入り一覧画面。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
@@ -76,7 +71,6 @@ fun FavoritesScreen(
     }
 }
 
-/** お気に入りが空のときに表示するコンテンツ。 */
 @Composable
 private fun FavoritesEmptyContent(modifier: Modifier = Modifier) {
     Column(
@@ -98,7 +92,6 @@ private fun FavoritesEmptyContent(modifier: Modifier = Modifier) {
     }
 }
 
-/** お気に入りの各カードコンポーネント。 */
 @Composable
 private fun FavoriteCard(
     favorite: Favorite,

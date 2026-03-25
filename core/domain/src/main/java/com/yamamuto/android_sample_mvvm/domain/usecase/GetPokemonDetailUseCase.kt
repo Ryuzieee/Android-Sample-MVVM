@@ -4,11 +4,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import javax.inject.Inject
 
-/**
- * ポケモン詳細を取得するユースケース。
- *
- * 1ユースケース = 1メソッドの原則に基づき、[invoke] のみを公開する。
- */
+/** ポケモン詳細を取得するユースケース。 */
 class GetPokemonDetailUseCase
     @Inject
     constructor(

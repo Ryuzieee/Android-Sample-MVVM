@@ -10,11 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-/**
- * お気に入り一覧画面のViewModel。
- *
- * [GetFavoritesUseCase] を通じてお気に入りポケモン一覧を Flow で取得する。
- */
+/** お気に入り一覧画面のViewModel。 */
 @HiltViewModel
 class FavoritesViewModel
     @Inject

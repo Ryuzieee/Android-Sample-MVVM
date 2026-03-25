@@ -116,7 +116,6 @@ fun PokemonDetailScreen(
     }
 }
 
-/** ポケモン詳細のコンテンツ部分。スクロール可能なレイアウトで情報を縦並びに表示する。 */
 @Composable
 private fun PokemonDetailContent(
     detail: PokemonDetail,
@@ -176,7 +175,6 @@ private fun PokemonDetailContent(
     }
 }
 
-/** ステータス名・プログレスバー・数値を横並びで表示する行コンポーネント。 */
 @Composable
 private fun StatRow(
     stat: PokemonDetail.Stat,

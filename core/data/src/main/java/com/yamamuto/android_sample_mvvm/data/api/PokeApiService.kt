@@ -1,7 +1,10 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.data.api
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
+import kotlinx.serialization.InternalSerializationApi
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

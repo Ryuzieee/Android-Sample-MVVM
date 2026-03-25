@@ -10,11 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/**
- * ポケモン一覧画面のViewModel。
- *
- * [GetPokemonListUseCase] を通じてポケモン一覧を Paging で取得する。
- */
+/** ポケモン一覧画面のViewModel。 */
 @HiltViewModel
 class PokemonListViewModel
     @Inject
