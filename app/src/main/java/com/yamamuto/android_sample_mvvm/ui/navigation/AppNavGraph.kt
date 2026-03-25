@@ -6,14 +6,15 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.yamamuto.android_sample_mvvm.ui.detail.PokemonDetailRoute
 import com.yamamuto.android_sample_mvvm.ui.detail.pokemonDetailScreen
+import com.yamamuto.android_sample_mvvm.ui.list.PokemonListRoute
 import com.yamamuto.android_sample_mvvm.ui.list.pokemonListScreen
 
 /**
  * アプリ全体のナビゲーショングラフ。
  *
- * 画面遷移の定義と各画面へのルーティングをまとめて管理する。
- * iOSライクな横スライドアニメーションをデフォルトとして適用する。
+ * 各 feature モジュールが公開する拡張関数を組み合わせてグラフを構築する。
  */
 @Composable
 fun AppNavGraph() {
