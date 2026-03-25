@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("org.jetbrains.kotlin.android")
-    alias(libs.plugins.kotlin.compose)
+    id("convention.android.compose")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.hilt)
@@ -20,15 +19,39 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        }
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        }
+        create("prod") {
+            dimension = "environment"
         }
     }
     compileOptions {
@@ -37,9 +60,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
     }
 }
 
@@ -51,6 +71,9 @@ tasks.named("preBuild").configure {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":core:ui"))
+    implementation(project(":feature:list"))
+    implementation(project(":feature:detail"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -69,6 +92,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.timber)
+    implementation(libs.profileinstaller)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
     implementation(libs.hilt.android)
