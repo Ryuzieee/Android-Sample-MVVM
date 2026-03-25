@@ -17,10 +17,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +36,9 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
+import com.yamamuto.android_sample_mvvm.ui.util.ObserveAsEvents
+import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
+import kotlinx.coroutines.launch
 
 /**
  * ポケモン詳細画面。
@@ -46,7 +53,18 @@ fun PokemonDetailScreen(
     onBack: () -> Unit,
     viewModel: PokemonDetailViewModel = hiltViewModel(),
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is UiEvent.ShowSnackbar -> scope.launch { snackbarHostState.showSnackbar(event.message) }
+            is UiEvent.NavigateBack -> onBack()
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(pokemonName.replaceFirstChar { it.uppercase() }) },
