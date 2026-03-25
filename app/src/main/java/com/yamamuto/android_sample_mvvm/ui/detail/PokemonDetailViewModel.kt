@@ -1,14 +1,14 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,8 +36,8 @@ class PokemonDetailViewModel
     ) : ViewModel() {
         private val pokemonName: String = checkNotNull(savedStateHandle["name"])
 
-        var uiState by mutableStateOf<PokemonDetailUiState>(PokemonDetailUiState.Loading)
-            private set
+        private val _uiState = MutableStateFlow<PokemonDetailUiState>(PokemonDetailUiState.Loading)
+        val uiState: StateFlow<PokemonDetailUiState> = _uiState.asStateFlow()
 
         init {
             loadDetail()
@@ -45,8 +45,8 @@ class PokemonDetailViewModel
 
         private fun loadDetail() {
             viewModelScope.launch {
-                uiState = PokemonDetailUiState.Loading
-                uiState =
+                _uiState.value = PokemonDetailUiState.Loading
+                _uiState.value =
                     try {
                         val detail = getPokemonDetailUseCase(pokemonName)
                         PokemonDetailUiState.Success(detail)

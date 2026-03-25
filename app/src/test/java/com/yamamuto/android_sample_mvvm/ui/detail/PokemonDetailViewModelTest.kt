@@ -42,7 +42,7 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            val state = viewModel.uiState
+            val state = viewModel.uiState.value
             assertTrue(state is PokemonDetailUiState.Success)
             assertEquals(fakePokemonDetail, (state as PokemonDetailUiState.Success).detail)
         }
@@ -54,7 +54,7 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            val state = viewModel.uiState
+            val state = viewModel.uiState.value
             assertTrue(state is PokemonDetailUiState.Error)
             assertEquals("Not found", (state as PokemonDetailUiState.Error).message)
         }
@@ -67,7 +67,7 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("charizard")
 
-            val state = viewModel.uiState as PokemonDetailUiState.Success
+            val state = viewModel.uiState.value as PokemonDetailUiState.Success
             assertEquals("charizard", state.detail.name)
             assertEquals(6, state.detail.id)
         }

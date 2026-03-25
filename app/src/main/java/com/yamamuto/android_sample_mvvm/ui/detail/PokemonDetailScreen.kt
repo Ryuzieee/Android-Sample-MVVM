@@ -22,11 +22,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
@@ -56,7 +58,8 @@ fun PokemonDetailScreen(
             )
         },
     ) { padding ->
-        when (val state = viewModel.uiState) {
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        when (val state = uiState) {
             is PokemonDetailUiState.Loading -> LoadingIndicator()
 
             is PokemonDetailUiState.Error ->
