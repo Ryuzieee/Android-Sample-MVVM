@@ -32,7 +32,8 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
