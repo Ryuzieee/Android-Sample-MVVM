@@ -1,13 +1,10 @@
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetFavoritesUseCase
+import com.yamamuto.android_sample_mvvm.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /** お気に入り一覧画面のViewModel。 */
@@ -15,10 +12,15 @@ import javax.inject.Inject
 class FavoritesViewModel
     @Inject
     constructor(
-        getFavoritesUseCase: GetFavoritesUseCase,
-    ) : ViewModel() {
-        val uiState: StateFlow<FavoritesUiState> =
-            getFavoritesUseCase()
-                .map { FavoritesUiState(favorites = it) }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FavoritesUiState())
+        private val getFavoritesUseCase: GetFavoritesUseCase,
+    ) : BaseViewModel<FavoritesUiState>(FavoritesUiState()) {
+        init {
+            load()
+        }
+
+        private fun load() {
+            viewModelScope.launch {
+                getFavoritesUseCase().collect { updateState(FavoritesUiState(favorites = it)) }
+            }
+        }
     }

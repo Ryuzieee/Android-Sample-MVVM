@@ -2,23 +2,21 @@
 
 package com.yamamuto.android_sample_mvvm.ui.search
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
+import com.yamamuto.android_sample_mvvm.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -31,40 +29,42 @@ class SearchViewModel
     @Inject
     constructor(
         private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
-    ) : ViewModel() {
-        private val _query = MutableStateFlow("")
-
-        private val searchResult: Flow<UiState<PokemonDetail>?> =
-            _query
-                .debounce(500)
-                .flatMapLatest { query ->
-                    if (query.isBlank()) {
-                        flowOf<UiState<PokemonDetail>?>(null)
-                    } else {
-                        flow {
-                            emit(UiState.Loading)
-                            emit(
-                                runCatching { getPokemonDetailUseCase(query.lowercase().trim()) }
-                                    .fold(
-                                        onSuccess = { UiState.Success(it) },
-                                        onFailure = { e ->
-                                            UiState.Error(
-                                                message = e.message ?: "エラーが発生しました",
-                                                isNetworkError = e is AppException.Network,
-                                            )
-                                        },
-                                    ),
-                            )
-                        }
-                    }
-                }
-
-        val uiState: StateFlow<SearchUiState> =
-            combine(_query, searchResult) { query, result ->
-                SearchUiState(query = query, result = result)
-            }.stateIn(viewModelScope, SharingStarted.Lazily, SearchUiState())
+    ) : BaseViewModel<SearchUiState>(SearchUiState()) {
+        init {
+            load()
+        }
 
         fun onQueryChange(newQuery: String) {
-            _query.value = newQuery
+            updateState { it.copy(query = newQuery) }
+        }
+
+        private fun load() {
+            viewModelScope.launch {
+                uiState
+                    .map { it.query }
+                    .distinctUntilChanged()
+                    .debounce(500)
+                    .flatMapLatest(::search)
+                    .collect { result -> updateState { it.copy(result = result) } }
+            }
+        }
+
+        private fun search(query: String): Flow<UiState<PokemonDetail>?> {
+            if (query.isBlank()) return flowOf(null)
+            return flow {
+                emit(UiState.Loading)
+                emit(
+                    runCatching { getPokemonDetailUseCase(query.lowercase().trim()) }
+                        .fold(
+                            onSuccess = { UiState.Success(it) },
+                            onFailure = { e ->
+                                UiState.Error(
+                                    message = e.message ?: "エラーが発生しました",
+                                    isNetworkError = e is AppException.Network,
+                                )
+                            },
+                        ),
+                )
+            }
         }
     }

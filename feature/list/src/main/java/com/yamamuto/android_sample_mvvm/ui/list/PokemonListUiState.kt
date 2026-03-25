@@ -3,6 +3,7 @@ package com.yamamuto.android_sample_mvvm.ui.list
 import androidx.paging.PagingData
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * ポケモン一覧画面のUI状態。
@@ -11,5 +12,5 @@ import kotlinx.coroutines.flow.Flow
  * 画面再構成時にページングがリセットされることはない。
  */
 data class PokemonListUiState(
-    val pagingData: Flow<PagingData<Pokemon>>,
+    val pagingData: Flow<PagingData<Pokemon>> = emptyFlow(),
 )
