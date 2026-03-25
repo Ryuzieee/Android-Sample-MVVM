@@ -1,7 +1,11 @@
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 /**
@@ -15,10 +19,12 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
-            extensions.configure<CommonExtension<*, *, *, *, *, *>> {
-                buildFeatures {
-                    compose = true
-                }
+            val androidExtension: CommonExtension<*, *, *, *, *, *>? =
+                extensions.findByType<LibraryExtension>()
+                    ?: extensions.findByType<BaseAppModuleExtension>()
+
+            androidExtension?.buildFeatures {
+                compose = true
             }
 
             extensions.configure<ComposeCompilerGradlePluginExtension> {

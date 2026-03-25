@@ -38,8 +38,7 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource =
-        PokemonRemoteDataSource(api)
+    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource = PokemonRemoteDataSource(api)
 
     @Provides
     @Singleton

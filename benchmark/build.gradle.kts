@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.library)
+    id("com.android.test")
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.baselineprofile)
 }
@@ -17,6 +17,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -31,4 +32,5 @@ baselineProfile {
 dependencies {
     implementation(libs.benchmark.macro.junit4)
     implementation(libs.uiautomator)
+    implementation(libs.androidx.junit)
 }

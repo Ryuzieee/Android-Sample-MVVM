@@ -1,6 +1,7 @@
 package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
+import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonListResponse
 import io.mockk.coEvery
@@ -17,12 +18,14 @@ import org.junit.Test
  */
 class PokemonRepositoryImplTest {
     private lateinit var dataSource: PokemonRemoteDataSource
+    private lateinit var dao: PokemonDao
     private lateinit var repository: PokemonRepositoryImpl
 
     @Before
     fun setUp() {
         dataSource = mockk()
-        repository = PokemonRepositoryImpl(dataSource)
+        dao = mockk()
+        repository = PokemonRepositoryImpl(dataSource, dao)
     }
 
     @Test

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.roborazzi.plugin)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -43,6 +44,8 @@ dependencies {
     testImplementation(libs.roborazzi.rule)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.compose.ui)
+    testImplementation(libs.androidx.compose.ui.test)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.material3)
 }

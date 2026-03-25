@@ -25,9 +25,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "Android-Sample-MVVM"
 include(":app")
+include(":core")
 include(":core:domain")
 include(":core:data")
 include(":core:ui")
+include(":feature")
 include(":feature:list")
 include(":feature:detail")
 include(":benchmark")

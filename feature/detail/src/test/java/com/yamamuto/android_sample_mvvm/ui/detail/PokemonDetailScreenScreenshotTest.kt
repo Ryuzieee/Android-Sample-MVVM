@@ -2,9 +2,9 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import org.junit.Rule
