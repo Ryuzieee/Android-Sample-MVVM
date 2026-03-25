@@ -60,8 +60,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem()
-                assertTrue(state is UiState.Success)
-                assertEquals(fakePokemonDetail, (state as UiState.Success).data)
+                assertTrue(state.contentState is UiState.Success)
+                assertEquals(fakePokemonDetail, (state.contentState as UiState.Success).data)
             }
         }
 
@@ -74,8 +74,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem()
-                assertTrue(state is UiState.Error)
-                assertEquals("Not found", (state as UiState.Error).message)
+                assertTrue(state.contentState is UiState.Error)
+                assertEquals("Not found", (state.contentState as UiState.Error).message)
             }
         }
 
@@ -88,7 +88,7 @@ class PokemonDetailViewModelTest {
             val viewModel = createViewModel("charizard")
 
             viewModel.uiState.test {
-                val state = awaitItem() as UiState.Success
+                val state = awaitItem().contentState as UiState.Success
                 assertEquals("charizard", state.data.name)
                 assertEquals(6, state.data.id)
             }
@@ -102,13 +102,12 @@ class PokemonDetailViewModelTest {
             val viewModel = createViewModel("bulbasaur")
 
             viewModel.uiState.test {
-                assertTrue(awaitItem() is UiState.Error)
+                assertTrue(awaitItem().contentState is UiState.Error)
 
                 coEvery { useCase("bulbasaur") } returns fakePokemonDetail
                 viewModel.retry()
 
-                val retried = awaitItem()
-                assertTrue(retried is UiState.Success)
+                assertTrue(awaitItem().contentState is UiState.Success)
             }
         }
 }

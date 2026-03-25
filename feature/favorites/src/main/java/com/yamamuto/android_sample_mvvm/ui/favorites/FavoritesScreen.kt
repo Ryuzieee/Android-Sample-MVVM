@@ -39,7 +39,7 @@ fun FavoritesScreen(
     onBack: () -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel(),
 ) {
-    val favorites by viewModel.favorites.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -53,14 +53,14 @@ fun FavoritesScreen(
             )
         },
     ) { padding ->
-        if (favorites.isEmpty()) {
+        if (uiState.favorites.isEmpty()) {
             FavoritesEmptyContent(modifier = Modifier.padding(padding))
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = padding,
             ) {
-                items(favorites, key = { it.id }) { favorite ->
+                items(uiState.favorites, key = { it.id }) { favorite ->
                     FavoriteCard(
                         favorite = favorite,
                         onClick = { onPokemonClick(favorite.name) },

@@ -14,10 +14,11 @@ import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -29,8 +30,8 @@ import javax.inject.Inject
 /**
  * ポケモン詳細画面のViewModel。
  *
- * [GetPokemonDetailUseCase] を通じて指定ポケモンの詳細を取得し、[UiState] として公開する。
- * お気に入り状態は [isFavorite] で監視し、[toggleFavorite] でトグルできる。
+ * [GetPokemonDetailUseCase] を通じて指定ポケモンの詳細を取得し、お気に入り状態とともに
+ * [PokemonDetailUiState] として公開する。
  */
 @HiltViewModel
 class PokemonDetailViewModel
@@ -43,18 +44,20 @@ class PokemonDetailViewModel
     ) : ViewModel() {
         private val pokemonName: String = checkNotNull(savedStateHandle["name"])
 
-        private val _uiState = MutableStateFlow<UiState<PokemonDetail>>(UiState.Loading)
-        val uiState: StateFlow<UiState<PokemonDetail>> = _uiState.asStateFlow()
+        private val _contentState = MutableStateFlow<UiState<PokemonDetail>>(UiState.Loading)
 
-        val isFavorite: StateFlow<Boolean> =
-            _uiState
-                .flatMapLatest { state ->
-                    when (state) {
-                        is UiState.Success -> getIsFavoriteUseCase(state.data.id)
-                        else -> flowOf(false)
-                    }
+        private val favoriteState: Flow<Boolean> =
+            _contentState.flatMapLatest { state ->
+                when (state) {
+                    is UiState.Success -> getIsFavoriteUseCase(state.data.id)
+                    else -> flowOf(false)
                 }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+            }
+
+        val uiState: StateFlow<PokemonDetailUiState> =
+            combine(_contentState, favoriteState) { content, fav ->
+                PokemonDetailUiState(contentState = content, isFavorite = fav)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, PokemonDetailUiState())
 
         private val _events = Channel<UiEvent>(Channel.BUFFERED)
         val events = _events.receiveAsFlow()
@@ -68,16 +71,17 @@ class PokemonDetailViewModel
         }
 
         fun toggleFavorite() {
-            val detail = (uiState.value as? UiState.Success)?.data ?: return
+            val state = uiState.value
+            val detail = (state.contentState as? UiState.Success)?.data ?: return
             viewModelScope.launch {
-                toggleFavoriteUseCase(detail, isFavorite.value)
+                toggleFavoriteUseCase(detail, state.isFavorite)
             }
         }
 
         private fun loadDetail() {
             viewModelScope.launch {
-                _uiState.value = UiState.Loading
-                _uiState.value =
+                _contentState.value = UiState.Loading
+                _contentState.value =
                     runCatching { getPokemonDetailUseCase(pokemonName) }.fold(
                         onSuccess = { UiState.Success(it) },
                         onFailure = { e ->

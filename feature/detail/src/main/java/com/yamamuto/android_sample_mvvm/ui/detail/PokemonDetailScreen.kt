@@ -59,7 +59,7 @@ fun PokemonDetailScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -86,17 +86,16 @@ fun PokemonDetailScreen(
                 actions = {
                     IconButton(onClick = viewModel::toggleFavorite) {
                         Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (isFavorite) "お気に入りから削除" else "お気に入りに追加",
-                            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (uiState.isFavorite) "お気に入りから削除" else "お気に入りに追加",
+                            tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 },
             )
         },
     ) { padding ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        when (val state = uiState) {
+        when (val state = uiState.contentState) {
             is UiState.Loading -> LoadingIndicator()
 
             is UiState.Error ->

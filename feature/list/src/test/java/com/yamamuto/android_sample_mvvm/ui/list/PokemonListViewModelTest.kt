@@ -55,7 +55,7 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val items = viewModel.pokemonPagingFlow.asSnapshot()
+            val items = viewModel.uiState.value.pagingData.asSnapshot()
             assertEquals(fakePokemonList.size, items.size)
             assertEquals("bulbasaur", items[0].name)
         }
@@ -67,7 +67,7 @@ class PokemonListViewModelTest {
 
             val viewModel = PokemonListViewModel(useCase)
 
-            val items = viewModel.pokemonPagingFlow.asSnapshot()
+            val items = viewModel.uiState.value.pagingData.asSnapshot()
             assertEquals(0, items.size)
         }
 }

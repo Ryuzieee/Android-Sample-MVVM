@@ -2,12 +2,11 @@ package com.yamamuto.android_sample_mvvm.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 /** ポケモン一覧画面のViewModel。 */
@@ -17,6 +16,10 @@ class PokemonListViewModel
     constructor(
         getPokemonListUseCase: GetPokemonListUseCase,
     ) : ViewModel() {
-        val pokemonPagingFlow: Flow<PagingData<Pokemon>> =
-            getPokemonListUseCase().cachedIn(viewModelScope)
+        val uiState: StateFlow<PokemonListUiState> =
+            MutableStateFlow(
+                PokemonListUiState(
+                    pagingData = getPokemonListUseCase().cachedIn(viewModelScope),
+                ),
+            )
     }

@@ -51,15 +51,14 @@ fun SearchScreen(
     onBack: () -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
-    val query by viewModel.query.collectAsStateWithLifecycle()
-    val searchResult by viewModel.searchResult.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     TextField(
-                        value = query,
+                        value = uiState.query,
                         onValueChange = viewModel::onQueryChange,
                         placeholder = { Text("ポケモン名を入力...") },
                         singleLine = true,
@@ -81,31 +80,27 @@ fun SearchScreen(
             )
         },
     ) { padding ->
-        when {
-            searchResult == null ->
+        when (val result = uiState.result) {
+            null ->
                 SearchIdleContent(modifier = Modifier.padding(padding))
 
-            searchResult is UiState.Loading ->
+            is UiState.Loading ->
                 LoadingIndicator()
 
-            searchResult is UiState.Error -> {
-                val error = searchResult as UiState.Error
+            is UiState.Error ->
                 ErrorContent(
-                    message = error.message,
-                    onRetry = { viewModel.onQueryChange(query) },
-                    isNetworkError = error.isNetworkError,
+                    message = result.message,
+                    onRetry = { viewModel.onQueryChange(uiState.query) },
+                    isNetworkError = result.isNetworkError,
                     modifier = Modifier.padding(padding),
                 )
-            }
 
-            searchResult is UiState.Success -> {
-                val detail = (searchResult as UiState.Success<PokemonDetail>).data
+            is UiState.Success ->
                 SearchResultContent(
-                    detail = detail,
-                    onCardClick = { onPokemonClick(detail.name) },
+                    detail = result.data,
+                    onCardClick = { onPokemonClick(result.data.name) },
                     modifier = Modifier.padding(padding),
                 )
-            }
         }
     }
 }

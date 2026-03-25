@@ -9,10 +9,11 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -24,7 +25,6 @@ import javax.inject.Inject
  * 検索画面のViewModel。
  *
  * クエリ入力に 500ms のデバウンスを適用し、[GetPokemonDetailUseCase] でポケモンを検索する。
- * [searchResult] が null の場合は入力待ちのアイドル状態を表す。
  */
 @HiltViewModel
 class SearchViewModel
@@ -33,9 +33,8 @@ class SearchViewModel
         private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
     ) : ViewModel() {
         private val _query = MutableStateFlow("")
-        val query: StateFlow<String> = _query.asStateFlow()
 
-        val searchResult: StateFlow<UiState<PokemonDetail>?> =
+        private val searchResult: Flow<UiState<PokemonDetail>?> =
             _query
                 .debounce(500)
                 .flatMapLatest { query ->
@@ -59,7 +58,11 @@ class SearchViewModel
                         }
                     }
                 }
-                .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+        val uiState: StateFlow<SearchUiState> =
+            combine(_query, searchResult) { query, result ->
+                SearchUiState(query = query, result = result)
+            }.stateIn(viewModelScope, SharingStarted.Lazily, SearchUiState())
 
         fun onQueryChange(newQuery: String) {
             _query.value = newQuery
