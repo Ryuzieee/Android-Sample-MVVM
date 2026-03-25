@@ -1,3 +1,5 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
@@ -8,6 +10,7 @@ import io.mockk.coEvery
 import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.InternalSerializationApi
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

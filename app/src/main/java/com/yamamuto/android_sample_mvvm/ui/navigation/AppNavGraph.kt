@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.ui.navigation
 
 import androidx.compose.animation.core.tween

@@ -1,5 +1,6 @@
 package com.yamamuto.android_sample_mvvm.data.api.dto
 
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,6 +9,7 @@ import kotlinx.serialization.Serializable
  *
  * ドメインモデルへのマッピングは [PokemonRepositoryImpl] で行う。
  */
+@InternalSerializationApi
 @Serializable
 data class PokemonDetailResponse(
     val id: Int,

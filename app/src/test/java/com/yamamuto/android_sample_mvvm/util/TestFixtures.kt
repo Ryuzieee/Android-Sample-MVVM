@@ -1,8 +1,11 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.util
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import kotlinx.serialization.InternalSerializationApi
 
 private const val OFFICIAL_ARTWORK_URL =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png"
