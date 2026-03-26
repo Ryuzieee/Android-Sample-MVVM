@@ -1,5 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.navigation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -10,8 +11,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-@PublishedApi
-internal const val ANIM_DURATION = 350
+private const val ANIM_DURATION = 350
 
 /**
  * モーダル画面用の composable。
@@ -24,7 +24,7 @@ internal const val ANIM_DURATION = 350
  * 検索・お気に入りなど、背景画面を動かしたくない画面に使う。
  */
 inline fun <reified T : Any> NavGraphBuilder.modalComposable(
-    noinline content: @Composable (NavBackStackEntry) -> Unit,
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
     composable<T>(
         enterTransition = {
