@@ -1,8 +1,9 @@
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import com.yamamuto.android_sample_mvvm.domain.model.Favorite
+import com.yamamuto.android_sample_mvvm.domain.model.UiState
 
 /** お気に入り一覧画面のUI状態。 */
 data class FavoritesUiState(
-    val favorites: List<Favorite> = emptyList(),
+    val contentState: UiState<List<Favorite>> = UiState.Loading,
 )

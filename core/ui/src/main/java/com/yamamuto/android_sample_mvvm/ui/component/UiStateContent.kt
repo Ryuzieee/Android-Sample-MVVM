@@ -5,28 +5,22 @@ import androidx.compose.ui.Modifier
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 
 /**
- * [UiState] に応じて Loading / Error / Success を切り替える共通コンポーネント。
+ * [UiState] に応じて Idle / Loading / Error / Success を切り替える共通コンポーネント。
  *
  * Success の中身だけ書けばよく、Loading と Error は自動で表示される。
- *
- * ```kotlin
- * UiStateContent(
- *     state = uiState.contentState,
- *     onRetry = viewModel::retry,
- *     modifier = Modifier.padding(padding),
- * ) { data ->
- *     DetailContent(detail = data)
- * }
- * ```
+ * Idle 状態を使う場合は [idleContent] を渡す。
  */
 @Composable
 fun <T> UiStateContent(
     state: UiState<T>,
-    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onRetry: () -> Unit = {},
+    idleContent: @Composable () -> Unit = {},
     content: @Composable (T) -> Unit,
 ) {
     when (state) {
+        is UiState.Idle -> idleContent()
+
         is UiState.Loading -> LoadingIndicator(modifier = modifier)
 
         is UiState.Error ->

@@ -18,11 +18,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
+import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
-import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
+import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
 @Composable
 fun PokemonListScreen(
@@ -45,30 +47,22 @@ fun PokemonListScreen(
             }
         },
     ) { padding ->
-        when (pagingItems.loadState.refresh) {
-            is LoadState.Loading -> PokemonListLoading()
-            is LoadState.Error -> PokemonListError(pagingItems, padding)
-            is LoadState.NotLoading -> PokemonListContent(pagingItems, padding, onPokemonClick)
+        val refreshState = pagingItems.loadState.refresh
+        UiStateContent(
+            state = when (refreshState) {
+                is LoadState.Loading -> UiState.Loading
+                is LoadState.Error -> UiState.Error(
+                    message = refreshState.error.message ?: "Unknown error",
+                    isNetworkError = refreshState.error is AppException.Network,
+                )
+                is LoadState.NotLoading -> UiState.Success(pagingItems)
+            },
+            onRetry = { pagingItems.retry() },
+            modifier = Modifier.padding(padding),
+        ) { items ->
+            PokemonListContent(items, padding, onPokemonClick)
         }
     }
-}
-
-@Composable
-private fun PokemonListLoading() {
-    LoadingIndicator()
-}
-
-@Composable
-private fun PokemonListError(
-    pagingItems: LazyPagingItems<Pokemon>,
-    padding: PaddingValues,
-) {
-    val error = (pagingItems.loadState.refresh as LoadState.Error).error
-    ErrorContent(
-        message = error.message ?: "Unknown error",
-        onRetry = { pagingItems.retry() },
-        modifier = Modifier.padding(padding),
-    )
 }
 
 @Composable

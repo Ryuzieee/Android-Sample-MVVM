@@ -59,7 +59,7 @@ Clean Architecture + MVVM をベースにマルチモジュール構成を採用
 ### レイヤー詳細
 
 #### `core:domain`（Android 非依存の純粋 Kotlin）
-- **Model**: `Pokemon`, `PokemonDetail`, `Favorite`, `UiState`, `AppException`
+- **Model**: `Pokemon`, `PokemonDetail`, `Favorite`, `UiState`（Idle / Loading / Success / Error）, `AppException`
 - **Repository Interface**: `PokemonRepository`, `FavoriteRepository`
 - **UseCase**: `GetPokemonListUseCase`, `GetPokemonDetailUseCase`, `SearchPokemonUseCase`, `GetFavoritesUseCase`, `GetIsFavoriteUseCase`, `ToggleFavoriteUseCase`
 
@@ -70,17 +70,17 @@ Clean Architecture + MVVM をベースにマルチモジュール構成を採用
 - **DI**: `DataModule`（Hilt）
 
 #### `core:ui`
-- **共通コンポーネント**: `LoadingIndicator`, `ErrorContent`, `PokemonIdText`, `PokemonNameText`
-- **BaseViewModel**: `StateFlow<S>` + `Channel<UiEvent>` を共通化した抽象 ViewModel
-- **UiEvent / ObserveAsEvents**: 一回限りイベント (SnackBar 等) のライフサイクル安全な配信
+- **共通コンポーネント**: `AppScaffold`, `AppText`, `EmptyContent`, `ErrorContent`, `LoadingIndicator`, `PokemonCard`, `PokemonImage`, `PokemonIdText`, `PokemonNameText`, `SearchTextField`, `UiStateContent`
+- **UiEvent / ObserveAsEvents**: 一回限りイベント（Snackbar 等）のライフサイクル安全な配信
 - Material3 テーマ定義 (Color, Type, Theme)
 
 #### `feature:list` / `feature:detail` / `feature:search` / `feature:favorites`
 - `ViewModel` → `UseCase` → `Repository` の一方向データフロー
-- UI 状態は `StateFlow<UiState<T>>` で管理
-- 一度きりのイベント（Snackbar 等）は `Channel` + `ObserveAsEvents` で管理
-- `feature:search`: クエリの `debounce(500ms)` + `flatMapLatest` でリアルタイム検索
-- `feature:favorites`: `StateFlow<List<Favorite>>` を Room の Flow から `stateIn` で公開
+- 各 ViewModel は `ViewModel()` を直接継承し `MutableStateFlow` で状態管理（基底クラスなし）
+- UI 状態は `UiStateContent` で Loading / Error / Success / Idle を統一描画
+- 一度きりのイベント（Snackbar 等）は `Channel` + `ObserveAsEvents` で管理（detail のみ）
+- `feature:search`: クエリの `debounce(500ms)` + `flatMapLatest` でリアルタイム検索。未入力は `UiState.Idle`
+- `feature:favorites`: Room の Flow を `UiState.Success` にラップして公開
 - `feature:detail`: `isFavorite` を `flatMapLatest` で詳細ロード後に DB 監視開始
 
 ### データフロー
@@ -143,7 +143,12 @@ Android-Sample-MVVM/
 navController.navigate(PokemonDetailRoute(pokemonName))
 ```
 
-画面遷移には `slideInHorizontally` / `slideOutHorizontally`（350ms）アニメーションを適用。
+遷移アニメーションは `pushComposable` / `modalComposable` で宣言し、`AppNavGraph` は遷移の種類を知らない。
+
+| 関数 | アニメーション | 用途 |
+|------|-------------|------|
+| `pushComposable` | 水平スライド（350ms） | 一覧 → 詳細など通常遷移 |
+| `modalComposable` | 下から上スライド（350ms） | 検索・お気に入りなどモーダル的遷移 |
 
 ---
 

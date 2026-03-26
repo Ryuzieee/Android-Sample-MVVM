@@ -16,12 +16,10 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
-import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
-import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import com.yamamuto.android_sample_mvvm.ui.component.SearchTextField
+import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
 @Composable
 fun SearchScreen(
@@ -41,11 +39,13 @@ fun SearchScreen(
         },
         onBack = onBack,
     ) { padding ->
-        when (val result = uiState.result) {
-            null -> SearchIdle(padding)
-            is UiState.Loading -> SearchLoading()
-            is UiState.Error -> SearchError(result, viewModel::retrySearch, padding)
-            is UiState.Success -> SearchResults(result.data, onPokemonClick, padding)
+        UiStateContent(
+            state = uiState.result,
+            onRetry = viewModel::retrySearch,
+            modifier = Modifier.padding(padding),
+            idleContent = { SearchIdle(padding) },
+        ) { names ->
+            SearchResults(names, onPokemonClick, padding)
         }
     }
 }
@@ -54,25 +54,6 @@ fun SearchScreen(
 private fun SearchIdle(padding: PaddingValues) {
     EmptyContent(
         message = "ポケモン名を入力してください",
-        modifier = Modifier.padding(padding),
-    )
-}
-
-@Composable
-private fun SearchLoading() {
-    LoadingIndicator()
-}
-
-@Composable
-private fun SearchError(
-    error: UiState.Error,
-    onRetry: () -> Unit,
-    padding: PaddingValues,
-) {
-    ErrorContent(
-        message = error.message,
-        onRetry = onRetry,
-        isNetworkError = error.isNetworkError,
         modifier = Modifier.padding(padding),
     )
 }

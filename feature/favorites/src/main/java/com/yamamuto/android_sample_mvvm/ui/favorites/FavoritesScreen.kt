@@ -15,6 +15,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.Favorite
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
+import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
 @Composable
 fun FavoritesScreen(
@@ -28,9 +29,15 @@ fun FavoritesScreen(
         title = { Text("お気に入り") },
         onBack = onBack,
     ) { padding ->
-        when {
-            uiState.favorites.isEmpty() -> FavoritesEmpty(padding)
-            else -> FavoritesContent(uiState.favorites, onPokemonClick, padding)
+        UiStateContent(
+            state = uiState.contentState,
+            modifier = Modifier.padding(padding),
+        ) { favorites ->
+            if (favorites.isEmpty()) {
+                FavoritesEmpty(padding)
+            } else {
+                FavoritesContent(favorites, onPokemonClick, padding)
+            }
         }
     }
 }
