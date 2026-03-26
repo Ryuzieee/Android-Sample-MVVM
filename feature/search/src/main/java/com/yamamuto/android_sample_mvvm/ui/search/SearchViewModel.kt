@@ -3,10 +3,10 @@
 package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
 import com.yamamuto.android_sample_mvvm.ui.base.BaseViewModel
+import com.yamamuto.android_sample_mvvm.ui.util.loadAsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
@@ -67,21 +67,12 @@ class SearchViewModel
             }
         }
 
-        private suspend fun fetchResults(query: String): UiState<List<String>> =
-            runCatching { searchPokemonUseCase(query) }
-                .fold(
-                    onSuccess = { names ->
-                        if (names.isEmpty()) {
-                            UiState.Error(message = "「$query」に一致するポケモンは見つかりませんでした")
-                        } else {
-                            UiState.Success(names)
-                        }
-                    },
-                    onFailure = { e ->
-                        UiState.Error(
-                            message = e.message ?: "エラーが発生しました",
-                            isNetworkError = e is AppException.Network,
-                        )
-                    },
-                )
+        private suspend fun fetchResults(query: String): UiState<List<String>> {
+            val result = loadAsUiState { searchPokemonUseCase(query) }
+            return if (result is UiState.Success && result.data.isEmpty()) {
+                UiState.Error(message = "「$query」に一致するポケモンは見つかりませんでした")
+            } else {
+                result
+            }
+        }
     }
