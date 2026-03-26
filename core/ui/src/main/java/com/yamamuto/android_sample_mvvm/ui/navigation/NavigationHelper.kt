@@ -10,7 +10,8 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-private const val ANIM_DURATION = 350
+@PublishedApi
+internal const val ANIM_DURATION = 350
 
 /**
  * モーダル画面用の composable。
