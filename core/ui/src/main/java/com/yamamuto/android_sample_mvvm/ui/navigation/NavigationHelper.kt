@@ -20,8 +20,6 @@ const val ANIM_DURATION = 350
  * - → 子画面: 横スライド (push)
  * - ← 子画面: 横スライド (pop)
  * - dismiss: 下へスライドアウト
- *
- * 検索・お気に入りなど、背景画面を動かしたくない画面に使う。
  */
 inline fun <reified T : Any> NavGraphBuilder.modalComposable(
     noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
