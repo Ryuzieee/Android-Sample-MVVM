@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
+
 package com.yamamuto.android_sample_mvvm.ui.navigation
 
 import androidx.compose.animation.AnimatedContentScope
@@ -8,10 +10,16 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 const val ANIM_DURATION = 350
+
+@PublishedApi
+internal val modalRouteNames = mutableSetOf<String?>()
+
+fun NavDestination.isModal(): Boolean = route in modalRouteNames
 
 /**
  * モーダル画面用の composable。
@@ -24,6 +32,7 @@ const val ANIM_DURATION = 350
 inline fun <reified T : Any> NavGraphBuilder.modalComposable(
     noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
+    modalRouteNames += T::class.qualifiedName
     composable<T>(
         enterTransition = {
             slideInVertically(initialOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
