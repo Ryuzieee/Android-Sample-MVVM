@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.util
+package com.yamamuto.android_sample_mvvm.testing
 
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
