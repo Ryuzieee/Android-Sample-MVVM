@@ -16,8 +16,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -105,21 +105,22 @@ private fun PokemonDetailContent(
             detail.types.forEach { type ->
                 AssistChip(
                     onClick = {},
-                    label = { Text(type) },
+                    label = { AppText(type) },
                     modifier = Modifier.padding(horizontal = 4.dp),
                 )
             }
         }
 
-        Text(
+        AppText(
             text = "Height: ${detail.height * 10} cm  ·  Weight: ${detail.weight / 10.0} kg",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
-        Text(
+        AppText(
             text = "Base Stats",
             style = MaterialTheme.typography.titleMedium,
+            bold = true,
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(start = 16.dp, bottom = 8.dp),
@@ -142,20 +143,20 @@ private fun StatRow(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        AppText(
             text = stat.name,
-            modifier = Modifier.width(110.dp),
             style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.width(110.dp),
         )
         LinearProgressIndicator(
             progress = { stat.value / 255f },
             modifier = Modifier.weight(1f),
         )
-        Text(
+        AppText(
             text = "${stat.value}",
-            modifier = Modifier.width(36.dp),
-            textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.End,
+            modifier = Modifier.width(36.dp),
         )
     }
 }
