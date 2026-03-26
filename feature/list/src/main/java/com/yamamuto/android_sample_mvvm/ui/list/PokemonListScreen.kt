@@ -17,14 +17,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
+import com.yamamuto.android_sample_mvvm.ui.component.PagingContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
-import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
 @Composable
 fun PokemonListScreen(
@@ -34,7 +31,6 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val pagingItems = uiState.pagingData.collectAsLazyPagingItems()
 
     AppScaffold(
         title = { Text("Pokédex") },
@@ -47,17 +43,8 @@ fun PokemonListScreen(
             }
         },
     ) { padding ->
-        val refreshState = pagingItems.loadState.refresh
-        UiStateContent(
-            state = when (refreshState) {
-                is LoadState.Loading -> UiState.Loading
-                is LoadState.Error -> UiState.Error(
-                    message = refreshState.error.message ?: "Unknown error",
-                    isNetworkError = refreshState.error is AppException.Network,
-                )
-                is LoadState.NotLoading -> UiState.Success(pagingItems)
-            },
-            onRetry = { pagingItems.retry() },
+        PagingContent(
+            pagingData = uiState.pagingData,
             modifier = Modifier.padding(padding),
         ) { items ->
             PokemonListContent(items, padding, onPokemonClick)
