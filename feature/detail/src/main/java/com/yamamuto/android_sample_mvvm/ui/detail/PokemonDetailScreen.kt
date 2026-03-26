@@ -118,10 +118,7 @@ private fun PokemonDetailContent(
         AsyncImage(
             model = detail.imageUrl,
             contentDescription = detail.name,
-            modifier =
-                Modifier
-                    .padding(top = 16.dp)
-                    .size(200.dp),
+            modifier = Modifier.padding(top = 16.dp),
         )
 
         PokemonIdText(id = detail.id)
