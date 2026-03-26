@@ -2,7 +2,6 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
@@ -10,9 +9,9 @@ import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.ui.base.BaseViewModel
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
+import com.yamamuto.android_sample_mvvm.ui.util.loadAsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -48,30 +47,22 @@ class PokemonDetailViewModel
 
         private fun load() {
             viewModelScope.launch {
-                    updateState { it.copy(contentState = UiState.Loading) }
-                    runCatching { getPokemonDetailUseCase(pokemonName) }.fold(
-                        onSuccess = { observeFavorite(it) },
-                        onFailure = { handleError(it) },
-                    )
+                updateState { it.copy(contentState = UiState.Loading) }
+                val result = loadAsUiState { getPokemonDetailUseCase(pokemonName) }
+                when (result) {
+                    is UiState.Success -> observeFavorite(result.data)
+                    is UiState.Error -> {
+                        sendEvent(UiEvent.ShowSnackbar(result.message))
+                        updateState { it.copy(contentState = result) }
+                    }
+                    is UiState.Loading -> {}
                 }
+            }
         }
 
         private suspend fun observeFavorite(detail: PokemonDetail) {
             getIsFavoriteUseCase(detail.id).collect { isFavorite ->
                 updateState(PokemonDetailUiState(UiState.Success(detail), isFavorite))
-            }
-        }
-
-        private suspend fun handleError(e: Throwable) {
-            Timber.e(e, "Failed to load detail: $pokemonName")
-            sendEvent(UiEvent.ShowSnackbar(e.message ?: "エラーが発生しました"))
-            updateState {
-                it.copy(
-                    contentState = UiState.Error(
-                        message = e.message ?: "不明なエラーが発生しました",
-                        isNetworkError = e is AppException.Network,
-                    ),
-                )
             }
         }
     }
