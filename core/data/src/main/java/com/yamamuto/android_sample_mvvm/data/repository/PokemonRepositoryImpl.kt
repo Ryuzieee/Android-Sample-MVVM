@@ -9,14 +9,12 @@ import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
 import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSource
-import com.yamamuto.android_sample_mvvm.domain.model.AppException
+import com.yamamuto.android_sample_mvvm.data.util.safeApiCall
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
-import retrofit2.HttpException
-import java.io.IOException
 
 private const val CACHE_DURATION_MS = 5 * 60 * 1000L // 5分
 
@@ -45,7 +43,7 @@ class PokemonRepositoryImpl(
         }
 
         // ネットワークから取得してキャッシュに保存
-        return wrapException {
+        return safeApiCall {
             val dto = dataSource.getPokemonDetail(name)
             val detail =
                 PokemonDetail(
@@ -63,7 +61,7 @@ class PokemonRepositoryImpl(
     }
 
     override suspend fun searchPokemonNames(query: String): List<String> {
-        val names = cachedPokemonNames ?: wrapException {
+        val names = cachedPokemonNames ?: safeApiCall {
             dataSource.getPokemonList(limit = 2000, offset = 0).results.map { it.name }
         }.also { cachedPokemonNames = it }
         return names.filter { it.contains(query.trim(), ignoreCase = true) }
@@ -95,14 +93,4 @@ class PokemonRepositoryImpl(
             stats = stats.joinToString(";") { "${it.name}:${it.value}" },
         )
 
-    private inline fun <T> wrapException(block: () -> T): T =
-        try {
-            block()
-        } catch (e: IOException) {
-            throw AppException.Network(e)
-        } catch (e: HttpException) {
-            throw AppException.Server(e.code(), e)
-        } catch (e: Exception) {
-            throw AppException.Unknown(e)
-        }
 }

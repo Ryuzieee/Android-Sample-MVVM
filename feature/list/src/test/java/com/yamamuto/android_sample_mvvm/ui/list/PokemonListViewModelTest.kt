@@ -7,8 +7,8 @@ import androidx.paging.PagingState
 import androidx.paging.testing.asSnapshot
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonListUseCase
-import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
-import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonList
+import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
+import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonList
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

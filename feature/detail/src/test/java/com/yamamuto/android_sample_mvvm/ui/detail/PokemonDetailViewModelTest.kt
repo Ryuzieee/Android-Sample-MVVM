@@ -6,8 +6,8 @@ import com.yamamuto.android_sample_mvvm.domain.model.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
-import com.yamamuto.android_sample_mvvm.util.MainDispatcherRule
-import com.yamamuto.android_sample_mvvm.util.TestFixtures.fakePokemonDetail
+import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
+import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonDetail
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
