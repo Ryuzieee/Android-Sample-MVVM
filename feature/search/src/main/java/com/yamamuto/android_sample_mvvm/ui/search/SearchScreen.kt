@@ -1,6 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,33 +42,54 @@ fun SearchScreen(
         onBack = onBack,
     ) { padding ->
         when (val result = uiState.result) {
-            null ->
-                EmptyContent(
-                    message = "ポケモン名を入力してください",
-                    modifier = Modifier.padding(padding),
-                )
+            null -> SearchIdle(padding)
+            is UiState.Loading -> SearchLoading()
+            is UiState.Error -> SearchError(result, viewModel::retrySearch, padding)
+            is UiState.Success -> SearchResults(result.data, onPokemonClick, padding)
+        }
+    }
+}
 
-            is UiState.Loading ->
-                LoadingIndicator()
+@Composable
+private fun SearchIdle(padding: PaddingValues) {
+    EmptyContent(
+        message = "ポケモン名を入力してください",
+        modifier = Modifier.padding(padding),
+    )
+}
 
-            is UiState.Error ->
-                ErrorContent(
-                    message = result.message,
-                    onRetry = viewModel::retrySearch,
-                    isNetworkError = result.isNetworkError,
-                    modifier = Modifier.padding(padding),
-                )
+@Composable
+private fun SearchLoading() {
+    LoadingIndicator()
+}
 
-            is UiState.Success ->
-                LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
-                    items(result.data) { name ->
-                        ListItem(
-                            headlineContent = { Text(name.capitalize(Locale.current)) },
-                            modifier = Modifier.clickable { onPokemonClick(name) },
-                        )
-                        HorizontalDivider()
-                    }
-                }
+@Composable
+private fun SearchError(
+    error: UiState.Error,
+    onRetry: () -> Unit,
+    padding: PaddingValues,
+) {
+    ErrorContent(
+        message = error.message,
+        onRetry = onRetry,
+        isNetworkError = error.isNetworkError,
+        modifier = Modifier.padding(padding),
+    )
+}
+
+@Composable
+private fun SearchResults(
+    names: List<String>,
+    onPokemonClick: (String) -> Unit,
+    padding: PaddingValues,
+) {
+    LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
+        items(names) { name ->
+            ListItem(
+                headlineContent = { Text(name.capitalize(Locale.current)) },
+                modifier = Modifier.clickable { onPokemonClick(name) },
+            )
+            HorizontalDivider()
         }
     }
 }
