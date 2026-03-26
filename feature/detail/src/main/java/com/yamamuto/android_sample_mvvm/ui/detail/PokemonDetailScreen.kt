@@ -120,8 +120,8 @@ private fun PokemonDetailContent(
             contentDescription = detail.name,
             modifier =
                 Modifier
-                    .size(200.dp)
-                    .padding(top = 16.dp),
+                    .padding(top = 16.dp)
+                    .size(200.dp),
         )
 
         PokemonIdText(id = detail.id)
