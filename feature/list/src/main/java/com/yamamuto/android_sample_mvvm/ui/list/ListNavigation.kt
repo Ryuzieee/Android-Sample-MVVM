@@ -3,7 +3,7 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import com.yamamuto.android_sample_mvvm.ui.navigation.pushComposable
 import kotlinx.serialization.Serializable
 
 /** ポケモン一覧画面のルート定義。 */
@@ -16,7 +16,7 @@ fun NavGraphBuilder.pokemonListScreen(
     onSearchClick: () -> Unit,
     onFavoritesClick: () -> Unit,
 ) {
-    composable<PokemonListRoute> {
+    pushComposable<PokemonListRoute> {
         PokemonListScreen(
             onPokemonClick = onPokemonClick,
             onSearchClick = onSearchClick,

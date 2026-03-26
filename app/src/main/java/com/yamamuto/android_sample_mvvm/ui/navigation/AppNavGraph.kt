@@ -2,11 +2,6 @@
 
 package com.yamamuto.android_sample_mvvm.ui.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -27,26 +22,6 @@ fun AppNavGraph() {
     NavHost(
         navController = navController,
         startDestination = PokemonListRoute,
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
-        },
-        exitTransition = {
-            if (targetState.destination.isModal()) {
-                ExitTransition.None
-            } else {
-                slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
-            }
-        },
-        popEnterTransition = {
-            if (initialState.destination.isModal()) {
-                EnterTransition.None
-            } else {
-                slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
-            }
-        },
-        popExitTransition = {
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
-        },
     ) {
         pokemonListScreen(
             onPokemonClick = { name -> navController.navigate(PokemonDetailRoute(name)) },
