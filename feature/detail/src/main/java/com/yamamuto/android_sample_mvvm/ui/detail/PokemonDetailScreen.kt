@@ -2,7 +2,6 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,15 +23,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonNameText
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 import com.yamamuto.android_sample_mvvm.ui.util.ObserveAsEvents
@@ -91,14 +89,9 @@ private fun PokemonDetailContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        AsyncImage(
-            model = detail.imageUrl,
+        PokemonImage(
+            imageUrl = detail.imageUrl,
             contentDescription = detail.name,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
-                .aspectRatio(1f),
         )
 
         PokemonIdText(id = detail.id)
