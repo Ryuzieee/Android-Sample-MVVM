@@ -26,5 +26,9 @@ gradlePlugin {
             id = "convention.kotlin.library"
             implementationClass = "KotlinLibraryConventionPlugin"
         }
+        register("feature") {
+            id = "convention.feature"
+            implementationClass = "FeatureConventionPlugin"
+        }
     }
 }
