@@ -2,9 +2,11 @@ import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
 
 /**
  * Feature モジュール用 Convention Plugin。
@@ -31,6 +33,10 @@ class FeatureConventionPlugin : Plugin<Project> {
                         isIncludeAndroidResources = true
                     }
                 }
+            }
+
+            tasks.withType<Test>().configureEach {
+                failOnNoDiscoveredTests.set(false)
             }
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -69,6 +75,7 @@ class FeatureConventionPlugin : Plugin<Project> {
                 add("testImplementation", libs.findLibrary("mockk").get())
                 add("testImplementation", libs.findLibrary("turbine").get())
                 add("testImplementation", libs.findLibrary("androidx-core-testing").get())
+                add("testImplementation", libs.findLibrary("kotlinx-coroutines-test").get())
             }
         }
     }
