@@ -32,17 +32,17 @@ fun ErrorContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
+        AppText(
             text = if (isNetworkError) "ネットワークに接続できません" else message,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         )
         if (isNetworkError) {
-            Text(
+            AppText(
                 text = "接続を確認してリトライしてください",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
+                secondary = true,
                 modifier = Modifier.padding(top = 4.dp),
             )
         }

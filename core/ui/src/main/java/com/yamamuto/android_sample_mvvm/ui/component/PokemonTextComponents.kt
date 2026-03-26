@@ -1,7 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.component
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -12,10 +11,10 @@ fun PokemonIdText(
     id: Int,
     modifier: Modifier = Modifier,
 ) {
-    Text(
+    AppText(
         text = "#$id",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.outline,
+        secondary = true,
         modifier = modifier,
     )
 }
@@ -27,7 +26,7 @@ fun PokemonNameText(
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
 ) {
-    Text(
+    AppText(
         text = name.replaceFirstChar { it.uppercase() },
         style = style,
         modifier = modifier,
