@@ -59,9 +59,9 @@ Clean Architecture + MVVM をベースにマルチモジュール構成を採用
 ### レイヤー詳細
 
 #### `core:domain`（Android 非依存の純粋 Kotlin）
-- **Model**: `Pokemon`, `PokemonDetail`, `UiState`, `AppException`
-- **Repository Interface**: `PokemonRepository`
-- **UseCase**: `GetPokemonListUseCase`, `GetPokemonDetailUseCase`
+- **Model**: `Pokemon`, `PokemonDetail`, `Favorite`, `UiState`, `AppException`
+- **Repository Interface**: `PokemonRepository`, `FavoriteRepository`
+- **UseCase**: `GetPokemonListUseCase`, `GetPokemonDetailUseCase`, `SearchPokemonUseCase`, `GetFavoritesUseCase`, `GetIsFavoriteUseCase`, `ToggleFavoriteUseCase`
 
 #### `core:data`
 - **API**: Retrofit + kotlinx.serialization で PokeAPI を呼び出し
@@ -70,8 +70,10 @@ Clean Architecture + MVVM をベースにマルチモジュール構成を採用
 - **DI**: `DataModule`（Hilt）
 
 #### `core:ui`
-- `LoadingIndicator`, `ErrorContent` など再利用可能な Compose コンポーネント
-- Material3 テーマ定義
+- **共通コンポーネント**: `LoadingIndicator`, `ErrorContent`, `PokemonIdText`, `PokemonNameText`
+- **BaseViewModel**: `StateFlow<S>` + `Channel<UiEvent>` を共通化した抽象 ViewModel
+- **UiEvent / ObserveAsEvents**: 一回限りイベント (SnackBar 等) のライフサイクル安全な配信
+- Material3 テーマ定義 (Color, Type, Theme)
 
 #### `feature:list` / `feature:detail` / `feature:search` / `feature:favorites`
 - `ViewModel` → `UseCase` → `Repository` の一方向データフロー
@@ -195,10 +197,11 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 
 | テストクラス | 対象 | ツール |
 |------------|------|--------|
+| `PokemonListViewModelTest` | Paging データの出力検証 | MockK + Paging Testing |
+| `PokemonDetailViewModelTest` | StateFlow の状態遷移・お気に入りトグル検証 | Turbine + MockK |
 | `GetPokemonListUseCaseTest` | PagingData の出力検証 | MockK + Paging Testing |
 | `GetPokemonDetailUseCaseTest` | 詳細取得のロジック検証 | MockK |
 | `PokemonRepositoryImplTest` | DTO → Domain マッピング検証 | MockK |
-| `PokemonDetailViewModelTest` | StateFlow の状態遷移検証 | Turbine + MockK |
 
 ### スクリーンショットテスト（Roborazzi）
 
