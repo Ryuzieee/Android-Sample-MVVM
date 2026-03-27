@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
+import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
+import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import com.yamamuto.android_sample_mvvm.ui.component.PagingContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
 
@@ -35,15 +37,19 @@ fun PokemonListScreen(
         PagingContent(
             pagingData = uiState.pagingData,
             modifier = Modifier.padding(padding),
-            contentPadding = padding,
-        ) { items ->
-            items(items) { pokemon ->
-                PokemonCard(
-                    name = pokemon.name,
-                    id = pokemon.id,
-                    imageUrl = pokemon.imageUrl,
-                    onClick = { onPokemonClick(pokemon.name) },
-                )
+        ) { pagingState ->
+            AppLazyVerticalGrid(contentPadding = padding) {
+                items(pagingState.items) { pokemon ->
+                    PokemonCard(
+                        name = pokemon.name,
+                        id = pokemon.id,
+                        imageUrl = pokemon.imageUrl,
+                        onClick = { onPokemonClick(pokemon.name) },
+                    )
+                }
+                if (pagingState.isAppendLoading) {
+                    item { LoadingIndicator() }
+                }
             }
         }
     }
