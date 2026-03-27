@@ -2,9 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
@@ -16,6 +14,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yamamuto.android_sample_mvvm.ui.component.AppLazyColumn
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
 import com.yamamuto.android_sample_mvvm.ui.component.SearchTextField
@@ -64,7 +63,7 @@ private fun SearchResults(
     onPokemonClick: (String) -> Unit,
     padding: PaddingValues,
 ) {
-    LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
+    AppLazyColumn(modifier = Modifier.padding(padding)) {
         items(names) { name ->
             ListItem(
                 headlineContent = { Text(name.capitalize(Locale.current)) },

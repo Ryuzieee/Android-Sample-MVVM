@@ -11,8 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -28,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
@@ -58,13 +57,12 @@ fun PokemonDetailScreen(
         title = { PokemonNameText(name = pokemonName, style = MaterialTheme.typography.titleLarge) },
         onBack = onBack,
         actions = {
-            IconButton(onClick = viewModel::toggleFavorite) {
-                Icon(
-                    imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = if (uiState.isFavorite) "お気に入りから削除" else "お気に入りに追加",
-                    tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                )
-            }
+            AppIconButton(
+                imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = if (uiState.isFavorite) "お気に入りから削除" else "お気に入りに追加",
+                onClick = viewModel::toggleFavorite,
+                tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            )
         },
         snackbarHostState = snackbarHostState,
     ) { padding ->
