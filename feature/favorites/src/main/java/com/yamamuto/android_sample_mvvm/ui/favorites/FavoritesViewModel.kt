@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
+import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetFavoritesUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

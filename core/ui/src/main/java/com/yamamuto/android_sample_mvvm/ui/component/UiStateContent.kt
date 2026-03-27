@@ -2,7 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
+import com.yamamuto.android_sample_mvvm.ui.util.UiState
 
 /**
  * [UiState] に応じて Idle / Loading / Error / Success を切り替える共通コンポーネント。

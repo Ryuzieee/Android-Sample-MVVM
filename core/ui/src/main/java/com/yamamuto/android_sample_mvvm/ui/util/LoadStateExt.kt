@@ -2,7 +2,6 @@ package com.yamamuto.android_sample_mvvm.ui.util
 
 import androidx.paging.LoadState
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
 
 /**
  * [LoadState] を [UiState] に変換する。

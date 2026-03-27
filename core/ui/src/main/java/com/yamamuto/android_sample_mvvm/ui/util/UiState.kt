@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.domain.model
+package com.yamamuto.android_sample_mvvm.ui.util
 
 /** 画面の UI 状態を表す汎用 sealed interface。 */
 sealed interface UiState<out T> {

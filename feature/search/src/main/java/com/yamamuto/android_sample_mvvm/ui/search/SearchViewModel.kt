@@ -3,7 +3,7 @@
 package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
+import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import com.yamamuto.android_sample_mvvm.ui.util.loadAsUiState
