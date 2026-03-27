@@ -30,7 +30,7 @@ fun FavoritesScreen(
         onBack = onBack,
     ) { padding ->
         UiStateContent(
-            state = uiState.contentState,
+            state = uiState,
             modifier = Modifier.padding(padding),
         ) { favorites ->
             if (favorites.isEmpty()) {
