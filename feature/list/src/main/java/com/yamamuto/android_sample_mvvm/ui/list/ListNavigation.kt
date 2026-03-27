@@ -1,9 +1,7 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package com.yamamuto.android_sample_mvvm.ui.list
 
 import androidx.navigation.NavGraphBuilder
-import com.yamamuto.android_sample_mvvm.ui.navigation.pushComposable
+import com.yamamuto.android_sample_mvvm.ui.navigation.pushScreen
 import kotlinx.serialization.Serializable
 
 /** ポケモン一覧画面のルート定義。 */
@@ -16,7 +14,7 @@ fun NavGraphBuilder.pokemonListScreen(
     onSearchClick: () -> Unit,
     onFavoritesClick: () -> Unit,
 ) {
-    pushComposable<PokemonListRoute> {
+    pushScreen<PokemonListRoute> {
         PokemonListScreen(
             onPokemonClick = onPokemonClick,
             onSearchClick = onSearchClick,
