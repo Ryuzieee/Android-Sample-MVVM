@@ -13,3 +13,18 @@ sealed interface UiState<out T> {
         val isNetworkError: Boolean = false,
     ) : UiState<Nothing>
 }
+
+/** Success のデータを返す。それ以外は null。 */
+fun <T> UiState<T>.getOrNull(): T? = (this as? UiState.Success)?.data
+
+/** Success のデータを変換する。それ以外はそのまま返す。 */
+fun <T, R> UiState<T>.map(transform: (T) -> R): UiState<R> = when (this) {
+    is UiState.Success -> UiState.Success(transform(data))
+    is UiState.Error -> this
+    is UiState.Loading -> this
+    is UiState.Idle -> this
+}
+
+val UiState<*>.isLoading: Boolean get() = this is UiState.Loading
+val UiState<*>.isSuccess: Boolean get() = this is UiState.Success
+val UiState<*>.isError: Boolean get() = this is UiState.Error

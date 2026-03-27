@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
+import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
@@ -41,7 +42,7 @@ class PokemonDetailViewModel
 
         fun toggleFavorite() {
             val state = currentState
-            val detail = (state.contentState as? UiState.Success)?.data ?: return
+            val detail = state.contentState.getOrNull() ?: return
             viewModelScope.launch { toggleFavoriteUseCase(detail, state.isFavorite) }
         }
 
