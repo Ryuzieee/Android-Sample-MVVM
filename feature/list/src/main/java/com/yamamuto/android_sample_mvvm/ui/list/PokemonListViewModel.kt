@@ -10,6 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val PAGE_SIZE = 20
+
 /** ポケモン一覧画面のViewModel。 */
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(
@@ -22,7 +24,7 @@ class PokemonListViewModel @Inject constructor(
     private fun load() {
         viewModelScope.launch {
             Pager(
-                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
                 pagingSourceFactory = { pagingSourceFactory.create() },
             ).flow
                 .cachedIn(viewModelScope)

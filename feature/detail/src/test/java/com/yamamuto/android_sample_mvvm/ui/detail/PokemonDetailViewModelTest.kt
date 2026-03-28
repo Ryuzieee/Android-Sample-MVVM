@@ -71,8 +71,8 @@ class PokemonDetailViewModelTest {
                 val state = awaitItem()
                 assertTrue(state.contentState is UiState.Success)
                 val data = (state.contentState as UiState.Success).data
-                assertEquals(fakePokemonDetail.id, data.id)
-                assertEquals(fakePokemonDetail.name, data.name)
+                assertEquals(fakePokemonDetail.id, data.detail.id)
+                assertEquals(fakePokemonDetail.name, data.detail.name)
             }
         }
     }
@@ -105,8 +105,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem().contentState as UiState.Success
-                assertEquals("charizard", state.data.name)
-                assertEquals(6, state.data.id)
+                assertEquals("charizard", state.data.detail.name)
+                assertEquals(6, state.data.detail.id)
             }
         }
     }

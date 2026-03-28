@@ -47,8 +47,8 @@ class PokemonDetailViewModel @Inject constructor(
 
     fun toggleFavorite() {
         val state = currentState
-        val detail = state.contentState.getOrNull() ?: return
-        viewModelScope.launch { toggleFavoriteUseCase(detail, state.isFavorite) }
+        val fullDetail = state.contentState.getOrNull() ?: return
+        viewModelScope.launch { toggleFavoriteUseCase(fullDetail.detail, state.isFavorite) }
     }
 
     private fun load(forceRefresh: Boolean = false) {
@@ -61,9 +61,7 @@ class PokemonDetailViewModel @Inject constructor(
                     val fullDetail = result.getOrThrow()
                     updateState {
                         copy(
-                            contentState = UiState.Success(fullDetail.detail),
-                            species = fullDetail.species,
-                            evolutionChain = fullDetail.evolutionChain,
+                            contentState = UiState.Success(fullDetail),
                             isRefreshing = false,
                         )
                     }

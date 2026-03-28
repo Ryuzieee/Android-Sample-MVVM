@@ -55,11 +55,6 @@ class SearchViewModel @Inject constructor(
         }
         updateState { copy(result = UiState.Loading) }
         val result = searchPokemonUseCase(query).toUiState()
-        val finalResult = if (result is UiState.Success && result.data.isEmpty()) {
-            UiState.Error(message = SearchStrings.noResultsMessage(query))
-        } else {
-            result
-        }
-        updateState { copy(result = finalResult) }
+        updateState { copy(result = result) }
     }
 }

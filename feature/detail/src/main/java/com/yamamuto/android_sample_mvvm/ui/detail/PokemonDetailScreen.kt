@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
@@ -66,7 +67,8 @@ fun PokemonDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showInfo by rememberSaveable { mutableStateOf(false) }
 
-    val displayName = uiState.species?.japaneseName?.ifEmpty { null } ?: pokemonName
+    val fullDetail = uiState.contentState.getOrNull()
+    val displayName = fullDetail?.species?.japaneseName?.ifEmpty { null } ?: pokemonName
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -106,26 +108,23 @@ fun PokemonDetailScreen(
             UiStateContent(
                 state = uiState.contentState,
                 onRetry = viewModel::retry,
-            ) { detail ->
+            ) { content ->
                 PokemonDetailContent(
-                    detail = detail,
-                    species = uiState.species,
-                    evolutionChain = uiState.evolutionChain,
+                    detail = content.detail,
+                    species = content.species,
+                    evolutionChain = content.evolutionChain,
                     onEvolutionClick = onPokemonClick,
                 )
             }
         }
     }
 
-    if (showInfo) {
-        val detail = uiState.contentState.getOrNull()
-        if (detail != null) {
-            InfoBottomSheet(
-                detail = detail,
-                species = uiState.species,
-                onDismiss = { showInfo = false },
-            )
-        }
+    if (showInfo && fullDetail != null) {
+        InfoBottomSheet(
+            detail = fullDetail.detail,
+            species = fullDetail.species,
+            onDismiss = { showInfo = false },
+        )
     }
 }
 

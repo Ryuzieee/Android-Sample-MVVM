@@ -12,6 +12,9 @@ sealed class AppException(message: String, cause: Throwable? = null) : Exception
     /** APIがエラーステータスを返した場合のサーバーエラー。 */
     class Server(val code: Int, cause: Throwable) : AppException("サーバーエラー ($code)", cause)
 
+    /** 検索結果が見つからなかった場合のエラー。 */
+    class NotFound(query: String) : AppException(ErrorMessages.notFound(query))
+
     /** 上記以外の予期しないエラー。 */
     class Unknown(cause: Throwable) : AppException(cause.message ?: ErrorMessages.UNKNOWN_ERROR, cause)
 }
