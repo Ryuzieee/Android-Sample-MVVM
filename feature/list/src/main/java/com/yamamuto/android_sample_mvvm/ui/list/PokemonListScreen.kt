@@ -1,7 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -17,6 +16,7 @@ import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import com.yamamuto.android_sample_mvvm.ui.component.PagingContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
+import com.yamamuto.android_sample_mvvm.ui.component.isAppendLoading
 
 @Composable
 fun PokemonListScreen(
@@ -37,17 +37,19 @@ fun PokemonListScreen(
         PagingContent(
             pagingData = uiState.pagingData,
             modifier = Modifier.padding(padding),
-        ) { pagingState ->
+        ) { pagingItems ->
             AppLazyVerticalGrid(contentPadding = padding) {
-                items(pagingState.items) { pokemon ->
-                    PokemonCard(
-                        name = pokemon.name,
-                        id = pokemon.id,
-                        imageUrl = pokemon.imageUrl,
-                        onClick = { onPokemonClick(pokemon.name) },
-                    )
+                items(pagingItems.itemCount) { index ->
+                    pagingItems[index]?.let { pokemon ->
+                        PokemonCard(
+                            name = pokemon.name,
+                            id = pokemon.id,
+                            imageUrl = pokemon.imageUrl,
+                            onClick = { onPokemonClick(pokemon.name) },
+                        )
+                    }
                 }
-                if (pagingState.isAppendLoading) {
+                if (pagingItems.isAppendLoading) {
                     item { LoadingIndicator() }
                 }
             }

@@ -1,33 +1,31 @@
 package com.yamamuto.android_sample_mvvm.ui.component
 
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.yamamuto.android_sample_mvvm.ui.util.asUiState
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Paging のアイテムと追加読み込み状態をまとめたデータクラス。
- *
- * Screen 側は Paging API を意識せず、通常のリストとして扱える。
- */
-@Immutable
-data class PagingState<T>(
-    val items: List<T>,
-    val isAppendLoading: Boolean,
-)
-
-/**
  * [Flow<PagingData<T>>] の初回読み込み状態に応じて Loading / Error / Content を切り替える共通コンポーネント。
  *
+ * [LazyPagingItems] をそのまま渡すことで、末端到達時の自動 prefetch を維持する。
  * レイアウト (Grid / Column / Row) の選択は呼び出し側に委ねる。
  *
  * ```kotlin
- * PagingContent(pagingData = uiState.pagingData) { pagingState ->
- *     AppLazyVerticalGrid { items(pagingState.items) { ... } }
+ * PagingContent(pagingData = uiState.pagingData) { pagingItems ->
+ *     AppLazyVerticalGrid {
+ *         items(pagingItems.itemCount) { index ->
+ *             pagingItems[index]?.let { PokemonCard(...) }
+ *         }
+ *         if (pagingItems.isAppendLoading) {
+ *             item { LoadingIndicator() }
+ *         }
+ *     }
  * }
  * ```
  */
@@ -35,7 +33,7 @@ data class PagingState<T>(
 fun <T : Any> PagingContent(
     pagingData: Flow<PagingData<T>>,
     modifier: Modifier = Modifier,
-    content: @Composable (PagingState<T>) -> Unit,
+    content: @Composable (LazyPagingItems<T>) -> Unit,
 ) {
     val pagingItems = pagingData.collectAsLazyPagingItems()
     UiStateContent(
@@ -43,8 +41,10 @@ fun <T : Any> PagingContent(
         onRetry = { pagingItems.retry() },
         modifier = modifier,
     ) {
-        val items = List(pagingItems.itemCount) { index -> pagingItems[index] }
-            .filterNotNull()
-        content(PagingState(items, pagingItems.loadState.append is LoadState.Loading))
+        content(pagingItems)
     }
 }
+
+/** append（次ページ）が読み込み中かどうか。 */
+val <T : Any> LazyPagingItems<T>.isAppendLoading: Boolean
+    get() = loadState.append is LoadState.Loading
