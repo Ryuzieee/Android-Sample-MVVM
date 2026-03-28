@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSource
+import com.yamamuto.android_sample_mvvm.data.util.cachedApiCall
 import com.yamamuto.android_sample_mvvm.data.util.safeApiCall
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
@@ -40,18 +41,20 @@ class PokemonRepositoryImpl(
             pagingSourceFactory = { PokemonPagingSource(dataSource) },
         ).flow
 
-    override suspend fun getPokemonDetail(name: String): PokemonDetail {
-        val cached = dao.getPokemonDetail(name)
-        if (cached != null && System.currentTimeMillis() - cached.cachedAt < CACHE_DURATION_MS) {
-            return cached.toDomain()
+    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): PokemonDetail =
+        safeApiCall {
+            cachedApiCall(
+                forceRefresh = forceRefresh,
+                fromCache = {
+                    val cached = dao.getPokemonDetail(name)
+                    if (cached != null && System.currentTimeMillis() - cached.cachedAt < CACHE_DURATION_MS) {
+                        cached.toDomain()
+                    } else null
+                },
+                fromNetwork = { dataSource.getPokemonDetail(name).toDomain() },
+                saveToCache = { dao.insertPokemonDetail(it.toEntity()) },
+            )
         }
-
-        return safeApiCall {
-            val detail = dataSource.getPokemonDetail(name).toDomain()
-            dao.insertPokemonDetail(detail.toEntity())
-            detail
-        }
-    }
 
     override suspend fun getPokemonSpecies(name: String): PokemonSpecies =
         safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }

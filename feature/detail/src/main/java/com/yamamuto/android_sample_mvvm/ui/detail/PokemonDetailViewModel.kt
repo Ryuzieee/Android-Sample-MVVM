@@ -51,7 +51,7 @@ class PokemonDetailViewModel
         fun refresh() {
             viewModelScope.launch {
                 updateState { copy(isRefreshing = true) }
-                val result = loadAsUiState { getPokemonDetailUseCase(pokemonName) }
+                val result = loadAsUiState { getPokemonDetailUseCase(pokemonName, forceRefresh = true) }
                 if (result is UiState.Success) {
                     loadSpeciesAndEvolution(result.data)
                 }

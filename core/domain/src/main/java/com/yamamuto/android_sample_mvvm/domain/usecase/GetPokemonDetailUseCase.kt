@@ -10,5 +10,6 @@ class GetPokemonDetailUseCase
     constructor(
         private val repository: PokemonRepository,
     ) {
-        suspend operator fun invoke(name: String): PokemonDetail = repository.getPokemonDetail(name)
+        suspend operator fun invoke(name: String, forceRefresh: Boolean = false): PokemonDetail =
+            repository.getPokemonDetail(name, forceRefresh)
     }
