@@ -53,8 +53,9 @@ class PokemonDetailViewModel
                 updateState { copy(contentState = UiState.Loading, isRefreshing = forceRefresh) }
 
                 val result = getPokemonFullDetailUseCase(pokemonName, forceRefresh = forceRefresh)
-                result.fold(
-                    onSuccess = { fullDetail ->
+                when {
+                    result.isSuccess -> {
+                        val fullDetail = result.getOrThrow()
                         updateState {
                             copy(
                                 contentState = UiState.Success(fullDetail.detail),
@@ -64,9 +65,9 @@ class PokemonDetailViewModel
                             )
                         }
                         observeFavorite(fullDetail.detail.id)
-                    },
-                    onFailure = { e ->
-                        val message = e.message ?: "不明なエラーが発生しました"
+                    }
+                    result.isFailure -> {
+                        val message = result.exceptionOrNull()?.message ?: "不明なエラーが発生しました"
                         updateState {
                             copy(
                                 contentState = UiState.Error(message = message),
@@ -74,8 +75,8 @@ class PokemonDetailViewModel
                             )
                         }
                         sendEvent(UiEvent.ShowSnackbar(message))
-                    },
-                )
+                    }
+                }
             }
         }
 
