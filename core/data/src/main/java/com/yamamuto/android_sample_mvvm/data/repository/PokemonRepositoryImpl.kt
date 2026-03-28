@@ -14,6 +14,9 @@ import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
 
@@ -57,7 +60,27 @@ class PokemonRepositoryImpl(
         safeApiCall {
             val species = dataSource.getPokemonSpecies(name)
             val chain = dataSource.getEvolutionChain(species.evolutionChain.url)
-            chain.toStages()
+
+            // 各ステージの日本語名を並列取得
+            val stagesRaw = chain.toStages()
+            val japaneseNames = coroutineScope {
+                stagesRaw.map { stage ->
+                    async {
+                        runCatching { dataSource.getPokemonSpecies(stage.name).extractJapaneseName() }
+                            .getOrDefault("")
+                    }
+                }.awaitAll()
+            }
+            val nameMap = stagesRaw.zip(japaneseNames).associate { (stage, jaName) -> stage.name to jaName }
+            chain.toStages(nameMap)
+        }
+
+    override suspend fun getAbilityJapaneseName(name: String): String =
+        safeApiCall {
+            val response = dataSource.getAbility(name)
+            response.names.firstOrNull { it.language.name == "ja" }?.name
+                ?: response.names.firstOrNull { it.language.name == "ja-hrkt" }?.name
+                ?: name
         }
 
     override suspend fun searchPokemonNames(query: String): List<String> {

@@ -3,6 +3,7 @@
 package com.yamamuto.android_sample_mvvm.data.datasource
 
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
+import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
@@ -27,4 +28,6 @@ class PokemonRemoteDataSource(
     suspend fun getPokemonSpecies(name: String): PokemonSpeciesResponse = api.getPokemonSpecies(name)
 
     suspend fun getEvolutionChain(url: String): EvolutionChainResponse = api.getEvolutionChain(url)
+
+    suspend fun getAbility(name: String): AbilityResponse = api.getAbility(name)
 }

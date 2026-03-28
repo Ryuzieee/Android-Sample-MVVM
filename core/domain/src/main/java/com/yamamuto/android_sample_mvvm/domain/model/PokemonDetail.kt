@@ -16,5 +16,5 @@ data class PokemonDetail(
     data class Stat(val name: String, val value: Int)
 
     /** ポケモンの特性。 */
-    data class Ability(val name: String, val isHidden: Boolean)
+    data class Ability(val name: String, val japaneseName: String = "", val isHidden: Boolean)
 }

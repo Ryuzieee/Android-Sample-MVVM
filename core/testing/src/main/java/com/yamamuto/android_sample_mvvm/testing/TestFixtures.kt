@@ -25,8 +25,8 @@ object TestFixtures {
             baseExperience = 64,
             types = listOf("grass", "poison"),
             abilities = listOf(
-                PokemonDetail.Ability(name = "overgrow", isHidden = false),
-                PokemonDetail.Ability(name = "chlorophyll", isHidden = true),
+                PokemonDetail.Ability(name = "overgrow", japaneseName = "しんりょく", isHidden = false),
+                PokemonDetail.Ability(name = "chlorophyll", japaneseName = "ようりょくそ", isHidden = true),
             ),
             imageUrl = OFFICIAL_ARTWORK_URL,
             stats =

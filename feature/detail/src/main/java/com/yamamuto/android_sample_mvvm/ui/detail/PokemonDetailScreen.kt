@@ -46,8 +46,8 @@ import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
-import com.yamamuto.android_sample_mvvm.ui.component.PokemonNameText
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
+import com.yamamuto.android_sample_mvvm.ui.util.JapaneseTranslation
 import com.yamamuto.android_sample_mvvm.ui.util.ObserveAsEvents
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
@@ -65,6 +65,8 @@ fun PokemonDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showInfo by rememberSaveable { mutableStateOf(false) }
 
+    val displayName = uiState.species?.japaneseName?.ifEmpty { null } ?: pokemonName
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is UiEvent.ShowSnackbar -> scope.launch { snackbarHostState.showSnackbar(event.message) }
@@ -73,7 +75,12 @@ fun PokemonDetailScreen(
     }
 
     AppScaffold(
-        title = { PokemonNameText(name = pokemonName, style = MaterialTheme.typography.titleLarge) },
+        title = {
+            AppText(
+                text = displayName,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
         onBack = onBack,
         actions = {
             AppIconButton(
@@ -124,9 +131,8 @@ private fun InfoBottomSheet(
 ) {
     AppBottomSheet(
         onDismiss = onDismiss,
-        title = "Details",
+        title = "くわしい情報",
     ) {
-        // 図鑑テキスト
         if (species != null) {
             AppText(
                 text = species.flavorText,
@@ -135,21 +141,19 @@ private fun InfoBottomSheet(
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            // Species info
             InfoRow("分類", species.genus)
-            InfoRow("世代", species.generation.removePrefix("generation-").uppercase())
-            species.habitat?.let { InfoRow("生息地", it) }
+            InfoRow("世代", JapaneseTranslation.generation(species.generation))
+            species.habitat?.let { InfoRow("生息地", JapaneseTranslation.habitat(it)) }
             InfoRow("捕獲率", "${species.captureRate}")
-            InfoRow("タマゴグループ", species.eggGroups.joinToString(", "))
+            InfoRow("タマゴグループ", species.eggGroups.joinToString("、") { JapaneseTranslation.eggGroup(it) })
             val genderText = if (species.genderRate == -1) "性別なし"
             else "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
             InfoRow("性別比率", genderText)
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
 
-        // Abilities
         AppText(
-            text = "Abilities",
+            text = "とくせい",
             style = MaterialTheme.typography.titleSmall,
             bold = true,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -161,20 +165,20 @@ private fun InfoBottomSheet(
                     .padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                PokemonNameText(
-                    name = ability.name,
+                AppText(
+                    text = ability.japaneseName.ifEmpty { ability.name },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
                 )
                 if (ability.isHidden) {
                     AssistChip(
                         onClick = {},
-                        label = { AppText("Hidden") },
+                        label = { AppText("かくれとくせい") },
                     )
                 }
             }
         }
-        InfoRow("Base Experience", "${detail.baseExperience}")
+        InfoRow("きそけいけんち", "${detail.baseExperience}")
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
@@ -210,6 +214,8 @@ private fun PokemonDetailContent(
     onEvolutionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val displayName = species?.japaneseName?.ifEmpty { null } ?: detail.name
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -218,17 +224,16 @@ private fun PokemonDetailContent(
     ) {
         PokemonImage(
             imageUrl = detail.imageUrl,
-            contentDescription = detail.name,
+            contentDescription = displayName,
         )
 
         PokemonIdText(id = detail.id)
-        PokemonNameText(
-            name = detail.name,
+        AppText(
+            text = displayName,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 4.dp),
         )
 
-        // 図鑑テキスト（ひとこと）
         if (species != null) {
             AppText(
                 text = species.genus,
@@ -241,14 +246,14 @@ private fun PokemonDetailContent(
             detail.types.forEach { type ->
                 AssistChip(
                     onClick = {},
-                    label = { AppText(type) },
+                    label = { AppText(JapaneseTranslation.type(type)) },
                     modifier = Modifier.padding(horizontal = 4.dp),
                 )
             }
         }
 
         AppText(
-            text = "Height: ${detail.height * 10} cm  ·  Weight: ${detail.weight / 10.0} kg",
+            text = "たかさ: ${detail.height * 10} cm ・ おもさ: ${detail.weight / 10.0} kg",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp),
         )
@@ -256,7 +261,7 @@ private fun PokemonDetailContent(
         // 進化チェーン
         if (evolutionChain.size > 1) {
             AppText(
-                text = "Evolution",
+                text = "しんか",
                 style = MaterialTheme.typography.titleMedium,
                 bold = true,
                 modifier = Modifier
@@ -272,7 +277,7 @@ private fun PokemonDetailContent(
         }
 
         AppText(
-            text = "Base Stats",
+            text = "しゅぞくち",
             style = MaterialTheme.typography.titleMedium,
             bold = true,
             modifier = Modifier
@@ -331,6 +336,7 @@ private fun EvolutionStageItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val displayName = stage.japaneseName.ifEmpty { stage.name }
     Column(
         modifier = modifier
             .clickable(enabled = !isCurrent, onClick = onClick)
@@ -339,12 +345,12 @@ private fun EvolutionStageItem(
     ) {
         AsyncImage(
             model = stage.imageUrl,
-            contentDescription = stage.name,
+            contentDescription = displayName,
             modifier = Modifier.size(80.dp),
             alpha = if (isCurrent) 1f else 0.6f,
         )
-        PokemonNameText(
-            name = stage.name,
+        AppText(
+            text = displayName,
             style = if (isCurrent) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelSmall,
         )
     }
@@ -362,9 +368,9 @@ private fun StatRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppText(
-            text = stat.name,
+            text = JapaneseTranslation.stat(stat.name),
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.width(110.dp),
+            modifier = Modifier.width(80.dp),
         )
         LinearProgressIndicator(
             progress = { stat.value / 255f },

@@ -2,6 +2,7 @@
 
 package com.yamamuto.android_sample_mvvm.data.api
 
+import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
@@ -38,4 +39,9 @@ interface PokeApiService {
     suspend fun getEvolutionChain(
         @Url url: String,
     ): EvolutionChainResponse
+
+    @GET("ability/{name}")
+    suspend fun getAbility(
+        @Path("name") name: String,
+    ): AbilityResponse
 }

@@ -22,5 +22,7 @@ interface PokemonRepository {
 
     suspend fun getEvolutionChain(name: String): List<EvolutionStage>
 
+    suspend fun getAbilityJapaneseName(name: String): String
+
     suspend fun searchPokemonNames(query: String): List<String>
 }

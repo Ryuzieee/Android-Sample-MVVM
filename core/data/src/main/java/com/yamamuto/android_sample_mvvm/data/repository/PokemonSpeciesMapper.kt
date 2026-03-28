@@ -13,6 +13,10 @@ private const val ARTWORK_URL =
 
 /** Species DTO → Domain */
 internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
+    val jaName = names.firstOrNull { it.language.name == "ja" }?.name
+        ?: names.firstOrNull { it.language.name == "ja-hrkt" }?.name
+        ?: ""
+
     val jaFlavorText = flavorTextEntries
         .lastOrNull { it.language.name == "ja" }
         ?.flavorText
@@ -26,6 +30,7 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
         ?: genera.firstOrNull { it.language.name == "en" }?.genus.orEmpty()
 
     return PokemonSpecies(
+        japaneseName = jaName,
         flavorText = jaFlavorText,
         genus = jaGenus,
         eggGroups = eggGroups.map { it.name },
@@ -36,14 +41,23 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
     )
 }
 
+/** Species DTO から日本語名だけを抽出する。 */
+internal fun PokemonSpeciesResponse.extractJapaneseName(): String =
+    names.firstOrNull { it.language.name == "ja" }?.name
+        ?: names.firstOrNull { it.language.name == "ja-hrkt" }?.name
+        ?: ""
+
 /** EvolutionChain DTO → Domain (フラットなリストに展開) */
-internal fun EvolutionChainResponse.toStages(): List<EvolutionStage> {
+internal fun EvolutionChainResponse.toStages(
+    japaneseNames: Map<String, String> = emptyMap(),
+): List<EvolutionStage> {
     val stages = mutableListOf<EvolutionStage>()
     fun walk(link: EvolutionChainResponse.ChainLink) {
         val id = extractIdFromUrl(link.species.url)
         val minLevel = link.evolutionDetails.firstOrNull()?.minLevel
         stages += EvolutionStage(
             name = link.species.name,
+            japaneseName = japaneseNames[link.species.name].orEmpty(),
             id = id,
             imageUrl = "${ARTWORK_URL}$id.png",
             minLevel = minLevel,
@@ -55,5 +69,5 @@ internal fun EvolutionChainResponse.toStages(): List<EvolutionStage> {
 }
 
 /** species URL (e.g. "https://pokeapi.co/api/v2/pokemon-species/2/") から ID を抽出 */
-private fun extractIdFromUrl(url: String): Int =
+internal fun extractIdFromUrl(url: String): Int =
     url.trimEnd('/').substringAfterLast('/').toInt()

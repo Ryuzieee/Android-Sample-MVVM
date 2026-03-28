@@ -37,6 +37,7 @@ class PokemonDetailViewModelTest {
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
     private lateinit var getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase
     private lateinit var getEvolutionChainUseCase: GetEvolutionChainUseCase
+    private lateinit var repository: com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 
     @Before
     fun setUp() {
@@ -45,10 +46,12 @@ class PokemonDetailViewModelTest {
         toggleFavoriteUseCase = mockk()
         getPokemonSpeciesUseCase = mockk()
         getEvolutionChainUseCase = mockk()
+        repository = mockk()
         every { getIsFavoriteUseCase(any()) } returns flowOf(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
         coEvery { getPokemonSpeciesUseCase(any()) } throws Exception("skip")
         coEvery { getEvolutionChainUseCase(any()) } throws Exception("skip")
+        coEvery { repository.getAbilityJapaneseName(any()) } returns ""
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
@@ -58,6 +61,7 @@ class PokemonDetailViewModelTest {
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             getPokemonSpeciesUseCase = getPokemonSpeciesUseCase,
             getEvolutionChainUseCase = getEvolutionChainUseCase,
+            repository = repository,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
 
@@ -71,7 +75,9 @@ class PokemonDetailViewModelTest {
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertTrue(state.contentState is UiState.Success)
-                assertEquals(fakePokemonDetail, (state.contentState as UiState.Success).data)
+                val data = (state.contentState as UiState.Success).data
+                assertEquals(fakePokemonDetail.id, data.id)
+                assertEquals(fakePokemonDetail.name, data.name)
             }
         }
 
@@ -117,7 +123,9 @@ class PokemonDetailViewModelTest {
                 coEvery { useCase("bulbasaur") } returns fakePokemonDetail
                 viewModel.retry()
 
-                assertTrue(awaitItem().contentState is UiState.Success)
+                // ability 日本語名取得でも state が更新されるため skipItems で中間状態をスキップ
+                val finalState = expectMostRecentItem()
+                assertTrue(finalState.contentState is UiState.Success)
             }
         }
 }

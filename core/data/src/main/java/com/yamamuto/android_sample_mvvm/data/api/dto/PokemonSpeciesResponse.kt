@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 @InternalSerializationApi
 @Serializable
 data class PokemonSpeciesResponse(
+    val names: List<Name>,
     @SerialName("flavor_text_entries") val flavorTextEntries: List<FlavorTextEntry>,
     @SerialName("evolution_chain") val evolutionChain: EvolutionChainRef,
     val genera: List<Genus>,
@@ -17,6 +18,12 @@ data class PokemonSpeciesResponse(
     val habitat: NamedResource?,
     val generation: NamedResource,
 ) {
+    @Serializable
+    data class Name(
+        val name: String,
+        val language: NamedResource,
+    )
+
     @Serializable
     data class FlavorTextEntry(
         @SerialName("flavor_text") val flavorText: String,

@@ -34,7 +34,11 @@ internal fun PokemonDetailEntity.toDomain(): PokemonDetail =
         types = types.split(","),
         abilities = abilities.split(";").mapNotNull { entry ->
             val parts = entry.split(":")
-            if (parts.size == 2) PokemonDetail.Ability(parts[0], parts[1].toBooleanStrictOrNull() ?: false) else null
+            when (parts.size) {
+                3 -> PokemonDetail.Ability(parts[0], parts[1], parts[2].toBooleanStrictOrNull() ?: false)
+                2 -> PokemonDetail.Ability(parts[0], "", parts[1].toBooleanStrictOrNull() ?: false)
+                else -> null
+            }
         },
         imageUrl = imageUrl,
         stats = stats.split(";").mapNotNull { entry ->
@@ -52,7 +56,7 @@ internal fun PokemonDetail.toEntity(): PokemonDetailEntity =
         weight = weight,
         baseExperience = baseExperience,
         types = types.joinToString(","),
-        abilities = abilities.joinToString(";") { "${it.name}:${it.isHidden}" },
+        abilities = abilities.joinToString(";") { "${it.name}:${it.japaneseName}:${it.isHidden}" },
         imageUrl = imageUrl,
         stats = stats.joinToString(";") { "${it.name}:${it.value}" },
     )

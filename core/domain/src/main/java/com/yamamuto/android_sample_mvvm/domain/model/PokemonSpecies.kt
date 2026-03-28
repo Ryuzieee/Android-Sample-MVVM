@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.domain.model
 
 /** ポケモン種族情報（図鑑テキスト・分類など）。 */
 data class PokemonSpecies(
+    val japaneseName: String,
     val flavorText: String,
     val genus: String,
     val eggGroups: List<String>,
