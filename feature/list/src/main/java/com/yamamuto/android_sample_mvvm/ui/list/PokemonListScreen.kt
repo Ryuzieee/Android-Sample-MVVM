@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
-import androidx.paging.PagingData
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
@@ -38,8 +37,16 @@ fun PokemonListScreen(
     AppScaffold(
         title = { Text(ListStrings.SCREEN_TITLE) },
         actions = {
-            AppIconButton(Icons.Filled.Search, ListStrings.SEARCH_DESCRIPTION, onClick = onSearchClick)
-            AppIconButton(Icons.Filled.Favorite, ListStrings.FAVORITES_DESCRIPTION, onClick = onFavoritesClick)
+            AppIconButton(
+                Icons.Filled.Search,
+                ListStrings.SEARCH_DESCRIPTION,
+                onClick = onSearchClick
+            )
+            AppIconButton(
+                Icons.Filled.Favorite,
+                ListStrings.FAVORITES_DESCRIPTION,
+                onClick = onFavoritesClick
+            )
         },
     ) { padding ->
         PagingContent(

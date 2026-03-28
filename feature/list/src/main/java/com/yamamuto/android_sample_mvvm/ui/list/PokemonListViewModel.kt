@@ -12,23 +12,21 @@ import javax.inject.Inject
 
 /** ポケモン一覧画面のViewModel。 */
 @HiltViewModel
-class PokemonListViewModel
-    @Inject
-    constructor(
-        private val pagingSourceFactory: PokemonPagingSourceFactory,
-    ) : UiStateViewModel<PokemonListUiState>(PokemonListUiState()) {
-        init {
-            load()
-        }
+class PokemonListViewModel @Inject constructor(
+    private val pagingSourceFactory: PokemonPagingSourceFactory,
+) : UiStateViewModel<PokemonListUiState>(PokemonListUiState()) {
+    init {
+        load()
+    }
 
-        private fun load() {
-            viewModelScope.launch {
-                Pager(
-                    config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-                    pagingSourceFactory = { pagingSourceFactory.create() },
-                ).flow
-                    .cachedIn(viewModelScope)
-                    .collect { updateState { copy(pagingData = it) } }
-            }
+    private fun load() {
+        viewModelScope.launch {
+            Pager(
+                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                pagingSourceFactory = { pagingSourceFactory.create() },
+            ).flow
+                .cachedIn(viewModelScope)
+                .collect { updateState { copy(pagingData = it) } }
         }
     }
+}

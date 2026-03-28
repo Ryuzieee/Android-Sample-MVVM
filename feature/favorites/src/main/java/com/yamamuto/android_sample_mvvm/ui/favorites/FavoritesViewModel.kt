@@ -11,20 +11,18 @@ import javax.inject.Inject
 
 /** お気に入り一覧画面のViewModel。 */
 @HiltViewModel
-class FavoritesViewModel
-    @Inject
-    constructor(
-        private val observeFavoritesUseCase: ObserveFavoritesUseCase,
-    ) : UiStateViewModel<UiState<List<FavoriteModel>>>(UiState.Loading) {
-        init {
-            load()
-        }
+class FavoritesViewModel @Inject constructor(
+    private val observeFavoritesUseCase: ObserveFavoritesUseCase,
+) : UiStateViewModel<UiState<List<FavoriteModel>>>(UiState.Loading) {
+    init {
+        load()
+    }
 
-        private fun load() {
-            viewModelScope.launch {
-                observeFavoritesUseCase().collect {
-                    updateState { UiState.Success(it) }
-                }
+    private fun load() {
+        viewModelScope.launch {
+            observeFavoritesUseCase().collect {
+                updateState { UiState.Success(it) }
             }
         }
     }
+}

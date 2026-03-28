@@ -148,10 +148,22 @@ private fun InfoBottomSheet(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             InfoRow(DetailStrings.LABEL_CATEGORY, species.genus)
-            InfoRow(DetailStrings.LABEL_GENERATION, JapaneseTranslation.generation(species.generation))
-            species.habitat?.let { InfoRow(DetailStrings.LABEL_HABITAT, JapaneseTranslation.habitat(it)) }
+            InfoRow(
+                DetailStrings.LABEL_GENERATION,
+                JapaneseTranslation.generation(species.generation)
+            )
+            species.habitat?.let {
+                InfoRow(
+                    DetailStrings.LABEL_HABITAT,
+                    JapaneseTranslation.habitat(it)
+                )
+            }
             InfoRow(DetailStrings.LABEL_CAPTURE_RATE, "${species.captureRate}")
-            InfoRow(DetailStrings.LABEL_EGG_GROUP, species.eggGroups.joinToString(DetailStrings.EGG_GROUP_SEPARATOR) { JapaneseTranslation.eggGroup(it) })
+            InfoRow(
+                DetailStrings.LABEL_EGG_GROUP,
+                species.eggGroups.joinToString(DetailStrings.EGG_GROUP_SEPARATOR) {
+                    JapaneseTranslation.eggGroup(it)
+                })
             val genderText = if (species.genderRate == -1) DetailStrings.LABEL_NO_GENDER
             else "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
             InfoRow(DetailStrings.LABEL_GENDER_RATIO, genderText)
