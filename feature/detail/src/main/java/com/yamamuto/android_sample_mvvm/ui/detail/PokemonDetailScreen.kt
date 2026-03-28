@@ -10,15 +10,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -26,14 +29,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
+import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonNameText
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 import com.yamamuto.android_sample_mvvm.ui.util.ObserveAsEvents
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
+import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 import kotlinx.coroutines.launch
 
 @Composable
@@ -45,6 +51,7 @@ fun PokemonDetailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showAbilities by rememberSaveable { mutableStateOf(false) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -57,6 +64,11 @@ fun PokemonDetailScreen(
         title = { PokemonNameText(name = pokemonName, style = MaterialTheme.typography.titleLarge) },
         onBack = onBack,
         actions = {
+            AppIconButton(
+                imageVector = Icons.Filled.Info,
+                contentDescription = "特性を表示",
+                onClick = { showAbilities = true },
+            )
             AppIconButton(
                 imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                 contentDescription = if (uiState.isFavorite) "お気に入りから削除" else "お気に入りに追加",
@@ -72,6 +84,53 @@ fun PokemonDetailScreen(
             modifier = Modifier.padding(padding),
         ) { detail ->
             PokemonDetailContent(detail = detail)
+        }
+    }
+
+    if (showAbilities) {
+        val detail = uiState.contentState.getOrNull()
+        if (detail != null) {
+            AbilitiesBottomSheet(
+                detail = detail,
+                onDismiss = { showAbilities = false },
+            )
+        }
+    }
+}
+
+@Composable
+private fun AbilitiesBottomSheet(
+    detail: PokemonDetail,
+    onDismiss: () -> Unit,
+) {
+    AppBottomSheet(
+        onDismiss = onDismiss,
+        title = "Abilities & Info",
+    ) {
+        AppText(
+            text = "Base Experience: ${detail.baseExperience}",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+        detail.abilities.forEach { ability ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PokemonNameText(
+                    name = ability.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                if (ability.isHidden) {
+                    AssistChip(
+                        onClick = {},
+                        label = { AppText("Hidden") },
+                    )
+                }
+            }
         }
     }
 }
