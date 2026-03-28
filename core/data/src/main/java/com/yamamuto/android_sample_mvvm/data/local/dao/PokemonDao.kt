@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
+import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
 
 /** ポケモンデータのキャッシュ操作を行う DAO。 */
 @Dao
@@ -14,4 +15,13 @@ interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonDetail(detail: PokemonDetailEntity)
+
+    @Query("SELECT name FROM pokemon_names")
+    suspend fun getAllPokemonNames(): List<String>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPokemonNames(names: List<PokemonNameEntity>)
+
+    @Query("SELECT COUNT(*) FROM pokemon_names")
+    suspend fun getPokemonNamesCount(): Int
 }
