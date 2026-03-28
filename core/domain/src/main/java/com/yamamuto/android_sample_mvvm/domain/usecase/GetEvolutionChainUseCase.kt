@@ -10,5 +10,6 @@ class GetEvolutionChainUseCase
     constructor(
         private val repository: PokemonRepository,
     ) {
-        suspend operator fun invoke(name: String): List<EvolutionStage> = repository.getEvolutionChain(name)
+        suspend operator fun invoke(name: String): Result<List<EvolutionStage>> =
+            repository.getEvolutionChain(name)
     }

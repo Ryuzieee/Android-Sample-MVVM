@@ -16,13 +16,13 @@ import kotlinx.coroutines.flow.Flow
 interface PokemonRepository {
     fun getPokemonPagingData(): Flow<PagingData<Pokemon>>
 
-    suspend fun getPokemonDetail(name: String, forceRefresh: Boolean = false): PokemonDetail
+    suspend fun getPokemonDetail(name: String, forceRefresh: Boolean = false): Result<PokemonDetail>
 
-    suspend fun getPokemonSpecies(name: String): PokemonSpecies
+    suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies>
 
-    suspend fun getEvolutionChain(name: String): List<EvolutionStage>
+    suspend fun getEvolutionChain(name: String): Result<List<EvolutionStage>>
 
-    suspend fun getAbilityJapaneseName(name: String): String
+    suspend fun getAbilityJapaneseName(name: String): Result<String>
 
-    suspend fun searchPokemonNames(query: String): List<String>
+    suspend fun searchPokemonNames(query: String): Result<List<String>>
 }

@@ -41,7 +41,7 @@ class PokemonRepositoryImpl(
             pagingSourceFactory = { PokemonPagingSource(dataSource) },
         ).flow
 
-    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): PokemonDetail =
+    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetail> =
         safeApiCall {
             cachedApiCall(
                 forceRefresh = forceRefresh,
@@ -56,10 +56,10 @@ class PokemonRepositoryImpl(
             )
         }
 
-    override suspend fun getPokemonSpecies(name: String): PokemonSpecies =
+    override suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies> =
         safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }
 
-    override suspend fun getEvolutionChain(name: String): List<EvolutionStage> =
+    override suspend fun getEvolutionChain(name: String): Result<List<EvolutionStage>> =
         safeApiCall {
             val species = dataSource.getPokemonSpecies(name)
             val chain = dataSource.getEvolutionChain(species.evolutionChain.url)
@@ -78,7 +78,7 @@ class PokemonRepositoryImpl(
             chain.toStages(nameMap)
         }
 
-    override suspend fun getAbilityJapaneseName(name: String): String =
+    override suspend fun getAbilityJapaneseName(name: String): Result<String> =
         safeApiCall {
             val response = dataSource.getAbility(name)
             response.names.firstOrNull { it.language.name == "ja" }?.name
@@ -86,10 +86,11 @@ class PokemonRepositoryImpl(
                 ?: name
         }
 
-    override suspend fun searchPokemonNames(query: String): List<String> {
-        val names = cachedPokemonNames ?: safeApiCall {
-            dataSource.getPokemonList(limit = 2000, offset = 0).results.map { it.name }
-        }.also { cachedPokemonNames = it }
-        return names.filter { it.contains(query.trim(), ignoreCase = true) }
-    }
+    override suspend fun searchPokemonNames(query: String): Result<List<String>> =
+        safeApiCall {
+            val names = cachedPokemonNames ?: dataSource.getPokemonList(limit = 2000, offset = 0)
+                .results.map { it.name }
+                .also { cachedPokemonNames = it }
+            names.filter { it.contains(query.trim(), ignoreCase = true) }
+        }
 }

@@ -13,7 +13,7 @@ import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
-import com.yamamuto.android_sample_mvvm.ui.util.loadAsUiState
+import com.yamamuto.android_sample_mvvm.ui.util.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -51,7 +51,7 @@ class PokemonDetailViewModel
         fun refresh() {
             viewModelScope.launch {
                 updateState { copy(isRefreshing = true) }
-                val result = loadAsUiState { getPokemonDetailUseCase(pokemonName, forceRefresh = true) }
+                val result = getPokemonDetailUseCase(pokemonName, forceRefresh = true).toUiState()
                 if (result is UiState.Success) {
                     loadSpeciesAndEvolution(result.data)
                 }
@@ -68,15 +68,16 @@ class PokemonDetailViewModel
         private fun load() {
             viewModelScope.launch {
                 updateState { copy(contentState = UiState.Loading) }
-                val result = loadAsUiState { getPokemonDetailUseCase(pokemonName) }
-                when (result) {
+                val result = getPokemonDetailUseCase(pokemonName)
+                val uiResult = result.toUiState()
+                when (uiResult) {
                     is UiState.Success -> {
-                        loadSpeciesAndEvolution(result.data)
-                        observeFavorite(result.data) // collect で永続サスペンドするので最後に呼ぶ
+                        loadSpeciesAndEvolution(uiResult.data)
+                        observeFavorite(uiResult.data) // collect で永続サスペンドするので最後に呼ぶ
                     }
                     is UiState.Error -> {
-                        sendEvent(UiEvent.ShowSnackbar(result.message))
-                        updateState { copy(contentState = result) }
+                        sendEvent(UiEvent.ShowSnackbar(uiResult.message))
+                        updateState { copy(contentState = uiResult) }
                     }
                     is UiState.Loading, is UiState.Idle -> {}
                 }
@@ -85,19 +86,18 @@ class PokemonDetailViewModel
 
         private fun loadSpeciesAndEvolution(detail: PokemonDetail) {
             viewModelScope.launch {
-                runCatching { getPokemonSpeciesUseCase(pokemonName) }
+                getPokemonSpeciesUseCase(pokemonName)
                     .onSuccess { species -> updateState { copy(species = species) } }
             }
             viewModelScope.launch {
-                runCatching { getEvolutionChainUseCase(pokemonName) }
+                getEvolutionChainUseCase(pokemonName)
                     .onSuccess { chain -> updateState { copy(evolutionChain = chain) } }
             }
             // 特性の日本語名を並列取得
             viewModelScope.launch {
                 val jaNames = detail.abilities.map { ability ->
                     async {
-                        runCatching { repository.getAbilityJapaneseName(ability.name) }
-                            .getOrDefault(ability.name)
+                        repository.getAbilityJapaneseName(ability.name).getOrDefault(ability.name)
                     }
                 }.awaitAll()
                 val updatedAbilities = detail.abilities.zip(jaNames) { ability, jaName ->

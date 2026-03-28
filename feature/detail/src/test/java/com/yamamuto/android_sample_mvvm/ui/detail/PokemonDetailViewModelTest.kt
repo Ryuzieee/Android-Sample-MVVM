@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
@@ -49,9 +50,9 @@ class PokemonDetailViewModelTest {
         repository = mockk()
         every { getIsFavoriteUseCase(any()) } returns flowOf(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
-        coEvery { getPokemonSpeciesUseCase(any()) } throws Exception("skip")
-        coEvery { getEvolutionChainUseCase(any()) } throws Exception("skip")
-        coEvery { repository.getAbilityJapaneseName(any()) } returns ""
+        coEvery { getPokemonSpeciesUseCase(any()) } returns Result.failure(Exception("skip"))
+        coEvery { getEvolutionChainUseCase(any()) } returns Result.failure(Exception("skip"))
+        coEvery { repository.getAbilityJapaneseName(any()) } returns Result.success("")
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
@@ -68,7 +69,7 @@ class PokemonDetailViewModelTest {
     @Test
     fun `データ取得成功時は Success 状態になる`() =
         runTest {
-            coEvery { useCase("bulbasaur") } returns fakePokemonDetail
+            coEvery { useCase("bulbasaur") } returns Result.success(fakePokemonDetail)
 
             val viewModel = createViewModel("bulbasaur")
 
@@ -84,7 +85,8 @@ class PokemonDetailViewModelTest {
     @Test
     fun `データ取得失敗時は Error 状態になる`() =
         runTest {
-            coEvery { useCase("bulbasaur") } throws Exception("Not found")
+            coEvery { useCase("bulbasaur") } returns
+                Result.failure(AppException.Unknown(Exception("Not found")))
 
             val viewModel = createViewModel("bulbasaur")
 
@@ -99,7 +101,7 @@ class PokemonDetailViewModelTest {
     fun `異なるポケモン名で正しくデータを取得する`() =
         runTest {
             val charizardDetail = fakePokemonDetail.copy(id = 6, name = "charizard")
-            coEvery { useCase("charizard") } returns charizardDetail
+            coEvery { useCase("charizard") } returns Result.success(charizardDetail)
 
             val viewModel = createViewModel("charizard")
 
@@ -113,14 +115,15 @@ class PokemonDetailViewModelTest {
     @Test
     fun `retry で再取得できる`() =
         runTest {
-            coEvery { useCase("bulbasaur") } throws Exception("error")
+            coEvery { useCase("bulbasaur") } returns
+                Result.failure(AppException.Unknown(Exception("error")))
 
             val viewModel = createViewModel("bulbasaur")
 
             viewModel.uiState.test {
                 assertTrue(awaitItem().contentState is UiState.Error)
 
-                coEvery { useCase("bulbasaur") } returns fakePokemonDetail
+                coEvery { useCase("bulbasaur") } returns Result.success(fakePokemonDetail)
                 viewModel.retry()
 
                 // ability 日本語名取得でも state が更新されるため skipItems で中間状態をスキップ

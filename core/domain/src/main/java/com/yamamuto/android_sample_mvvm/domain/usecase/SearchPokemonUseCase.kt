@@ -9,5 +9,6 @@ class SearchPokemonUseCase
     constructor(
         private val repository: PokemonRepository,
     ) {
-        suspend operator fun invoke(query: String): List<String> = repository.searchPokemonNames(query)
+        suspend operator fun invoke(query: String): Result<List<String>> =
+            repository.searchPokemonNames(query)
     }

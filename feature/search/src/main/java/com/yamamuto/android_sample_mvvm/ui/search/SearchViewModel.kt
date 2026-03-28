@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
-import com.yamamuto.android_sample_mvvm.ui.util.loadAsUiState
+import com.yamamuto.android_sample_mvvm.ui.util.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
@@ -64,7 +64,7 @@ class SearchViewModel
         }
 
         private suspend fun fetchResults(query: String): UiState<List<String>> {
-            val result = loadAsUiState { searchPokemonUseCase(query) }
+            val result = searchPokemonUseCase(query).toUiState()
             return if (result is UiState.Success && result.data.isEmpty()) {
                 UiState.Error(message = "「$query」に一致するポケモンは見つかりませんでした")
             } else {

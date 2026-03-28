@@ -5,25 +5,19 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * API 呼び出しを [AppException] でラップするヘルパー。
+ * API 呼び出しを [Result] でラップするヘルパー。
  *
- * 新しい Repository で毎回 try-catch を書く必要がなくなる。
- *
- * ```kotlin
- * override suspend fun getItems(): List<Item> = safeApiCall {
- *     dataSource.fetchItems().map { it.toDomain() }
- * }
- * ```
+ * 例外を [AppException] に変換して [Result.failure] で返す。
  */
-inline fun <T> safeApiCall(block: () -> T): T =
+inline fun <T> safeApiCall(block: () -> T): Result<T> =
     try {
-        block()
+        Result.success(block())
     } catch (e: IOException) {
-        throw AppException.Network(e)
+        Result.failure(AppException.Network(e))
     } catch (e: HttpException) {
-        throw AppException.Server(e.code(), e)
+        Result.failure(AppException.Server(e.code(), e))
     } catch (e: AppException) {
-        throw e
+        Result.failure(e)
     } catch (e: Exception) {
-        throw AppException.Unknown(e)
+        Result.failure(AppException.Unknown(e))
     }

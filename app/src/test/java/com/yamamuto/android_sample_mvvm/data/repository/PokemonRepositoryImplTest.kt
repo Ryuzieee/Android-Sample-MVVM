@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.InternalSerializationApi
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -41,13 +42,15 @@ class PokemonRepositoryImplTest {
 
             val result = repository.getPokemonDetail("bulbasaur")
 
-            assertEquals(1, result.id)
-            assertEquals("bulbasaur", result.name)
-            assertEquals(7, result.height)
-            assertEquals(69, result.weight)
-            assertEquals(listOf("grass", "poison"), result.types)
-            assertEquals(2, result.stats.size)
-            assertEquals("hp", result.stats[0].name)
-            assertEquals(45, result.stats[0].value)
+            assertTrue(result.isSuccess)
+            val detail = result.getOrThrow()
+            assertEquals(1, detail.id)
+            assertEquals("bulbasaur", detail.name)
+            assertEquals(7, detail.height)
+            assertEquals(69, detail.weight)
+            assertEquals(listOf("grass", "poison"), detail.types)
+            assertEquals(2, detail.stats.size)
+            assertEquals("hp", detail.stats[0].name)
+            assertEquals(45, detail.stats[0].value)
         }
 }

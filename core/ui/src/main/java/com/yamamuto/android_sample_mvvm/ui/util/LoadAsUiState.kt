@@ -4,17 +4,13 @@ import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import timber.log.Timber
 
 /**
- * suspend ブロックを実行し、結果を [UiState] にマッピングする。
+ * [Result] を [UiState] に変換する拡張関数。
  *
  * - 成功時: [UiState.Success]
  * - 失敗時: [UiState.Error]（ネットワークエラー判定 + Timber ログ付き）
- *
- * ```kotlin
- * _uiState.value = loadAsUiState { useCase(name) }
- * ```
  */
-suspend fun <T> loadAsUiState(block: suspend () -> T): UiState<T> =
-    runCatching { block() }.fold(
+fun <T> Result<T>.toUiState(): UiState<T> =
+    fold(
         onSuccess = { UiState.Success(it) },
         onFailure = { e ->
             Timber.e(e)
