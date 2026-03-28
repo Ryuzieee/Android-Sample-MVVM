@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetAbilityJapaneseNameUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonSpeciesUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
@@ -31,7 +31,7 @@ class PokemonDetailViewModel
     @Inject
     constructor(
         private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
-        private val getIsFavoriteUseCase: GetIsFavoriteUseCase,
+        private val observeIsFavoriteUseCase: ObserveIsFavoriteUseCase,
         private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
         private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
         private val getEvolutionChainUseCase: GetEvolutionChainUseCase,
@@ -96,7 +96,7 @@ class PokemonDetailViewModel
         }
 
         private suspend fun observeFavorite(detail: PokemonDetail) {
-            getIsFavoriteUseCase(detail.id).collect { isFavorite ->
+            observeIsFavoriteUseCase(detail.id).collect { isFavorite ->
                 updateState { copy(isFavorite = isFavorite) }
             }
         }

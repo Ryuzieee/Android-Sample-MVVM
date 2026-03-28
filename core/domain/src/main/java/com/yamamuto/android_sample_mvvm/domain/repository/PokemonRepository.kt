@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
  * ドメイン層がデータソースに依存しない設計を実現する。
  */
 interface PokemonRepository {
-    fun getPokemonPagingData(): Flow<PagingData<Pokemon>>
+    fun observePokemonPaging(): Flow<PagingData<Pokemon>>
 
     suspend fun getPokemonDetail(name: String, forceRefresh: Boolean = false): Result<PokemonDetail>
 

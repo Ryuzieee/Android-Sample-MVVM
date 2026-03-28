@@ -5,7 +5,7 @@ import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetAbilityJapaneseNameUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonSpeciesUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
@@ -35,7 +35,7 @@ class PokemonDetailViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var useCase: GetPokemonDetailUseCase
-    private lateinit var getIsFavoriteUseCase: GetIsFavoriteUseCase
+    private lateinit var observeIsFavoriteUseCase: ObserveIsFavoriteUseCase
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
     private lateinit var getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase
     private lateinit var getEvolutionChainUseCase: GetEvolutionChainUseCase
@@ -44,12 +44,12 @@ class PokemonDetailViewModelTest {
     @Before
     fun setUp() {
         useCase = mockk()
-        getIsFavoriteUseCase = mockk()
+        observeIsFavoriteUseCase = mockk()
         toggleFavoriteUseCase = mockk()
         getPokemonSpeciesUseCase = mockk()
         getEvolutionChainUseCase = mockk()
         getAbilityJapaneseNameUseCase = mockk()
-        every { getIsFavoriteUseCase(any()) } returns flowOf(false)
+        every { observeIsFavoriteUseCase(any()) } returns flowOf(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
         coEvery { getPokemonSpeciesUseCase(any()) } returns Result.failure(Exception("skip"))
         coEvery { getEvolutionChainUseCase(any()) } returns Result.failure(Exception("skip"))
@@ -59,7 +59,7 @@ class PokemonDetailViewModelTest {
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
         PokemonDetailViewModel(
             getPokemonDetailUseCase = useCase,
-            getIsFavoriteUseCase = getIsFavoriteUseCase,
+            observeIsFavoriteUseCase = observeIsFavoriteUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             getPokemonSpeciesUseCase = getPokemonSpeciesUseCase,
             getEvolutionChainUseCase = getEvolutionChainUseCase,

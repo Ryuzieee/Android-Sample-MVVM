@@ -2,7 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.Favorite
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetFavoritesUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveFavoritesUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class FavoritesViewModel
     @Inject
     constructor(
-        private val getFavoritesUseCase: GetFavoritesUseCase,
+        private val observeFavoritesUseCase: ObserveFavoritesUseCase,
     ) : UiStateViewModel<UiState<List<Favorite>>>(UiState.Loading) {
         init {
             load()
@@ -22,7 +22,7 @@ class FavoritesViewModel
 
         private fun load() {
             viewModelScope.launch {
-                getFavoritesUseCase().collect {
+                observeFavoritesUseCase().collect {
                     updateState { UiState.Success(it) }
                 }
             }

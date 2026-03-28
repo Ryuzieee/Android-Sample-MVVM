@@ -32,7 +32,7 @@ class PokemonRepositoryImpl(
 ) : PokemonRepository {
     private var cachedPokemonNames: List<String>? = null
 
-    override fun getPokemonPagingData(): Flow<PagingData<Pokemon>> =
+    override fun observePokemonPaging(): Flow<PagingData<Pokemon>> =
         Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             pagingSourceFactory = { PokemonPagingSource(dataSource) },

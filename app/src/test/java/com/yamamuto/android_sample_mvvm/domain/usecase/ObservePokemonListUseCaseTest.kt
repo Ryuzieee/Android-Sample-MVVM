@@ -12,21 +12,21 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-/** [GetPokemonListUseCase] の単体テスト。 */
-class GetPokemonListUseCaseTest {
+/** [ObservePokemonListUseCase] の単体テスト。 */
+class ObservePokemonListUseCaseTest {
     private lateinit var repository: PokemonRepository
-    private lateinit var useCase: GetPokemonListUseCase
+    private lateinit var useCase: ObservePokemonListUseCase
 
     @Before
     fun setUp() {
         repository = mockk()
-        useCase = GetPokemonListUseCase(repository)
+        useCase = ObservePokemonListUseCase(repository)
     }
 
     @Test
     fun `PagingData を返す`() =
         runTest {
-            every { repository.getPokemonPagingData() } returns flowOf(PagingData.from(fakePokemonList))
+            every { repository.observePokemonPaging() } returns flowOf(PagingData.from(fakePokemonList))
 
             val items = useCase().asSnapshot()
 

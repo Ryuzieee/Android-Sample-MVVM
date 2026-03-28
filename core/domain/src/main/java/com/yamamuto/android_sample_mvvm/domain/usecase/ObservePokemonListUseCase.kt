@@ -6,11 +6,11 @@ import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/** ポケモン一覧を取得するユースケース。 */
-class GetPokemonListUseCase
+/** ポケモン一覧を監視するユースケース。 */
+class ObservePokemonListUseCase
     @Inject
     constructor(
         private val repository: PokemonRepository,
     ) {
-        operator fun invoke(): Flow<PagingData<Pokemon>> = repository.getPokemonPagingData()
+        operator fun invoke(): Flow<PagingData<Pokemon>> = repository.observePokemonPaging()
     }
