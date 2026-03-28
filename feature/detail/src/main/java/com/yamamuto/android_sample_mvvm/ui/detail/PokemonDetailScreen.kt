@@ -1,10 +1,17 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -12,6 +19,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -28,7 +36,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
@@ -46,12 +57,13 @@ import kotlinx.coroutines.launch
 fun PokemonDetailScreen(
     pokemonName: String,
     onBack: () -> Unit,
+    onPokemonClick: (String) -> Unit = {},
     viewModel: PokemonDetailViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showAbilities by rememberSaveable { mutableStateOf(false) }
+    var showInfo by rememberSaveable { mutableStateOf(false) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -66,8 +78,8 @@ fun PokemonDetailScreen(
         actions = {
             AppIconButton(
                 imageVector = Icons.Filled.Info,
-                contentDescription = "特性を表示",
-                onClick = { showAbilities = true },
+                contentDescription = "詳細情報を表示",
+                onClick = { showInfo = true },
             )
             AppIconButton(
                 imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -83,33 +95,63 @@ fun PokemonDetailScreen(
             onRetry = viewModel::retry,
             modifier = Modifier.padding(padding),
         ) { detail ->
-            PokemonDetailContent(detail = detail)
+            PokemonDetailContent(
+                detail = detail,
+                species = uiState.species,
+                evolutionChain = uiState.evolutionChain,
+                onEvolutionClick = onPokemonClick,
+            )
         }
     }
 
-    if (showAbilities) {
+    if (showInfo) {
         val detail = uiState.contentState.getOrNull()
         if (detail != null) {
-            AbilitiesBottomSheet(
+            InfoBottomSheet(
                 detail = detail,
-                onDismiss = { showAbilities = false },
+                species = uiState.species,
+                onDismiss = { showInfo = false },
             )
         }
     }
 }
 
 @Composable
-private fun AbilitiesBottomSheet(
+private fun InfoBottomSheet(
     detail: PokemonDetail,
+    species: PokemonSpecies?,
     onDismiss: () -> Unit,
 ) {
     AppBottomSheet(
         onDismiss = onDismiss,
-        title = "Abilities & Info",
+        title = "Details",
     ) {
+        // 図鑑テキスト
+        if (species != null) {
+            AppText(
+                text = species.flavorText,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Species info
+            InfoRow("分類", species.genus)
+            InfoRow("世代", species.generation.removePrefix("generation-").uppercase())
+            species.habitat?.let { InfoRow("生息地", it) }
+            InfoRow("捕獲率", "${species.captureRate}")
+            InfoRow("タマゴグループ", species.eggGroups.joinToString(", "))
+            val genderText = if (species.genderRate == -1) "性別なし"
+            else "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
+            InfoRow("性別比率", genderText)
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        }
+
+        // Abilities
         AppText(
-            text = "Base Experience: ${detail.baseExperience}",
-            style = MaterialTheme.typography.bodyMedium,
+            text = "Abilities",
+            style = MaterialTheme.typography.titleSmall,
+            bold = true,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
         detail.abilities.forEach { ability ->
@@ -132,12 +174,40 @@ private fun AbilitiesBottomSheet(
                 }
             }
         }
+        InfoRow("Base Experience", "${detail.baseExperience}")
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun InfoRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 2.dp),
+    ) {
+        AppText(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.width(120.dp),
+        )
+        AppText(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
 @Composable
 private fun PokemonDetailContent(
     detail: PokemonDetail,
+    species: PokemonSpecies?,
+    evolutionChain: List<EvolutionStage>,
+    onEvolutionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -158,6 +228,15 @@ private fun PokemonDetailContent(
             modifier = Modifier.padding(top = 4.dp),
         )
 
+        // 図鑑テキスト（ひとこと）
+        if (species != null) {
+            AppText(
+                text = species.genus,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+
         Row(modifier = Modifier.padding(vertical = 8.dp)) {
             detail.types.forEach { type ->
                 AssistChip(
@@ -174,6 +253,24 @@ private fun PokemonDetailContent(
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
+        // 進化チェーン
+        if (evolutionChain.size > 1) {
+            AppText(
+                text = "Evolution",
+                style = MaterialTheme.typography.titleMedium,
+                bold = true,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp, bottom = 8.dp),
+            )
+            EvolutionChainRow(
+                stages = evolutionChain,
+                currentName = detail.name,
+                onStageClick = onEvolutionClick,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         AppText(
             text = "Base Stats",
             style = MaterialTheme.typography.titleMedium,
@@ -186,6 +283,70 @@ private fun PokemonDetailContent(
         detail.stats.forEach { stat ->
             StatRow(stat = stat)
         }
+    }
+}
+
+@Composable
+private fun EvolutionChainRow(
+    stages: List<EvolutionStage>,
+    currentName: String,
+    onStageClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        items(stages) { stage ->
+            if (stage != stages.first()) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    AppText(
+                        text = "→",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    if (stage.minLevel != null) {
+                        AppText(
+                            text = "Lv.${stage.minLevel}",
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                }
+            }
+            EvolutionStageItem(
+                stage = stage,
+                isCurrent = stage.name == currentName,
+                onClick = { if (stage.name != currentName) onStageClick(stage.name) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun EvolutionStageItem(
+    stage: EvolutionStage,
+    isCurrent: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .clickable(enabled = !isCurrent, onClick = onClick)
+            .padding(horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        AsyncImage(
+            model = stage.imageUrl,
+            contentDescription = stage.name,
+            modifier = Modifier.size(80.dp),
+            alpha = if (isCurrent) 1f else 0.6f,
+        )
+        PokemonNameText(
+            name = stage.name,
+            style = if (isCurrent) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelSmall,
+        )
     }
 }
 

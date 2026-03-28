@@ -30,6 +30,7 @@ fun AppNavGraph() {
         )
         pokemonDetailScreen(
             onBack = { navController.popBackStack() },
+            onPokemonClick = { name -> navController.navigate(PokemonDetailRoute(name)) },
         )
         searchScreen(
             onPokemonClick = { name -> navController.navigate(PokemonDetailRoute(name)) },

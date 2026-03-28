@@ -2,17 +2,19 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
-import com.yamamuto.android_sample_mvvm.ui.util.UiState
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonSpeciesUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonDetail
+import com.yamamuto.android_sample_mvvm.ui.util.UiState
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.Runs
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -33,14 +35,20 @@ class PokemonDetailViewModelTest {
     private lateinit var useCase: GetPokemonDetailUseCase
     private lateinit var getIsFavoriteUseCase: GetIsFavoriteUseCase
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private lateinit var getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase
+    private lateinit var getEvolutionChainUseCase: GetEvolutionChainUseCase
 
     @Before
     fun setUp() {
         useCase = mockk()
         getIsFavoriteUseCase = mockk()
         toggleFavoriteUseCase = mockk()
+        getPokemonSpeciesUseCase = mockk()
+        getEvolutionChainUseCase = mockk()
         every { getIsFavoriteUseCase(any()) } returns flowOf(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
+        coEvery { getPokemonSpeciesUseCase(any()) } throws Exception("skip")
+        coEvery { getEvolutionChainUseCase(any()) } throws Exception("skip")
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
@@ -48,6 +56,8 @@ class PokemonDetailViewModelTest {
             getPokemonDetailUseCase = useCase,
             getIsFavoriteUseCase = getIsFavoriteUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
+            getPokemonSpeciesUseCase = getPokemonSpeciesUseCase,
+            getEvolutionChainUseCase = getEvolutionChainUseCase,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
 

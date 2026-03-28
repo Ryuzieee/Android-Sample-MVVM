@@ -11,11 +11,15 @@ data class PokemonDetailRoute(
 )
 
 /** ポケモン詳細画面のナビゲーション定義。 */
-fun NavGraphBuilder.pokemonDetailScreen(onBack: () -> Unit) {
+fun NavGraphBuilder.pokemonDetailScreen(
+    onBack: () -> Unit,
+    onPokemonClick: (String) -> Unit,
+) {
     pushScreenWithRoute<PokemonDetailRoute> { route ->
         PokemonDetailScreen(
             pokemonName = route.name,
             onBack = onBack,
+            onPokemonClick = onPokemonClick,
         )
     }
 }
