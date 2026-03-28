@@ -1,6 +1,6 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import javax.inject.Inject
 
@@ -10,7 +10,7 @@ class GetPokemonDetailUseCase
     constructor(
         private val repository: PokemonRepository,
     ) {
-        suspend operator fun invoke(name: String, forceRefresh: Boolean = false): Result<PokemonDetail> {
+        suspend operator fun invoke(name: String, forceRefresh: Boolean = false): Result<PokemonDetailModel> {
             return repository.getPokemonDetail(name, forceRefresh)
         }
     }

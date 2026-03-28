@@ -5,8 +5,8 @@ package com.yamamuto.android_sample_mvvm.domain.model
  *
  * [GetPokemonFullDetailUseCase] が並列取得した結果を1つにまとめる。
  */
-data class PokemonFullDetail(
-    val detail: PokemonDetail,
-    val species: PokemonSpecies?,
-    val evolutionChain: List<EvolutionStage>,
+data class PokemonFullDetailModel(
+    val detail: PokemonDetailModel,
+    val species: PokemonSpeciesModel?,
+    val evolutionChain: List<EvolutionStageModel>,
 )

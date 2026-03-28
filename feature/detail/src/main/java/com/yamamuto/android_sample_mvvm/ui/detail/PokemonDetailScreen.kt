@@ -37,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
+import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
@@ -131,8 +131,8 @@ fun PokemonDetailScreen(
 
 @Composable
 private fun InfoBottomSheet(
-    detail: PokemonDetail,
-    species: PokemonSpecies?,
+    detail: PokemonDetailModel,
+    species: PokemonSpeciesModel?,
     onDismiss: () -> Unit,
 ) {
     AppBottomSheet(
@@ -214,9 +214,9 @@ private fun InfoRow(
 
 @Composable
 private fun PokemonDetailContent(
-    detail: PokemonDetail,
-    species: PokemonSpecies?,
-    evolutionChain: List<EvolutionStage>,
+    detail: PokemonDetailModel,
+    species: PokemonSpeciesModel?,
+    evolutionChain: List<EvolutionStageModel>,
     onEvolutionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -299,7 +299,7 @@ private fun PokemonDetailContent(
 
 @Composable
 private fun EvolutionChainRow(
-    stages: List<EvolutionStage>,
+    stages: List<EvolutionStageModel>,
     currentName: String,
     onStageClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -337,7 +337,7 @@ private fun EvolutionChainRow(
 
 @Composable
 private fun EvolutionStageItem(
-    stage: EvolutionStage,
+    stage: EvolutionStageModel,
     isCurrent: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -364,7 +364,7 @@ private fun EvolutionStageItem(
 
 @Composable
 private fun StatRow(
-    stat: PokemonDetail.Stat,
+    stat: PokemonDetailModel.Stat,
     modifier: Modifier = Modifier,
 ) {
     Row(

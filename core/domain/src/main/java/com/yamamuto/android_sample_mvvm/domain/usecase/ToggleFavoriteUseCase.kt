@@ -1,6 +1,6 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ class ToggleFavoriteUseCase
         private val repository: FavoriteRepository,
     ) {
         suspend operator fun invoke(
-            detail: PokemonDetail,
+            detail: PokemonDetailModel,
             isFavorite: Boolean,
         ) {
             if (isFavorite) {

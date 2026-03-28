@@ -2,8 +2,8 @@ package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.local.dao.FavoriteDao
 import com.yamamuto.android_sample_mvvm.data.local.entity.FavoriteEntity
-import com.yamamuto.android_sample_mvvm.domain.model.Favorite
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.map
 class FavoriteRepositoryImpl(
     private val dao: FavoriteDao,
 ) : FavoriteRepository {
-    override fun observeFavorites(): Flow<List<Favorite>> {
+    override fun observeFavorites(): Flow<List<FavoriteModel>> {
         return dao.getAllFavorites().map { list ->
-            list.map { Favorite(id = it.id, name = it.name, imageUrl = it.imageUrl) }
+            list.map { FavoriteModel(id = it.id, name = it.name, imageUrl = it.imageUrl) }
         }
     }
 
@@ -22,7 +22,7 @@ class FavoriteRepositoryImpl(
         return dao.isFavorite(id)
     }
 
-    override suspend fun addFavorite(detail: PokemonDetail) {
+    override suspend fun addFavorite(detail: PokemonDetailModel) {
         dao.insertFavorite(
             FavoriteEntity(
                 id = detail.id,

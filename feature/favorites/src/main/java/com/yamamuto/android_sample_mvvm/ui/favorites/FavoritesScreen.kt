@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yamamuto.android_sample_mvvm.domain.model.Favorite
+import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
 import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
@@ -52,7 +52,7 @@ private fun FavoritesEmpty(padding: PaddingValues) {
 
 @Composable
 private fun FavoritesContent(
-    favorites: List<Favorite>,
+    favorites: List<FavoriteModel>,
     onPokemonClick: (String) -> Unit,
     padding: PaddingValues,
 ) {

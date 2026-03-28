@@ -3,7 +3,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
@@ -36,7 +36,7 @@ class PokemonDetailViewModelTest {
     private lateinit var observeIsFavoriteUseCase: ObserveIsFavoriteUseCase
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
 
-    private val fakeFullDetail = PokemonFullDetail(
+    private val fakeFullDetail = PokemonFullDetailModel(
         detail = fakePokemonDetail,
         species = null,
         evolutionChain = emptyList(),

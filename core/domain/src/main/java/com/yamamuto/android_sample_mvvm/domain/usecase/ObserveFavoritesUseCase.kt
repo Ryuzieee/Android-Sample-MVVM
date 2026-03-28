@@ -1,6 +1,6 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
-import com.yamamuto.android_sample_mvvm.domain.model.Favorite
+import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
 import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -11,7 +11,7 @@ class ObserveFavoritesUseCase
     constructor(
         private val repository: FavoriteRepository,
     ) {
-        operator fun invoke(): Flow<List<Favorite>> {
+        operator fun invoke(): Flow<List<FavoriteModel>> {
             return repository.observeFavorites()
         }
     }

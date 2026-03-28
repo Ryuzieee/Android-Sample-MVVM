@@ -3,8 +3,8 @@
 package com.yamamuto.android_sample_mvvm.util
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
-import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import kotlinx.serialization.InternalSerializationApi
 
 private const val OFFICIAL_ARTWORK_URL =
@@ -13,7 +13,7 @@ private const val OFFICIAL_ARTWORK_URL =
 /** テスト用のダミーデータをまとめたオブジェクト。 */
 object TestFixtures {
     val fakePokemon =
-        Pokemon(
+        PokemonSummaryModel(
             name = "bulbasaur",
             url = "https://pokeapi.co/api/v2/pokemon/1/",
         )
@@ -21,7 +21,7 @@ object TestFixtures {
     val fakePokemonList = listOf(fakePokemon)
 
     val fakePokemonDetail =
-        PokemonDetail(
+        PokemonDetailModel(
             id = 1,
             name = "bulbasaur",
             height = 7,
@@ -30,14 +30,14 @@ object TestFixtures {
             types = listOf("grass", "poison"),
             abilities =
                 listOf(
-                    PokemonDetail.Ability(name = "overgrow", japaneseName = "しんりょく", isHidden = false),
-                    PokemonDetail.Ability(name = "chlorophyll", japaneseName = "ようりょくそ", isHidden = true),
+                    PokemonDetailModel.Ability(name = "overgrow", japaneseName = "しんりょく", isHidden = false),
+                    PokemonDetailModel.Ability(name = "chlorophyll", japaneseName = "ようりょくそ", isHidden = true),
                 ),
             imageUrl = OFFICIAL_ARTWORK_URL,
             stats =
                 listOf(
-                    PokemonDetail.Stat(name = "hp", value = 45),
-                    PokemonDetail.Stat(name = "attack", value = 49),
+                    PokemonDetailModel.Stat(name = "hp", value = 45),
+                    PokemonDetailModel.Stat(name = "attack", value = 49),
                 ),
         )
 

@@ -4,15 +4,15 @@ package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
-import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
+import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import kotlinx.serialization.InternalSerializationApi
 
 private const val ARTWORK_URL =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"
 
 /** Species DTO → Domain */
-internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
+internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
     val jaName = names.firstOrNull { it.language.name == "ja" }?.name
         ?: names.firstOrNull { it.language.name == "ja-hrkt" }?.name
         ?: ""
@@ -29,7 +29,7 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
         ?.genus
         ?: genera.firstOrNull { it.language.name == "en" }?.genus.orEmpty()
 
-    return PokemonSpecies(
+    return PokemonSpeciesModel(
         japaneseName = jaName,
         flavorText = jaFlavorText,
         genus = jaGenus,
@@ -43,12 +43,12 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
 }
 
 /** EvolutionChain DTO → Domain (フラットなリストに展開) */
-internal fun EvolutionChainResponse.toStages(): List<EvolutionStage> {
-    val stages = mutableListOf<EvolutionStage>()
+internal fun EvolutionChainResponse.toStages(): List<EvolutionStageModel> {
+    val stages = mutableListOf<EvolutionStageModel>()
     fun walk(link: EvolutionChainResponse.ChainLink) {
         val id = extractIdFromUrl(link.species.url)
         val minLevel = link.evolutionDetails.firstOrNull()?.minLevel
-        stages += EvolutionStage(
+        stages += EvolutionStageModel(
             name = link.species.name,
             japaneseName = "",
             id = id,

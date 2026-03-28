@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.ui.component.ErrorContent
 import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import org.junit.Rule
@@ -29,7 +29,7 @@ class PokemonDetailScreenScreenshotTest {
     val composeRule = createComposeRule()
 
     private val fakePokemonDetail =
-        PokemonDetail(
+        PokemonDetailModel(
             id = 1,
             name = "bulbasaur",
             height = 7,
@@ -37,15 +37,15 @@ class PokemonDetailScreenScreenshotTest {
             baseExperience = 64,
             types = listOf("grass", "poison"),
             abilities = listOf(
-                PokemonDetail.Ability("overgrow", "しんりょく", isHidden = false),
-                PokemonDetail.Ability("chlorophyll", "ようりょくそ", isHidden = true),
+                PokemonDetailModel.Ability("overgrow", "しんりょく", isHidden = false),
+                PokemonDetailModel.Ability("chlorophyll", "ようりょくそ", isHidden = true),
             ),
             imageUrl = "",
             stats =
                 listOf(
-                    PokemonDetail.Stat("hp", 45),
-                    PokemonDetail.Stat("attack", 49),
-                    PokemonDetail.Stat("defense", 49),
+                    PokemonDetailModel.Stat("hp", 45),
+                    PokemonDetailModel.Stat("attack", 49),
+                    PokemonDetailModel.Stat("defense", 49),
                 ),
         )
 

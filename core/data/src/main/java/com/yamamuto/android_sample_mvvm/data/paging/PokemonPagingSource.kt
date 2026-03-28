@@ -5,7 +5,7 @@ package com.yamamuto.android_sample_mvvm.data.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
-import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import kotlinx.serialization.InternalSerializationApi
 
 /**
@@ -15,12 +15,12 @@ import kotlinx.serialization.InternalSerializationApi
  */
 class PokemonPagingSource(
     private val dataSource: PokemonRemoteDataSource,
-) : PagingSource<Int, Pokemon>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
+) : PagingSource<Int, PokemonSummaryModel>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PokemonSummaryModel> {
         return try {
             val offset = params.key ?: 0
             val response = dataSource.getPokemonList(limit = params.loadSize, offset = offset)
-            val pokemons = response.results.map { Pokemon(name = it.name, url = it.url) }
+            val pokemons = response.results.map { PokemonSummaryModel(name = it.name, url = it.url) }
             LoadResult.Page(
                 data = pokemons,
                 prevKey = if (offset == 0) null else offset - params.loadSize,
@@ -31,7 +31,7 @@ class PokemonPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, PokemonSummaryModel>): Int? {
         return state.anchorPosition?.let { anchor ->
             state.closestPageToPosition(anchor)?.prevKey
         }

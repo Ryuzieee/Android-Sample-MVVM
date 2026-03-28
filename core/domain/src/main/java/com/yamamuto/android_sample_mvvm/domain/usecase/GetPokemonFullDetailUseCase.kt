@@ -1,6 +1,6 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
@@ -21,7 +21,7 @@ class GetPokemonFullDetailUseCase
         suspend operator fun invoke(
             name: String,
             forceRefresh: Boolean = false,
-        ): Result<PokemonFullDetail> {
+        ): Result<PokemonFullDetailModel> {
             val detail = getPokemonDetailUseCase(name, forceRefresh)
                 .getOrElse { return Result.failure(it) }
 
@@ -31,7 +31,7 @@ class GetPokemonFullDetailUseCase
                 val abilitiesDeferred = async { resolveAbilityNames(detail) }
 
                 Result.success(
-                    PokemonFullDetail(
+                    PokemonFullDetailModel(
                         detail = abilitiesDeferred.await(),
                         species = speciesDeferred.await(),
                         evolutionChain = chainDeferred.await() ?: emptyList(),
@@ -41,8 +41,8 @@ class GetPokemonFullDetailUseCase
         }
 
         private suspend fun resolveAbilityNames(
-            detail: com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail,
-        ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail = coroutineScope {
+            detail: com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel,
+        ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel = coroutineScope {
             val jaNames = detail.abilities.map { ability ->
                 async { getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name) }
             }.map { it.await() }

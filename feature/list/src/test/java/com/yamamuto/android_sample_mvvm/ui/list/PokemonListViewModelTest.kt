@@ -6,7 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSourceFactory
-import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonList
 import io.mockk.every
@@ -34,13 +34,13 @@ class PokemonListViewModelTest {
         pagingSourceFactory = mockk()
     }
 
-    private fun fakePagingSource(items: List<Pokemon>): PagingSource<Int, Pokemon> {
-        return object : PagingSource<Int, Pokemon>() {
-            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
+    private fun fakePagingSource(items: List<PokemonSummaryModel>): PagingSource<Int, PokemonSummaryModel> {
+        return object : PagingSource<Int, PokemonSummaryModel>() {
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PokemonSummaryModel> {
                 return LoadResult.Page(data = items, prevKey = null, nextKey = null)
             }
 
-            override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? {
+            override fun getRefreshKey(state: PagingState<Int, PokemonSummaryModel>): Int? {
                 return null
             }
         }

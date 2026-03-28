@@ -1,6 +1,6 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
-import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
+import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -18,7 +18,7 @@ class GetEvolutionChainUseCase
         private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
         private val repository: PokemonRepository,
     ) {
-        suspend operator fun invoke(name: String): Result<List<EvolutionStage>> {
+        suspend operator fun invoke(name: String): Result<List<EvolutionStageModel>> {
             val species = getPokemonSpeciesUseCase(name).getOrElse { return Result.failure(it) }
             val stages = repository.getEvolutionChainByUrl(species.evolutionChainUrl)
                 .getOrElse { return Result.failure(it) }

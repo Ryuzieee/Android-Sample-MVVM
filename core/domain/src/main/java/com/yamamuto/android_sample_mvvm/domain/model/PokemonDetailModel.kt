@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.domain.model
 
 /** ポケモン詳細画面で表示するデータを表すドメインモデル。 */
-data class PokemonDetail(
+data class PokemonDetailModel(
     val id: Int,
     val name: String,
     val height: Int,

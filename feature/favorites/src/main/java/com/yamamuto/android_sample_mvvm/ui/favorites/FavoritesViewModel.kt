@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.domain.model.Favorite
+import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
 import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveFavoritesUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
@@ -15,7 +15,7 @@ class FavoritesViewModel
     @Inject
     constructor(
         private val observeFavoritesUseCase: ObserveFavoritesUseCase,
-    ) : UiStateViewModel<UiState<List<Favorite>>>(UiState.Loading) {
+    ) : UiStateViewModel<UiState<List<FavoriteModel>>>(UiState.Loading) {
         init {
             load()
         }

@@ -6,9 +6,9 @@ import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.util.cachedApiCall
 import com.yamamuto.android_sample_mvvm.data.util.safeApiCall
-import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
+import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.serialization.InternalSerializationApi
 
@@ -26,7 +26,7 @@ class PokemonRepositoryImpl(
 ) : PokemonRepository {
     private var cachedPokemonNames: List<String>? = null
 
-    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetail> {
+    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetailModel> {
         return safeApiCall {
             cachedApiCall(
                 forceRefresh = forceRefresh,
@@ -42,11 +42,11 @@ class PokemonRepositoryImpl(
         }
     }
 
-    override suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies> {
+    override suspend fun getPokemonSpecies(name: String): Result<PokemonSpeciesModel> {
         return safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }
     }
 
-    override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStage>> {
+    override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStageModel>> {
         return safeApiCall { dataSource.getEvolutionChain(url).toStages() }
     }
 
