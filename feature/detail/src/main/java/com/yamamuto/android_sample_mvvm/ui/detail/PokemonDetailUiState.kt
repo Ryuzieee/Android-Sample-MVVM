@@ -9,6 +9,7 @@ import com.yamamuto.android_sample_mvvm.ui.util.UiState
 data class PokemonDetailUiState(
     val contentState: UiState<PokemonDetail> = UiState.Loading,
     val isFavorite: Boolean = false,
+    val isRefreshing: Boolean = false,
     val species: PokemonSpecies? = null,
     val evolutionChain: List<EvolutionStage> = emptyList(),
 )

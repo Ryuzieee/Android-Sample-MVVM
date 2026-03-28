@@ -48,6 +48,17 @@ class PokemonDetailViewModel
             load()
         }
 
+        fun refresh() {
+            viewModelScope.launch {
+                updateState { copy(isRefreshing = true) }
+                val result = loadAsUiState { getPokemonDetailUseCase(pokemonName) }
+                if (result is UiState.Success) {
+                    loadSpeciesAndEvolution(result.data)
+                }
+                updateState { copy(contentState = result, isRefreshing = false) }
+            }
+        }
+
         fun toggleFavorite() {
             val state = currentState
             val detail = state.contentState.getOrNull() ?: return

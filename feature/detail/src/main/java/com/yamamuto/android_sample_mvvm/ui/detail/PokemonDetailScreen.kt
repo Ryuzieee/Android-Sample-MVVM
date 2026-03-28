@@ -42,6 +42,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
+import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
@@ -97,17 +98,22 @@ fun PokemonDetailScreen(
         },
         snackbarHostState = snackbarHostState,
     ) { padding ->
-        UiStateContent(
-            state = uiState.contentState,
-            onRetry = viewModel::retry,
+        AppPullRefresh(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = viewModel::refresh,
             modifier = Modifier.padding(padding),
-        ) { detail ->
-            PokemonDetailContent(
-                detail = detail,
-                species = uiState.species,
-                evolutionChain = uiState.evolutionChain,
-                onEvolutionClick = onPokemonClick,
-            )
+        ) {
+            UiStateContent(
+                state = uiState.contentState,
+                onRetry = viewModel::retry,
+            ) { detail ->
+                PokemonDetailContent(
+                    detail = detail,
+                    species = uiState.species,
+                    evolutionChain = uiState.evolutionChain,
+                    onEvolutionClick = onPokemonClick,
+                )
+            }
         }
     }
 
