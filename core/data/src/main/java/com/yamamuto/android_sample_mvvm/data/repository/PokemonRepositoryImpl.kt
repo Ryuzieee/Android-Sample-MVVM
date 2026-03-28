@@ -5,6 +5,7 @@ package com.yamamuto.android_sample_mvvm.data.repository
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
+import com.yamamuto.android_sample_mvvm.data.util.Cached
 import com.yamamuto.android_sample_mvvm.data.util.repositoryHandler
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
@@ -27,7 +28,7 @@ class PokemonRepositoryImpl(
     override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetailModel> {
         return repositoryHandler(
             forceRefresh = forceRefresh,
-            local = { dao.getPokemonDetail(name)?.takeUnless { it.isExpired() }?.toDomain() },
+            local = { dao.getPokemonDetail(name)?.let { Cached(it.toDomain(), it.cachedAt) } },
             remote = { dataSource.getPokemonDetail(name).toDomain() },
             cache = { dao.insertPokemonDetail(it.toEntity()) },
         )
@@ -53,14 +54,16 @@ class PokemonRepositoryImpl(
 
     override suspend fun searchPokemonNames(query: String): Result<List<String>> {
         return repositoryHandler(
-            local = { dao.getAllPokemonNames().takeIf { it.isNotEmpty() } },
-            remote = {
-                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0)
-                    .results.map { it.name }
+            local = {
+                val names = dao.getAllPokemonNames()
+                names.takeIf { it.isNotEmpty() }?.toSearchResults(query)?.let { Cached(it) }
             },
-            cache = { names -> dao.insertPokemonNames(names.map { PokemonNameEntity(name = it) }) },
-        ).map { names ->
-            names.filter { it.contains(query.trim(), ignoreCase = true) }
-        }
+            remote = {
+                val names = dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0)
+                    .results.map { it.name }
+                dao.insertPokemonNames(names.map { PokemonNameEntity(name = it) })
+                names.toSearchResults(query)
+            },
+        )
     }
 }

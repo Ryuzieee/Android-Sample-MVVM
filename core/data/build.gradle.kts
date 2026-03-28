@@ -8,6 +8,26 @@ plugins {
 
 android {
     namespace = "com.yamamuto.android_sample_mvvm.core.data"
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        // デフォルト: 5分
+        buildConfigField("long", "CACHE_DURATION_MS", "5 * 60 * 1000L")
+    }
+
+    buildTypes {
+        debug {
+            // debug: 1分（開発時はキャッシュを短くして動作確認しやすくする）
+            buildConfigField("long", "CACHE_DURATION_MS", "1 * 60 * 1000L")
+        }
+        release {
+            // release: 5分
+            buildConfigField("long", "CACHE_DURATION_MS", "5 * 60 * 1000L")
+        }
+    }
 }
 
 dependencies {
