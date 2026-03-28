@@ -15,17 +15,18 @@ import javax.inject.Inject
 class GetEvolutionChainUseCase
     @Inject
     constructor(
+        private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
         private val repository: PokemonRepository,
     ) {
         suspend operator fun invoke(name: String): Result<List<EvolutionStage>> {
-            val species = repository.getPokemonSpecies(name).getOrElse { return Result.failure(it) }
+            val species = getPokemonSpeciesUseCase(name).getOrElse { return Result.failure(it) }
             val stages = repository.getEvolutionChainByUrl(species.evolutionChainUrl)
                 .getOrElse { return Result.failure(it) }
 
             val jaNames = coroutineScope {
                 stages.map { stage ->
                     async {
-                        repository.getPokemonSpecies(stage.name)
+                        getPokemonSpeciesUseCase(stage.name)
                             .map { it.japaneseName }
                             .getOrDefault("")
                     }
