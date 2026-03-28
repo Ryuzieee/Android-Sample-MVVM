@@ -33,7 +33,7 @@ fun SearchScreen(
             SearchTextField(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
-                placeholder = "ポケモン名を入力...",
+                placeholder = SearchStrings.SEARCH_PLACEHOLDER,
             )
         },
         onBack = onBack,
@@ -52,7 +52,7 @@ fun SearchScreen(
 @Composable
 private fun SearchIdle(padding: PaddingValues) {
     EmptyContent(
-        message = "ポケモン名を入力してください",
+        message = SearchStrings.SEARCH_IDLE_MESSAGE,
         modifier = Modifier.padding(padding),
     )
 }

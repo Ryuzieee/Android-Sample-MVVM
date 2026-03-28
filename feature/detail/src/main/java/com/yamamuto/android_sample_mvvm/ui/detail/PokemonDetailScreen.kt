@@ -86,12 +86,12 @@ fun PokemonDetailScreen(
         actions = {
             AppIconButton(
                 imageVector = Icons.Filled.Info,
-                contentDescription = "詳細情報を表示",
+                contentDescription = DetailStrings.INFO_BUTTON_DESCRIPTION,
                 onClick = { showInfo = true },
             )
             AppIconButton(
                 imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = if (uiState.isFavorite) "お気に入りから削除" else "お気に入りに追加",
+                contentDescription = if (uiState.isFavorite) DetailStrings.REMOVE_FAVORITE_DESCRIPTION else DetailStrings.ADD_FAVORITE_DESCRIPTION,
                 onClick = viewModel::toggleFavorite,
                 tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
@@ -137,7 +137,7 @@ private fun InfoBottomSheet(
 ) {
     AppBottomSheet(
         onDismiss = onDismiss,
-        title = "くわしい情報",
+        title = DetailStrings.BOTTOM_SHEET_TITLE,
     ) {
         if (species != null) {
             AppText(
@@ -147,19 +147,19 @@ private fun InfoBottomSheet(
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            InfoRow("分類", species.genus)
-            InfoRow("世代", JapaneseTranslation.generation(species.generation))
-            species.habitat?.let { InfoRow("生息地", JapaneseTranslation.habitat(it)) }
-            InfoRow("捕獲率", "${species.captureRate}")
-            InfoRow("タマゴグループ", species.eggGroups.joinToString("、") { JapaneseTranslation.eggGroup(it) })
-            val genderText = if (species.genderRate == -1) "性別なし"
+            InfoRow(DetailStrings.LABEL_CATEGORY, species.genus)
+            InfoRow(DetailStrings.LABEL_GENERATION, JapaneseTranslation.generation(species.generation))
+            species.habitat?.let { InfoRow(DetailStrings.LABEL_HABITAT, JapaneseTranslation.habitat(it)) }
+            InfoRow(DetailStrings.LABEL_CAPTURE_RATE, "${species.captureRate}")
+            InfoRow(DetailStrings.LABEL_EGG_GROUP, species.eggGroups.joinToString(DetailStrings.EGG_GROUP_SEPARATOR) { JapaneseTranslation.eggGroup(it) })
+            val genderText = if (species.genderRate == -1) DetailStrings.LABEL_NO_GENDER
             else "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
-            InfoRow("性別比率", genderText)
+            InfoRow(DetailStrings.LABEL_GENDER_RATIO, genderText)
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
 
         AppText(
-            text = "とくせい",
+            text = DetailStrings.LABEL_ABILITIES,
             style = MaterialTheme.typography.titleSmall,
             bold = true,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -179,12 +179,12 @@ private fun InfoBottomSheet(
                 if (ability.isHidden) {
                     AssistChip(
                         onClick = {},
-                        label = { AppText("かくれとくせい") },
+                        label = { AppText(DetailStrings.LABEL_HIDDEN_ABILITY) },
                     )
                 }
             }
         }
-        InfoRow("きそけいけんち", "${detail.baseExperience}")
+        InfoRow(DetailStrings.LABEL_BASE_EXPERIENCE, "${detail.baseExperience}")
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
@@ -267,7 +267,7 @@ private fun PokemonDetailContent(
         // 進化チェーン
         if (evolutionChain.size > 1) {
             AppText(
-                text = "しんか",
+                text = DetailStrings.SECTION_EVOLUTION,
                 style = MaterialTheme.typography.titleMedium,
                 bold = true,
                 modifier = Modifier
@@ -283,7 +283,7 @@ private fun PokemonDetailContent(
         }
 
         AppText(
-            text = "しゅぞくち",
+            text = DetailStrings.SECTION_BASE_STATS,
             style = MaterialTheme.typography.titleMedium,
             bold = true,
             modifier = Modifier

@@ -18,6 +18,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+private const val DATABASE_NAME = "pokemon.db"
+
 /** データ層の依存関係を定義する Hilt モジュール。 */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,7 +30,7 @@ object DataModule {
         @ApplicationContext context: Context,
     ): PokemonDatabase {
         return Room
-            .databaseBuilder(context, PokemonDatabase::class.java, "pokemon.db")
+            .databaseBuilder(context, PokemonDatabase::class.java, DATABASE_NAME)
             .fallbackToDestructiveMigration()
             .build()
     }

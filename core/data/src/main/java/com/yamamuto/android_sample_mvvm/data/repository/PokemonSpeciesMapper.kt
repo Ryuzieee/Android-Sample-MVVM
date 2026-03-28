@@ -6,6 +6,7 @@ import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
+import com.yamamuto.android_sample_mvvm.domain.util.LanguageCodes
 import kotlinx.serialization.InternalSerializationApi
 
 private const val ARTWORK_URL =
@@ -13,21 +14,21 @@ private const val ARTWORK_URL =
 
 /** Species DTO → Domain */
 internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
-    val jaName = names.firstOrNull { it.language.name == "ja" }?.name
-        ?: names.firstOrNull { it.language.name == "ja-hrkt" }?.name
+    val jaName = names.firstOrNull { it.language.name == LanguageCodes.JA }?.name
+        ?: names.firstOrNull { it.language.name == LanguageCodes.JA_HRKT }?.name
         ?: ""
 
     val jaFlavorText = flavorTextEntries
-        .lastOrNull { it.language.name == "ja" }
+        .lastOrNull { it.language.name == LanguageCodes.JA }
         ?.flavorText
         ?.replace("\n", " ")
         ?.replace("\u000c", " ")
-        ?: flavorTextEntries.lastOrNull { it.language.name == "en" }?.flavorText.orEmpty()
+        ?: flavorTextEntries.lastOrNull { it.language.name == LanguageCodes.EN }?.flavorText.orEmpty()
 
     val jaGenus = genera
-        .firstOrNull { it.language.name == "ja" }
+        .firstOrNull { it.language.name == LanguageCodes.JA }
         ?.genus
-        ?: genera.firstOrNull { it.language.name == "en" }?.genus.orEmpty()
+        ?: genera.firstOrNull { it.language.name == LanguageCodes.EN }?.genus.orEmpty()
 
     return PokemonSpeciesModel(
         japaneseName = jaName,

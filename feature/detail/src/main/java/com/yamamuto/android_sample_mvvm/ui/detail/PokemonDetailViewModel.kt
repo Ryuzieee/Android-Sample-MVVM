@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.yamamuto.android_sample_mvvm.domain.model.ErrorMessages
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
@@ -28,7 +29,11 @@ class PokemonDetailViewModel
         private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
         savedStateHandle: SavedStateHandle,
     ) : UiStateViewModel<PokemonDetailUiState>(PokemonDetailUiState()) {
-        private val pokemonName: String = checkNotNull(savedStateHandle["name"])
+        companion object {
+            const val KEY_NAME = "name"
+        }
+
+        private val pokemonName: String = checkNotNull(savedStateHandle[KEY_NAME])
 
         init {
             load()
@@ -67,7 +72,7 @@ class PokemonDetailViewModel
                         observeFavorite(fullDetail.detail.id)
                     }
                     result.isFailure -> {
-                        val message = result.exceptionOrNull()?.message ?: "不明なエラーが発生しました"
+                        val message = result.exceptionOrNull()?.message ?: ErrorMessages.UNKNOWN_ERROR
                         updateState {
                             copy(
                                 contentState = UiState.Error(message = message),

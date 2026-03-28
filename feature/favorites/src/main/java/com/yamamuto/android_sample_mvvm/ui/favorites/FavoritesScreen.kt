@@ -25,7 +25,7 @@ fun FavoritesScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AppScaffold(
-        title = { Text("お気に入り") },
+        title = { Text(FavoritesStrings.SCREEN_TITLE) },
         onBack = onBack,
     ) { padding ->
         UiStateContent(
@@ -44,8 +44,8 @@ fun FavoritesScreen(
 @Composable
 private fun FavoritesEmpty(padding: PaddingValues) {
     EmptyContent(
-        message = "お気に入りがありません",
-        subMessage = "詳細画面のハートアイコンから追加できます",
+        message = FavoritesStrings.EMPTY_MESSAGE,
+        subMessage = FavoritesStrings.EMPTY_SUB_MESSAGE,
         modifier = Modifier.padding(padding),
     )
 }

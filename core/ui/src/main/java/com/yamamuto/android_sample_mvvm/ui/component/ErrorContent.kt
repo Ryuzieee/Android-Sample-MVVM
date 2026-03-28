@@ -33,14 +33,14 @@ fun ErrorContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AppText(
-            text = if (isNetworkError) "ネットワークに接続できません" else message,
+            text = if (isNetworkError) ErrorStrings.NETWORK_ERROR_MESSAGE else message,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         )
         if (isNetworkError) {
             AppText(
-                text = "接続を確認してリトライしてください",
+                text = ErrorStrings.NETWORK_ERROR_SUB_MESSAGE,
                 style = MaterialTheme.typography.bodySmall,
                 secondary = true,
                 modifier = Modifier.padding(top = 4.dp),
@@ -48,7 +48,7 @@ fun ErrorContent(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text("リトライ")
+            Text(ErrorStrings.RETRY_BUTTON)
         }
     }
 }

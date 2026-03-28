@@ -36,10 +36,10 @@ fun PokemonListScreen(
     var isRefreshing by remember { mutableStateOf(false) }
 
     AppScaffold(
-        title = { Text("Pokédex") },
+        title = { Text(ListStrings.SCREEN_TITLE) },
         actions = {
-            AppIconButton(Icons.Filled.Search, "検索", onClick = onSearchClick)
-            AppIconButton(Icons.Filled.Favorite, "お気に入り", onClick = onFavoritesClick)
+            AppIconButton(Icons.Filled.Search, ListStrings.SEARCH_DESCRIPTION, onClick = onSearchClick)
+            AppIconButton(Icons.Filled.Favorite, ListStrings.FAVORITES_DESCRIPTION, onClick = onFavoritesClick)
         },
     ) { padding ->
         PagingContent(

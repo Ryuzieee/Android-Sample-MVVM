@@ -58,7 +58,7 @@ class SearchViewModel
             updateState { copy(result = UiState.Loading) }
             val result = searchPokemonUseCase(query).toUiState()
             val finalResult = if (result is UiState.Success && result.data.isEmpty()) {
-                UiState.Error(message = "「$query」に一致するポケモンは見つかりませんでした")
+                UiState.Error(message = SearchStrings.noResultsMessage(query))
             } else {
                 result
             }

@@ -14,6 +14,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
+private const val CONTENT_TYPE_JSON = "application/json"
+
 /** ネットワーク層の依存関係を定義する Hilt モジュール。 */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -46,7 +48,7 @@ object AppModule {
             .Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(json.asConverterFactory(CONTENT_TYPE_JSON.toMediaType()))
             .build()
     }
 

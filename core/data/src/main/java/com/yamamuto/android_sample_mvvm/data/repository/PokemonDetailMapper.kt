@@ -7,6 +7,10 @@ import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import kotlinx.serialization.InternalSerializationApi
 
+private const val TYPE_DELIMITER = ","
+private const val ENTRY_DELIMITER = ";"
+private const val FIELD_DELIMITER = ":"
+
 /** DTO → Domain */
 internal fun PokemonDetailResponse.toDomain(): PokemonDetailModel {
     return PokemonDetailModel(
@@ -32,9 +36,9 @@ internal fun PokemonDetailEntity.toDomain(): PokemonDetailModel {
         height = height,
         weight = weight,
         baseExperience = baseExperience,
-        types = types.split(","),
-        abilities = abilities.split(";").mapNotNull { entry ->
-            val parts = entry.split(":")
+        types = types.split(TYPE_DELIMITER),
+        abilities = abilities.split(ENTRY_DELIMITER).mapNotNull { entry ->
+            val parts = entry.split(FIELD_DELIMITER)
             when (parts.size) {
                 3 -> PokemonDetailModel.Ability(parts[0], parts[1], parts[2].toBooleanStrictOrNull() ?: false)
                 2 -> PokemonDetailModel.Ability(parts[0], "", parts[1].toBooleanStrictOrNull() ?: false)
@@ -42,8 +46,8 @@ internal fun PokemonDetailEntity.toDomain(): PokemonDetailModel {
             }
         },
         imageUrl = imageUrl,
-        stats = stats.split(";").mapNotNull { entry ->
-            val parts = entry.split(":")
+        stats = stats.split(ENTRY_DELIMITER).mapNotNull { entry ->
+            val parts = entry.split(FIELD_DELIMITER)
             if (parts.size == 2) PokemonDetailModel.Stat(parts[0], parts[1].toInt()) else null
         },
     )
@@ -57,9 +61,9 @@ internal fun PokemonDetailModel.toEntity(): PokemonDetailEntity {
         height = height,
         weight = weight,
         baseExperience = baseExperience,
-        types = types.joinToString(","),
-        abilities = abilities.joinToString(";") { "${it.name}:${it.japaneseName}:${it.isHidden}" },
+        types = types.joinToString(TYPE_DELIMITER),
+        abilities = abilities.joinToString(ENTRY_DELIMITER) { "${it.name}${FIELD_DELIMITER}${it.japaneseName}${FIELD_DELIMITER}${it.isHidden}" },
         imageUrl = imageUrl,
-        stats = stats.joinToString(";") { "${it.name}:${it.value}" },
+        stats = stats.joinToString(ENTRY_DELIMITER) { "${it.name}${FIELD_DELIMITER}${it.value}" },
     )
 }

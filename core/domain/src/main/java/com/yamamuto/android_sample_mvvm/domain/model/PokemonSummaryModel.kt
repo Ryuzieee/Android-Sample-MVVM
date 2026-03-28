@@ -1,5 +1,8 @@
 package com.yamamuto.android_sample_mvvm.domain.model
 
+private const val SPRITE_URL =
+    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+
 /** ポケモンの一覧表示に必要な最小限のデータを表すドメインモデル。 */
 data class PokemonSummaryModel(
     val name: String,
@@ -9,6 +12,6 @@ data class PokemonSummaryModel(
         return url.trimEnd('/').split('/').last().toInt()
     }
     val imageUrl: String get() {
-        return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
+        return "${SPRITE_URL}$id.png"
     }
 }
