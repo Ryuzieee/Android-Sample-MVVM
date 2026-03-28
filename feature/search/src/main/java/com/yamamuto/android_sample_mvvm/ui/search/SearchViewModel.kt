@@ -1,19 +1,15 @@
-@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
+@file:OptIn(kotlinx.coroutines.FlowPreview::class)
 
 package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
+import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import com.yamamuto.android_sample_mvvm.ui.util.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,8 +35,7 @@ class SearchViewModel
                     .map { it.query }
                     .distinctUntilChanged()
                     .debounce(500)
-                    .flatMapLatest(::search)
-                    .collect { result -> updateState { copy(result = result) } }
+                    .collect { query -> search(query) }
             }
         }
 
@@ -48,31 +43,25 @@ class SearchViewModel
             updateState { copy(query = newQuery) }
         }
 
-        /** エラー後の再検索。[distinctUntilChanged] をバイパスして直接実行する。 */
+        /** エラー後の再検索。デバウンスをバイパスして直接実行する。 */
         fun retrySearch() {
             val query = currentState.query
             if (query.isBlank()) return
-            viewModelScope.launch {
-                updateState { copy(result = UiState.Loading) }
-                val result = fetchResults(query)
-                updateState { copy(result = result) }
-            }
+            viewModelScope.launch { search(query) }
         }
 
-        private fun search(query: String): Flow<UiState<List<String>>> {
-            if (query.isBlank()) return flowOf(UiState.Idle)
-            return flow {
-                emit(UiState.Loading)
-                emit(fetchResults(query))
+        private suspend fun search(query: String) {
+            if (query.isBlank()) {
+                updateState { copy(result = UiState.Idle) }
+                return
             }
-        }
-
-        private suspend fun fetchResults(query: String): UiState<List<String>> {
+            updateState { copy(result = UiState.Loading) }
             val result = searchPokemonUseCase(query).toUiState()
-            return if (result is UiState.Success && result.data.isEmpty()) {
+            val finalResult = if (result is UiState.Success && result.data.isEmpty()) {
                 UiState.Error(message = "「$query」に一致するポケモンは見つかりませんでした")
             } else {
                 result
             }
+            updateState { copy(result = finalResult) }
         }
     }
