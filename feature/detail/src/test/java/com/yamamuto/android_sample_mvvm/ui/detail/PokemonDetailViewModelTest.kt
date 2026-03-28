@@ -3,11 +3,9 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetAbilityJapaneseNameUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetail
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonSpeciesUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonDetail
@@ -34,43 +32,37 @@ class PokemonDetailViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private lateinit var useCase: GetPokemonDetailUseCase
+    private lateinit var getPokemonFullDetailUseCase: GetPokemonFullDetailUseCase
     private lateinit var observeIsFavoriteUseCase: ObserveIsFavoriteUseCase
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
-    private lateinit var getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase
-    private lateinit var getEvolutionChainUseCase: GetEvolutionChainUseCase
-    private lateinit var getAbilityJapaneseNameUseCase: GetAbilityJapaneseNameUseCase
+
+    private val fakeFullDetail = PokemonFullDetail(
+        detail = fakePokemonDetail,
+        species = null,
+        evolutionChain = emptyList(),
+    )
 
     @Before
     fun setUp() {
-        useCase = mockk()
+        getPokemonFullDetailUseCase = mockk()
         observeIsFavoriteUseCase = mockk()
         toggleFavoriteUseCase = mockk()
-        getPokemonSpeciesUseCase = mockk()
-        getEvolutionChainUseCase = mockk()
-        getAbilityJapaneseNameUseCase = mockk()
         every { observeIsFavoriteUseCase(any()) } returns flowOf(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
-        coEvery { getPokemonSpeciesUseCase(any()) } returns Result.failure(Exception("skip"))
-        coEvery { getEvolutionChainUseCase(any()) } returns Result.failure(Exception("skip"))
-        coEvery { getAbilityJapaneseNameUseCase(any()) } returns Result.success("")
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
         PokemonDetailViewModel(
-            getPokemonDetailUseCase = useCase,
+            getPokemonFullDetailUseCase = getPokemonFullDetailUseCase,
             observeIsFavoriteUseCase = observeIsFavoriteUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
-            getPokemonSpeciesUseCase = getPokemonSpeciesUseCase,
-            getEvolutionChainUseCase = getEvolutionChainUseCase,
-            getAbilityJapaneseNameUseCase = getAbilityJapaneseNameUseCase,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
 
     @Test
     fun `データ取得成功時は Success 状態になる`() =
         runTest {
-            coEvery { useCase("bulbasaur") } returns Result.success(fakePokemonDetail)
+            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
 
             val viewModel = createViewModel("bulbasaur")
 
@@ -86,7 +78,7 @@ class PokemonDetailViewModelTest {
     @Test
     fun `データ取得失敗時は Error 状態になる`() =
         runTest {
-            coEvery { useCase("bulbasaur") } returns
+            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns
                 Result.failure(AppException.Unknown(Exception("Not found")))
 
             val viewModel = createViewModel("bulbasaur")
@@ -101,8 +93,10 @@ class PokemonDetailViewModelTest {
     @Test
     fun `異なるポケモン名で正しくデータを取得する`() =
         runTest {
-            val charizardDetail = fakePokemonDetail.copy(id = 6, name = "charizard")
-            coEvery { useCase("charizard") } returns Result.success(charizardDetail)
+            val charizardFullDetail = fakeFullDetail.copy(
+                detail = fakePokemonDetail.copy(id = 6, name = "charizard"),
+            )
+            coEvery { getPokemonFullDetailUseCase("charizard") } returns Result.success(charizardFullDetail)
 
             val viewModel = createViewModel("charizard")
 
@@ -116,7 +110,7 @@ class PokemonDetailViewModelTest {
     @Test
     fun `retry で再取得できる`() =
         runTest {
-            coEvery { useCase("bulbasaur") } returns
+            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns
                 Result.failure(AppException.Unknown(Exception("error")))
 
             val viewModel = createViewModel("bulbasaur")
@@ -124,10 +118,9 @@ class PokemonDetailViewModelTest {
             viewModel.uiState.test {
                 assertTrue(awaitItem().contentState is UiState.Error)
 
-                coEvery { useCase("bulbasaur") } returns Result.success(fakePokemonDetail)
+                coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
                 viewModel.retry()
 
-                // ability 日本語名取得でも state が更新されるため skipItems で中間状態をスキップ
                 val finalState = expectMostRecentItem()
                 assertTrue(finalState.contentState is UiState.Success)
             }
