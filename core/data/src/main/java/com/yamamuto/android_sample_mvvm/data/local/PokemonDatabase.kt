@@ -10,7 +10,7 @@ import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
 /** アプリの Room データベース。 */
 @Database(
     entities = [PokemonDetailEntity::class, FavoriteEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class PokemonDatabase : RoomDatabase() {

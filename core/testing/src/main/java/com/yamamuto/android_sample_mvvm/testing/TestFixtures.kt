@@ -22,7 +22,12 @@ object TestFixtures {
             name = "bulbasaur",
             height = 7,
             weight = 69,
+            baseExperience = 64,
             types = listOf("grass", "poison"),
+            abilities = listOf(
+                PokemonDetail.Ability(name = "overgrow", isHidden = false),
+                PokemonDetail.Ability(name = "chlorophyll", isHidden = true),
+            ),
             imageUrl = OFFICIAL_ARTWORK_URL,
             stats =
                 listOf(

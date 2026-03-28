@@ -16,7 +16,9 @@ data class PokemonDetailResponse(
     val name: String,
     val height: Int,
     val weight: Int,
+    @SerialName("base_experience") val baseExperience: Int,
     val types: List<TypeSlot>,
+    val abilities: List<AbilitySlot>,
     val sprites: Sprites,
     val stats: List<StatSlot>,
 ) {
@@ -27,6 +29,17 @@ data class PokemonDetailResponse(
 
     @Serializable
     data class TypeInfo(
+        val name: String,
+    )
+
+    @Serializable
+    data class AbilitySlot(
+        val ability: AbilityInfo,
+        @SerialName("is_hidden") val isHidden: Boolean,
+    )
+
+    @Serializable
+    data class AbilityInfo(
         val name: String,
     )
 
