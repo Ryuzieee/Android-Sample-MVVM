@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.ui.component
 
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -9,6 +10,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.yamamuto.android_sample_mvvm.ui.util.asUiState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * [Flow<PagingData<T>>] の初回読み込み状態に応じて Loading / Error / Content を切り替える共通コンポーネント。
@@ -43,6 +45,22 @@ fun <T : Any> PagingContent(
     ) {
         content(pagingItems)
     }
+}
+
+/**
+ * [PagingData] を直接受け取るオーバーロード。
+ *
+ * ViewModel が `collect { updateState }` で [PagingData] を状態として保持するケースで使用する。
+ */
+@Composable
+fun <T : Any> PagingContent(
+    pagingData: PagingData<T>,
+    modifier: Modifier = Modifier,
+    content: @Composable (LazyPagingItems<T>) -> Unit,
+) {
+    val flow = remember { MutableStateFlow(PagingData.empty<T>()) }
+    flow.value = pagingData
+    PagingContent(pagingData = flow, modifier = modifier, content = content)
 }
 
 /** append（次ページ）が読み込み中かどうか。 */
