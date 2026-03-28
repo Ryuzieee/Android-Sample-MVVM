@@ -9,8 +9,10 @@ import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSource
 import com.yamamuto.android_sample_mvvm.data.util.safeApiCall
+import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
@@ -47,6 +49,16 @@ class PokemonRepositoryImpl(
             detail
         }
     }
+
+    override suspend fun getPokemonSpecies(name: String): PokemonSpecies =
+        safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }
+
+    override suspend fun getEvolutionChain(name: String): List<EvolutionStage> =
+        safeApiCall {
+            val species = dataSource.getPokemonSpecies(name)
+            val chain = dataSource.getEvolutionChain(species.evolutionChain.url)
+            chain.toStages()
+        }
 
     override suspend fun searchPokemonNames(query: String): List<String> {
         val names = cachedPokemonNames ?: safeApiCall {
