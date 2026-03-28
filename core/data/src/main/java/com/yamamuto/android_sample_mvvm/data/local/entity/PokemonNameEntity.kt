@@ -7,5 +7,4 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "pokemon_names")
 data class PokemonNameEntity(
     @PrimaryKey val name: String,
-    val cachedAt: Long = System.currentTimeMillis(),
 )

@@ -11,7 +11,7 @@ import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
 /** アプリの Room データベース。 */
 @Database(
     entities = [PokemonDetailEntity::class, FavoriteEntity::class, PokemonNameEntity::class],
-    version = 6,
+    version = 7,
     exportSchema = false,
 )
 abstract class PokemonDatabase : RoomDatabase() {
