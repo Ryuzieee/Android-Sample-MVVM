@@ -11,20 +11,20 @@ private const val TYPE_DELIMITER = ","
 private const val ENTRY_DELIMITER = ";"
 private const val FIELD_DELIMITER = ":"
 
-/** DTO → Domain */
-internal fun PokemonDetailResponse.toDomain(): PokemonDetailModel {
-    return PokemonDetailModel(
+/** DTO → Entity */
+internal fun PokemonDetailResponse.toEntity(): PokemonDetailEntity {
+    return PokemonDetailEntity(
         id = id,
         name = name,
         height = height,
         weight = weight,
         baseExperience = baseExperience,
-        types = types.map { it.type.name },
-        abilities = abilities.map {
-            PokemonDetailModel.Ability(name = it.ability.name, isHidden = it.isHidden)
+        types = types.map { it.type.name }.joinToString(TYPE_DELIMITER),
+        abilities = abilities.joinToString(ENTRY_DELIMITER) {
+            "${it.ability.name}${FIELD_DELIMITER}${FIELD_DELIMITER}${it.isHidden}"
         },
         imageUrl = sprites.other.officialArtwork.frontDefault,
-        stats = stats.map { PokemonDetailModel.Stat(name = it.stat.name, value = it.baseStat) },
+        stats = stats.joinToString(ENTRY_DELIMITER) { "${it.stat.name}${FIELD_DELIMITER}${it.baseStat}" },
     )
 }
 

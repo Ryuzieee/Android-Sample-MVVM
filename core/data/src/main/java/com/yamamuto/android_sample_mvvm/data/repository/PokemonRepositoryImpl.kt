@@ -4,8 +4,6 @@ package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
-import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
-import com.yamamuto.android_sample_mvvm.data.util.Cached
 import com.yamamuto.android_sample_mvvm.data.util.repositoryHandler
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
@@ -25,45 +23,50 @@ class PokemonRepositoryImpl(
     private val dao: PokemonDao,
 ) : PokemonRepository {
 
-    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetailModel> {
+    override suspend fun getPokemonDetail(
+        name: String,
+        forceRefresh: Boolean
+    ): Result<PokemonDetailModel> {
         return repositoryHandler(
             forceRefresh = forceRefresh,
-            local = { dao.getPokemonDetail(name)?.let { Cached(it.toDomain(), it.cachedAt) } },
-            remote = { dataSource.getPokemonDetail(name).toDomain() },
-            cache = { dao.insertPokemonDetail(it.toEntity()) },
+            load = { dao.getPokemonDetail(name) },
+            fetch = { dataSource.getPokemonDetail(name).toEntity() },
+            toModel = { it.toDomain() },
+            cachedAt = { it.cachedAt },
+            save = { dao.insertPokemonDetail(it) },
         )
     }
 
     override suspend fun getPokemonSpecies(name: String): Result<PokemonSpeciesModel> {
         return repositoryHandler(
-            remote = { dataSource.getPokemonSpecies(name).toDomain() },
+            fetch = { dataSource.getPokemonSpecies(name) },
+            toModel = { it.toDomain() },
         )
     }
 
     override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStageModel>> {
         return repositoryHandler(
-            remote = { dataSource.getEvolutionChain(url).toStages() },
+            fetch = { dataSource.getEvolutionChain(url) },
+            toModel = { it.toStages() },
         )
     }
 
     override suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>> {
         return repositoryHandler(
-            remote = { dataSource.getAbility(name).toLocalizedNames() },
+            fetch = { dataSource.getAbility(name) },
+            toModel = { it.toLocalizedNames() },
         )
     }
 
     override suspend fun searchPokemonNames(query: String): Result<List<String>> {
         return repositoryHandler(
-            local = {
-                val names = dao.getAllPokemonNames()
-                names.takeIf { it.isNotEmpty() }?.toSearchResults(query)?.let { Cached(it) }
+            load = { dao.getAllPokemonNames().takeIf { it.isNotEmpty() } },
+            fetch = {
+                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0).toEntities()
             },
-            remote = {
-                val names = dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0)
-                    .results.map { it.name }
-                dao.insertPokemonNames(names.map { PokemonNameEntity(name = it) })
-                names.toSearchResults(query)
-            },
+            toModel = { it.toModels(query) },
+            cachedAt = { it.first().cachedAt },
+            save = { dao.insertPokemonNames(it) },
         )
     }
 }

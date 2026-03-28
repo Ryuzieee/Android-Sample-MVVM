@@ -5,61 +5,53 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * キャッシュデータのラッパー。
- *
- * [cachedAt] を指定すると [CACHE_DURATION_MS] に基づく期限チェックが行われる。
- * 省略した場合は常に有効（期限なし）として扱われる。
- */
-data class Cached<T>(val data: T, val cachedAt: Long? = null)
-
-/**
  * Repository メソッドの共通ハンドラ。
  *
  * 例外を [AppException] に変換して [Result] で返す。
- * [local] / [cache] を指定するとキャッシュ付きパターンになる。
+ * キャッシュの期限チェックは [cachedAt] と [CACHE_DURATION_MS] で handler が一元管理する。
+ * [load] と [fetch] は共に [E] を返し、[toModel] で [D] に変換する。
+ *
+ * ### キャッシュ付き
+ * ```
+ * repositoryHandler(
+ *     forceRefresh = forceRefresh,
+ *     load = { dao.getFoo(id) },
+ *     fetch = { dataSource.getFoo(id).toEntity() },
+ *     toModel = { it.toDomain() },
+ *     cachedAt = { it.cachedAt },
+ *     save = { dao.insertFoo(it) },
+ * )
+ * ```
  *
  * ### API のみ
  * ```
  * repositoryHandler(
- *     remote = { dataSource.getFoo(id).toDomain() },
+ *     fetch = { dataSource.getFoo(id) },
+ *     toModel = { it.toDomain() },
  * )
  * ```
  *
- * ### キャッシュ付き（期限あり）
- * ```
- * repositoryHandler(
- *     forceRefresh = forceRefresh,
- *     local = { dao.getFoo(id)?.let { Cached(it.toDomain(), it.cachedAt) } },
- *     remote = { dataSource.getFoo(id).toDomain() },
- *     cache = { dao.insertFoo(it.toEntity()) },
- * )
- * ```
- *
- * ### キャッシュ付き（期限なし）
- * ```
- * repositoryHandler(
- *     local = { dao.getAll().takeIf { it.isNotEmpty() }?.let { Cached(it) } },
- *     remote = { dataSource.getAll() },
- *     cache = { dao.insertAll(it) },
- * )
- * ```
+ * @param D ドメインモデル型（[Result] で返す型）
+ * @param E ローカルキャッシュの Entity 型（[load] と [fetch] が共に返す型）
  */
-suspend fun <T> repositoryHandler(
+suspend fun <D : Any, E : Any> repositoryHandler(
     forceRefresh: Boolean = false,
-    local: (suspend () -> Cached<T>?)? = null,
-    remote: suspend () -> T,
-    cache: (suspend (T) -> Unit)? = null,
-): Result<T> {
+    load: suspend () -> E?,
+    fetch: suspend () -> E,
+    toModel: (E) -> D,
+    cachedAt: ((E) -> Long)? = null,
+    save: (suspend (E) -> Unit)? = null,
+): Result<D> {
     return try {
-        if (!forceRefresh && local != null) {
-            val cached = local()
-            if (cached != null && !isExpired(cached.cachedAt)) {
-                return Result.success(cached.data)
+        if (!forceRefresh) {
+            val entity = load()
+            if (entity != null && !isExpired(cachedAt?.invoke(entity))) {
+                return Result.success(toModel(entity))
             }
         }
-        val result = remote()
-        cache?.invoke(result)
-        Result.success(result)
+        val entity = fetch()
+        save?.invoke(entity)
+        Result.success(toModel(entity))
     } catch (e: IOException) {
         Result.failure(AppException.Network(e))
     } catch (e: HttpException) {
@@ -69,6 +61,18 @@ suspend fun <T> repositoryHandler(
     } catch (e: Exception) {
         Result.failure(AppException.Unknown(e))
     }
+}
+
+/** API のみの Repository メソッド用ハンドラ。キャッシュ版に委譲する。 */
+suspend fun <D : Any, E : Any> repositoryHandler(
+    fetch: suspend () -> E,
+    toModel: (E) -> D,
+): Result<D> {
+    return repositoryHandler(
+        load = { null },
+        fetch = fetch,
+        toModel = toModel,
+    )
 }
 
 private fun isExpired(cachedAt: Long?): Boolean {
