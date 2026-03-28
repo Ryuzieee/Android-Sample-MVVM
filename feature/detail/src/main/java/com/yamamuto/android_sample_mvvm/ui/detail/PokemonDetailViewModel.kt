@@ -56,8 +56,8 @@ class PokemonDetailViewModel
                 val result = loadAsUiState { getPokemonDetailUseCase(pokemonName) }
                 when (result) {
                     is UiState.Success -> {
-                        observeFavorite(result.data)
                         loadSpeciesAndEvolution()
+                        observeFavorite(result.data) // collect で永続サスペンドするので最後に呼ぶ
                     }
                     is UiState.Error -> {
                         sendEvent(UiEvent.ShowSnackbar(result.message))
