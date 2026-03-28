@@ -49,14 +49,7 @@ class PokemonDetailViewModel
         }
 
         fun refresh() {
-            viewModelScope.launch {
-                updateState { copy(isRefreshing = true) }
-                val result = getPokemonDetailUseCase(pokemonName, forceRefresh = true).toUiState()
-                if (result is UiState.Success) {
-                    loadSpeciesAndEvolution(result.data)
-                }
-                updateState { copy(contentState = result, isRefreshing = false) }
-            }
+            load(forceRefresh = true)
         }
 
         fun toggleFavorite() {
@@ -65,46 +58,40 @@ class PokemonDetailViewModel
             viewModelScope.launch { toggleFavoriteUseCase(detail, state.isFavorite) }
         }
 
-        private fun load() {
+        private fun load(forceRefresh: Boolean = false) {
             viewModelScope.launch {
-                updateState { copy(contentState = UiState.Loading) }
-                val result = getPokemonDetailUseCase(pokemonName)
-                val uiResult = result.toUiState()
-                when (uiResult) {
-                    is UiState.Success -> {
-                        loadSpeciesAndEvolution(uiResult.data)
-                        observeFavorite(uiResult.data) // collect で永続サスペンドするので最後に呼ぶ
-                    }
-                    is UiState.Error -> {
-                        sendEvent(UiEvent.ShowSnackbar(uiResult.message))
-                        updateState { copy(contentState = uiResult) }
-                    }
-                    is UiState.Loading, is UiState.Idle -> {}
+                updateState { copy(contentState = UiState.Loading, isRefreshing = forceRefresh) }
+
+                val result = getPokemonDetailUseCase(pokemonName, forceRefresh = forceRefresh).toUiState()
+                updateState { copy(contentState = result, isRefreshing = false) }
+
+                if (result is UiState.Success) {
+                    loadSubData(result.data)
+                    observeFavorite(result.data) // collect で永続サスペンドするので最後に呼ぶ
+                }
+                if (result is UiState.Error) {
+                    sendEvent(UiEvent.ShowSnackbar(result.message))
                 }
             }
         }
 
-        private fun loadSpeciesAndEvolution(detail: PokemonDetail) {
+        private fun loadSubData(detail: PokemonDetail) {
             viewModelScope.launch {
-                getPokemonSpeciesUseCase(pokemonName)
-                    .onSuccess { species -> updateState { copy(species = species) } }
+                val species = getPokemonSpeciesUseCase(pokemonName).getOrNull()
+                if (species != null) updateState { copy(species = species) }
             }
             viewModelScope.launch {
-                getEvolutionChainUseCase(pokemonName)
-                    .onSuccess { chain -> updateState { copy(evolutionChain = chain) } }
+                val chain = getEvolutionChainUseCase(pokemonName).getOrNull()
+                if (chain != null) updateState { copy(evolutionChain = chain) }
             }
-            // 特性の日本語名を並列取得
             viewModelScope.launch {
                 val jaNames = detail.abilities.map { ability ->
-                    async {
-                        getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name)
-                    }
+                    async { getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name) }
                 }.awaitAll()
                 val updatedAbilities = detail.abilities.zip(jaNames) { ability, jaName ->
                     ability.copy(japaneseName = jaName)
                 }
-                val updatedDetail = detail.copy(abilities = updatedAbilities)
-                updateState { copy(contentState = UiState.Success(updatedDetail)) }
+                updateState { copy(contentState = UiState.Success(detail.copy(abilities = updatedAbilities))) }
             }
         }
 
