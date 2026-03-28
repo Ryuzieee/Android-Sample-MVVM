@@ -20,14 +20,11 @@ interface PokemonRepository {
 
     suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies>
 
-    /** 進化チェーンを取得する（日本語名なし）。 */
-    suspend fun getEvolutionChain(name: String): Result<List<EvolutionStage>>
+    /** URL から進化チェーンを取得する。 */
+    suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStage>>
 
-    /** ポケモンの日本語名を取得する。 */
-    suspend fun getSpeciesJapaneseName(name: String): Result<String>
-
-    /** 特性の日本語名を取得する。 */
-    suspend fun getAbilityJapaneseName(name: String): Result<String>
+    /** 特性のローカライズ名一覧を取得する（language → name）。 */
+    suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>>
 
     suspend fun searchPokemonNames(query: String): Result<List<String>>
 }

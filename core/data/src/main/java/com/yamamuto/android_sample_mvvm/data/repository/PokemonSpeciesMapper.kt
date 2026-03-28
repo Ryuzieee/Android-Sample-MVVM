@@ -38,26 +38,19 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpecies {
         captureRate = captureRate,
         habitat = habitat?.name,
         generation = generation.name,
+        evolutionChainUrl = evolutionChain.url,
     )
 }
 
-/** Species DTO から日本語名だけを抽出する。 */
-internal fun PokemonSpeciesResponse.extractJapaneseName(): String =
-    names.firstOrNull { it.language.name == "ja" }?.name
-        ?: names.firstOrNull { it.language.name == "ja-hrkt" }?.name
-        ?: ""
-
 /** EvolutionChain DTO → Domain (フラットなリストに展開) */
-internal fun EvolutionChainResponse.toStages(
-    japaneseNames: Map<String, String> = emptyMap(),
-): List<EvolutionStage> {
+internal fun EvolutionChainResponse.toStages(): List<EvolutionStage> {
     val stages = mutableListOf<EvolutionStage>()
     fun walk(link: EvolutionChainResponse.ChainLink) {
         val id = extractIdFromUrl(link.species.url)
         val minLevel = link.evolutionDetails.firstOrNull()?.minLevel
         stages += EvolutionStage(
             name = link.species.name,
-            japaneseName = japaneseNames[link.species.name].orEmpty(),
+            japaneseName = "",
             id = id,
             imageUrl = "${ARTWORK_URL}$id.png",
             minLevel = minLevel,

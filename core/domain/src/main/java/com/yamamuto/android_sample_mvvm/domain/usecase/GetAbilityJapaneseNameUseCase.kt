@@ -10,5 +10,7 @@ class GetAbilityJapaneseNameUseCase
         private val repository: PokemonRepository,
     ) {
         suspend operator fun invoke(name: String): Result<String> =
-            repository.getAbilityJapaneseName(name)
+            repository.getAbilityLocalizedNames(name).map { names ->
+                names["ja"] ?: names["ja-hrkt"] ?: name
+            }
     }

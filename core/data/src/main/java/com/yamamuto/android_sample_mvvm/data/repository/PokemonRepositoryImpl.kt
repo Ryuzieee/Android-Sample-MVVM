@@ -56,23 +56,11 @@ class PokemonRepositoryImpl(
     override suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies> =
         safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }
 
-    override suspend fun getEvolutionChain(name: String): Result<List<EvolutionStage>> =
-        safeApiCall {
-            val species = dataSource.getPokemonSpecies(name)
-            val chain = dataSource.getEvolutionChain(species.evolutionChain.url)
-            chain.toStages()
-        }
+    override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStage>> =
+        safeApiCall { dataSource.getEvolutionChain(url).toStages() }
 
-    override suspend fun getSpeciesJapaneseName(name: String): Result<String> =
-        safeApiCall { dataSource.getPokemonSpecies(name).extractJapaneseName() }
-
-    override suspend fun getAbilityJapaneseName(name: String): Result<String> =
-        safeApiCall {
-            val response = dataSource.getAbility(name)
-            response.names.firstOrNull { it.language.name == "ja" }?.name
-                ?: response.names.firstOrNull { it.language.name == "ja-hrkt" }?.name
-                ?: name
-        }
+    override suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>> =
+        safeApiCall { dataSource.getAbility(name).toLocalizedNames() }
 
     override suspend fun searchPokemonNames(query: String): Result<List<String>> =
         safeApiCall {

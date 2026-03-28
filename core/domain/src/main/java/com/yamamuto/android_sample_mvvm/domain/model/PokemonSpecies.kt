@@ -10,4 +10,5 @@ data class PokemonSpecies(
     val captureRate: Int,
     val habitat: String?,
     val generation: String,
+    val evolutionChainUrl: String,
 )
