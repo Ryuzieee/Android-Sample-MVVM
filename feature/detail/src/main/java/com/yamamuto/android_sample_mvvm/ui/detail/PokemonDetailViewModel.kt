@@ -3,7 +3,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
-import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetAbilityJapaneseNameUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
@@ -35,7 +35,7 @@ class PokemonDetailViewModel
         private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
         private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
         private val getEvolutionChainUseCase: GetEvolutionChainUseCase,
-        private val repository: PokemonRepository,
+        private val getAbilityJapaneseNameUseCase: GetAbilityJapaneseNameUseCase,
         savedStateHandle: SavedStateHandle,
     ) : UiStateViewModel<PokemonDetailUiState>(PokemonDetailUiState()) {
         private val pokemonName: String = checkNotNull(savedStateHandle["name"])
@@ -97,7 +97,7 @@ class PokemonDetailViewModel
             viewModelScope.launch {
                 val jaNames = detail.abilities.map { ability ->
                     async {
-                        repository.getAbilityJapaneseName(ability.name).getOrDefault(ability.name)
+                        getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name)
                     }
                 }.awaitAll()
                 val updatedAbilities = detail.abilities.zip(jaNames) { ability, jaName ->

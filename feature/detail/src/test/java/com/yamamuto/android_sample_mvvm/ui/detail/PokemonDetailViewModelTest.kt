@@ -3,6 +3,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetAbilityJapaneseNameUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetEvolutionChainUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonDetailUseCase
@@ -38,7 +39,7 @@ class PokemonDetailViewModelTest {
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
     private lateinit var getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase
     private lateinit var getEvolutionChainUseCase: GetEvolutionChainUseCase
-    private lateinit var repository: com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
+    private lateinit var getAbilityJapaneseNameUseCase: GetAbilityJapaneseNameUseCase
 
     @Before
     fun setUp() {
@@ -47,12 +48,12 @@ class PokemonDetailViewModelTest {
         toggleFavoriteUseCase = mockk()
         getPokemonSpeciesUseCase = mockk()
         getEvolutionChainUseCase = mockk()
-        repository = mockk()
+        getAbilityJapaneseNameUseCase = mockk()
         every { getIsFavoriteUseCase(any()) } returns flowOf(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
         coEvery { getPokemonSpeciesUseCase(any()) } returns Result.failure(Exception("skip"))
         coEvery { getEvolutionChainUseCase(any()) } returns Result.failure(Exception("skip"))
-        coEvery { repository.getAbilityJapaneseName(any()) } returns Result.success("")
+        coEvery { getAbilityJapaneseNameUseCase(any()) } returns Result.success("")
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
@@ -62,7 +63,7 @@ class PokemonDetailViewModelTest {
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             getPokemonSpeciesUseCase = getPokemonSpeciesUseCase,
             getEvolutionChainUseCase = getEvolutionChainUseCase,
-            repository = repository,
+            getAbilityJapaneseNameUseCase = getAbilityJapaneseNameUseCase,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
 
