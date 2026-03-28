@@ -7,7 +7,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
-import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
 import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSource
 import com.yamamuto.android_sample_mvvm.data.util.safeApiCall
 import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
@@ -29,6 +28,7 @@ class PokemonRepositoryImpl(
     private val dao: PokemonDao,
 ) : PokemonRepository {
     private var cachedPokemonNames: List<String>? = null
+
     override fun getPokemonPagingData(): Flow<PagingData<Pokemon>> =
         Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
@@ -36,29 +36,13 @@ class PokemonRepositoryImpl(
         ).flow
 
     override suspend fun getPokemonDetail(name: String): PokemonDetail {
-        // キャッシュが有効ならキャッシュから返す
         val cached = dao.getPokemonDetail(name)
         if (cached != null && System.currentTimeMillis() - cached.cachedAt < CACHE_DURATION_MS) {
             return cached.toDomain()
         }
 
-        // ネットワークから取得してキャッシュに保存
         return safeApiCall {
-            val dto = dataSource.getPokemonDetail(name)
-            val detail =
-                PokemonDetail(
-                    id = dto.id,
-                    name = dto.name,
-                    height = dto.height,
-                    weight = dto.weight,
-                    baseExperience = dto.baseExperience,
-                    types = dto.types.map { it.type.name },
-                    abilities = dto.abilities.map {
-                        PokemonDetail.Ability(name = it.ability.name, isHidden = it.isHidden)
-                    },
-                    imageUrl = dto.sprites.other.officialArtwork.frontDefault,
-                    stats = dto.stats.map { PokemonDetail.Stat(name = it.stat.name, value = it.baseStat) },
-                )
+            val detail = dataSource.getPokemonDetail(name).toDomain()
             dao.insertPokemonDetail(detail.toEntity())
             detail
         }
@@ -70,38 +54,4 @@ class PokemonRepositoryImpl(
         }.also { cachedPokemonNames = it }
         return names.filter { it.contains(query.trim(), ignoreCase = true) }
     }
-
-    private fun PokemonDetailEntity.toDomain(): PokemonDetail =
-        PokemonDetail(
-            id = id,
-            name = name,
-            height = height,
-            weight = weight,
-            baseExperience = baseExperience,
-            types = types.split(","),
-            abilities = abilities.split(";").mapNotNull { entry ->
-                val parts = entry.split(":")
-                if (parts.size == 2) PokemonDetail.Ability(parts[0], parts[1].toBooleanStrictOrNull() ?: false) else null
-            },
-            imageUrl = imageUrl,
-            stats =
-                stats.split(";").mapNotNull { entry ->
-                    val parts = entry.split(":")
-                    if (parts.size == 2) PokemonDetail.Stat(parts[0], parts[1].toInt()) else null
-                },
-        )
-
-    private fun PokemonDetail.toEntity(): PokemonDetailEntity =
-        PokemonDetailEntity(
-            id = id,
-            name = name,
-            height = height,
-            weight = weight,
-            baseExperience = baseExperience,
-            types = types.joinToString(","),
-            abilities = abilities.joinToString(";") { "${it.name}:${it.isHidden}" },
-            imageUrl = imageUrl,
-            stats = stats.joinToString(";") { "${it.name}:${it.value}" },
-        )
-
 }
