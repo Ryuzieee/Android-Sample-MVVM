@@ -1,10 +1,7 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.toRoute
-import com.yamamuto.android_sample_mvvm.ui.navigation.pushComposable
+import com.yamamuto.android_sample_mvvm.ui.navigation.pushScreenWithRoute
 import kotlinx.serialization.Serializable
 
 /** ポケモン詳細画面のルート定義。 */
@@ -15,8 +12,7 @@ data class PokemonDetailRoute(
 
 /** ポケモン詳細画面のナビゲーション定義。 */
 fun NavGraphBuilder.pokemonDetailScreen(onBack: () -> Unit) {
-    pushComposable<PokemonDetailRoute> { backStackEntry ->
-        val route = backStackEntry.toRoute<PokemonDetailRoute>()
+    pushScreenWithRoute<PokemonDetailRoute> { route ->
         PokemonDetailScreen(
             pokemonName = route.name,
             onBack = onBack,

@@ -1,9 +1,7 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import androidx.navigation.NavGraphBuilder
-import com.yamamuto.android_sample_mvvm.ui.navigation.modalComposable
+import com.yamamuto.android_sample_mvvm.ui.navigation.modalScreen
 import kotlinx.serialization.Serializable
 
 /** お気に入り一覧画面のルート定義。 */
@@ -15,7 +13,7 @@ fun NavGraphBuilder.favoritesScreen(
     onPokemonClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
-    modalComposable<FavoritesRoute> {
+    modalScreen<FavoritesRoute> {
         FavoritesScreen(
             onPokemonClick = onPokemonClick,
             onBack = onBack,

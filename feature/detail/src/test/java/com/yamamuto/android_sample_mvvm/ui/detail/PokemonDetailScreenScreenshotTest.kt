@@ -34,7 +34,12 @@ class PokemonDetailScreenScreenshotTest {
             name = "bulbasaur",
             height = 7,
             weight = 69,
+            baseExperience = 64,
             types = listOf("grass", "poison"),
+            abilities = listOf(
+                PokemonDetail.Ability("overgrow", isHidden = false),
+                PokemonDetail.Ability("chlorophyll", isHidden = true),
+            ),
             imageUrl = "",
             stats =
                 listOf(

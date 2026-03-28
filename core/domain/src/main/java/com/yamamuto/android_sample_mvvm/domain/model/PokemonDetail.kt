@@ -6,10 +6,15 @@ data class PokemonDetail(
     val name: String,
     val height: Int,
     val weight: Int,
+    val baseExperience: Int,
     val types: List<String>,
+    val abilities: List<Ability>,
     val imageUrl: String,
     val stats: List<Stat>,
 ) {
     /** ポケモンの各種基本ステータス（HP・攻撃力など）。 */
     data class Stat(val name: String, val value: Int)
+
+    /** ポケモンの特性。 */
+    data class Ability(val name: String, val isHidden: Boolean)
 }

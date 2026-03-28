@@ -51,7 +51,11 @@ class PokemonRepositoryImpl(
                     name = dto.name,
                     height = dto.height,
                     weight = dto.weight,
+                    baseExperience = dto.baseExperience,
                     types = dto.types.map { it.type.name },
+                    abilities = dto.abilities.map {
+                        PokemonDetail.Ability(name = it.ability.name, isHidden = it.isHidden)
+                    },
                     imageUrl = dto.sprites.other.officialArtwork.frontDefault,
                     stats = dto.stats.map { PokemonDetail.Stat(name = it.stat.name, value = it.baseStat) },
                 )
@@ -73,7 +77,12 @@ class PokemonRepositoryImpl(
             name = name,
             height = height,
             weight = weight,
+            baseExperience = baseExperience,
             types = types.split(","),
+            abilities = abilities.split(";").mapNotNull { entry ->
+                val parts = entry.split(":")
+                if (parts.size == 2) PokemonDetail.Ability(parts[0], parts[1].toBooleanStrictOrNull() ?: false) else null
+            },
             imageUrl = imageUrl,
             stats =
                 stats.split(";").mapNotNull { entry ->
@@ -88,7 +97,9 @@ class PokemonRepositoryImpl(
             name = name,
             height = height,
             weight = weight,
+            baseExperience = baseExperience,
             types = types.joinToString(","),
+            abilities = abilities.joinToString(";") { "${it.name}:${it.isHidden}" },
             imageUrl = imageUrl,
             stats = stats.joinToString(";") { "${it.name}:${it.value}" },
         )

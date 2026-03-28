@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
-import com.yamamuto.android_sample_mvvm.domain.model.UiState
+import com.yamamuto.android_sample_mvvm.ui.util.UiState
 
 /** ポケモン詳細画面のUI状態。 */
 data class PokemonDetailUiState(

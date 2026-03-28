@@ -2,8 +2,6 @@ package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yamamuto.android_sample_mvvm.domain.model.Favorite
+import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
@@ -30,7 +29,7 @@ fun FavoritesScreen(
         onBack = onBack,
     ) { padding ->
         UiStateContent(
-            state = uiState.contentState,
+            state = uiState,
             modifier = Modifier.padding(padding),
         ) { favorites ->
             if (favorites.isEmpty()) {
@@ -57,10 +56,7 @@ private fun FavoritesContent(
     onPokemonClick: (String) -> Unit,
     padding: PaddingValues,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = padding,
-    ) {
+    AppLazyVerticalGrid(contentPadding = padding) {
         items(favorites, key = { it.id }) { favorite ->
             PokemonCard(
                 name = favorite.name,

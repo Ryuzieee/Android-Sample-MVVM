@@ -1,9 +1,7 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package com.yamamuto.android_sample_mvvm.ui.search
 
 import androidx.navigation.NavGraphBuilder
-import com.yamamuto.android_sample_mvvm.ui.navigation.modalComposable
+import com.yamamuto.android_sample_mvvm.ui.navigation.modalScreen
 import kotlinx.serialization.Serializable
 
 /** 検索画面のルート定義。 */
@@ -15,7 +13,7 @@ fun NavGraphBuilder.searchScreen(
     onPokemonClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
-    modalComposable<SearchRoute> {
+    modalScreen<SearchRoute> {
         SearchScreen(
             onPokemonClick = onPokemonClick,
             onBack = onBack,
