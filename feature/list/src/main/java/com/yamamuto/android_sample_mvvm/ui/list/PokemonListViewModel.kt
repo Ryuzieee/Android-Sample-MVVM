@@ -12,9 +12,13 @@ import javax.inject.Inject
 class PokemonListViewModel
     @Inject
     constructor(
-        getPokemonListUseCase: GetPokemonListUseCase,
+        private val getPokemonListUseCase: GetPokemonListUseCase,
     ) : UiStateViewModel<PokemonListUiState>(PokemonListUiState()) {
         init {
+            load()
+        }
+
+        private fun load() {
             updateState { copy(pagingData = getPokemonListUseCase().cachedIn(viewModelScope)) }
         }
     }

@@ -17,6 +17,10 @@ class FavoritesViewModel
         private val getFavoritesUseCase: GetFavoritesUseCase,
     ) : UiStateViewModel<UiState<List<Favorite>>>(UiState.Loading) {
         init {
+            load()
+        }
+
+        private fun load() {
             viewModelScope.launch {
                 getFavoritesUseCase().collect {
                     updateState { UiState.Success(it) }

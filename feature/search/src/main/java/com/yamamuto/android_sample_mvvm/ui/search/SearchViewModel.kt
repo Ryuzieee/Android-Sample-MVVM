@@ -30,6 +30,10 @@ class SearchViewModel
         private val searchPokemonUseCase: SearchPokemonUseCase,
     ) : UiStateViewModel<SearchUiState>(SearchUiState()) {
         init {
+            observeQuery()
+        }
+
+        private fun observeQuery() {
             viewModelScope.launch {
                 uiState
                     .map { it.query }
