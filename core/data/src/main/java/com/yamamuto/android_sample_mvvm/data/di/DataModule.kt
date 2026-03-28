@@ -5,6 +5,9 @@ import androidx.room.Room
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.PokemonDatabase
+import com.yamamuto.android_sample_mvvm.data.paging.PagingSourceFactory
+import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSourceFactory
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.data.local.dao.FavoriteDao
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.repository.FavoriteRepositoryImpl
@@ -66,5 +69,13 @@ object DataModule {
     @Singleton
     fun provideFavoriteRepository(dao: FavoriteDao): FavoriteRepository {
         return FavoriteRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePokemonPagingSourceFactory(
+        factory: PokemonPagingSourceFactory,
+    ): PagingSourceFactory<PokemonSummaryModel> {
+        return factory
     }
 }

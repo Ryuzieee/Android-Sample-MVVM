@@ -5,7 +5,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
-import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSourceFactory
+import com.yamamuto.android_sample_mvvm.data.paging.PagingSourceFactory
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonList
@@ -27,7 +27,7 @@ class PokemonListViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private lateinit var pagingSourceFactory: PokemonPagingSourceFactory
+    private lateinit var pagingSourceFactory: PagingSourceFactory<PokemonSummaryModel>
 
     @Before
     fun setUp() {
