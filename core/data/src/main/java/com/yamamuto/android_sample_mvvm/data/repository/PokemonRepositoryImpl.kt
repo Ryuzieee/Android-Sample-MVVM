@@ -2,20 +2,14 @@
 
 package com.yamamuto.android_sample_mvvm.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
-import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSource
 import com.yamamuto.android_sample_mvvm.data.util.cachedApiCall
 import com.yamamuto.android_sample_mvvm.data.util.safeApiCall
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStage
-import com.yamamuto.android_sample_mvvm.domain.model.Pokemon
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpecies
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
 
 private const val CACHE_DURATION_MS = 5 * 60 * 1000L // 5分
@@ -31,12 +25,6 @@ class PokemonRepositoryImpl(
     private val dao: PokemonDao,
 ) : PokemonRepository {
     private var cachedPokemonNames: List<String>? = null
-
-    override fun observePokemonPaging(): Flow<PagingData<Pokemon>> =
-        Pager(
-            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            pagingSourceFactory = { PokemonPagingSource(dataSource) },
-        ).flow
 
     override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetail> =
         safeApiCall {
