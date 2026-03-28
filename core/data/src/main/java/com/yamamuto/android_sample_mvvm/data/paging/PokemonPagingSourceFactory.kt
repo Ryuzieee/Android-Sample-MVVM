@@ -11,5 +11,7 @@ class PokemonPagingSourceFactory
     constructor(
         private val dataSource: PokemonRemoteDataSource,
     ) {
-        fun create(): PagingSource<Int, Pokemon> = PokemonPagingSource(dataSource)
+        fun create(): PagingSource<Int, Pokemon> {
+            return PokemonPagingSource(dataSource)
+        }
     }

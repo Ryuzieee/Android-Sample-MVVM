@@ -51,16 +51,17 @@ class PokemonDetailViewModelTest {
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
     }
 
-    private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel =
-        PokemonDetailViewModel(
+    private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel {
+        return PokemonDetailViewModel(
             getPokemonFullDetailUseCase = getPokemonFullDetailUseCase,
             observeIsFavoriteUseCase = observeIsFavoriteUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
+    }
 
     @Test
-    fun `データ取得成功時は Success 状態になる`() =
+    fun `データ取得成功時は Success 状態になる`() {
         runTest {
             coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
 
@@ -74,9 +75,10 @@ class PokemonDetailViewModelTest {
                 assertEquals(fakePokemonDetail.name, data.name)
             }
         }
+    }
 
     @Test
-    fun `データ取得失敗時は Error 状態になる`() =
+    fun `データ取得失敗時は Error 状態になる`() {
         runTest {
             coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns
                 Result.failure(AppException.Unknown(Exception("Not found")))
@@ -89,9 +91,10 @@ class PokemonDetailViewModelTest {
                 assertEquals("Not found", (state.contentState as UiState.Error).message)
             }
         }
+    }
 
     @Test
-    fun `異なるポケモン名で正しくデータを取得する`() =
+    fun `異なるポケモン名で正しくデータを取得する`() {
         runTest {
             val charizardFullDetail = fakeFullDetail.copy(
                 detail = fakePokemonDetail.copy(id = 6, name = "charizard"),
@@ -106,9 +109,10 @@ class PokemonDetailViewModelTest {
                 assertEquals(6, state.data.id)
             }
         }
+    }
 
     @Test
-    fun `retry で再取得できる`() =
+    fun `retry で再取得できる`() {
         runTest {
             coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns
                 Result.failure(AppException.Unknown(Exception("error")))
@@ -125,4 +129,5 @@ class PokemonDetailViewModelTest {
                 assertTrue(finalState.contentState is UiState.Success)
             }
         }
+    }
 }

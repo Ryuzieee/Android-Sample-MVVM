@@ -21,13 +21,23 @@ class PokemonRemoteDataSource(
     suspend fun getPokemonList(
         limit: Int,
         offset: Int,
-    ): PokemonListResponse = api.getPokemonList(limit, offset)
+    ): PokemonListResponse {
+        return api.getPokemonList(limit, offset)
+    }
 
-    suspend fun getPokemonDetail(name: String): PokemonDetailResponse = api.getPokemonDetail(name)
+    suspend fun getPokemonDetail(name: String): PokemonDetailResponse {
+        return api.getPokemonDetail(name)
+    }
 
-    suspend fun getPokemonSpecies(name: String): PokemonSpeciesResponse = api.getPokemonSpecies(name)
+    suspend fun getPokemonSpecies(name: String): PokemonSpeciesResponse {
+        return api.getPokemonSpecies(name)
+    }
 
-    suspend fun getEvolutionChain(url: String): EvolutionChainResponse = api.getEvolutionChain(url)
+    suspend fun getEvolutionChain(url: String): EvolutionChainResponse {
+        return api.getEvolutionChain(url)
+    }
 
-    suspend fun getAbility(name: String): AbilityResponse = api.getAbility(name)
+    suspend fun getAbility(name: String): AbilityResponse {
+        return api.getAbility(name)
+    }
 }

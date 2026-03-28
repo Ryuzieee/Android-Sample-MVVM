@@ -10,5 +10,7 @@ class ObserveIsFavoriteUseCase
     constructor(
         private val repository: FavoriteRepository,
     ) {
-        operator fun invoke(id: Int): Flow<Boolean> = repository.observeIsFavorite(id)
+        operator fun invoke(id: Int): Flow<Boolean> {
+            return repository.observeIsFavorite(id)
+        }
     }

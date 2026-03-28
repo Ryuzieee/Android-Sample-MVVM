@@ -12,12 +12,15 @@ import kotlinx.coroutines.flow.map
 class FavoriteRepositoryImpl(
     private val dao: FavoriteDao,
 ) : FavoriteRepository {
-    override fun observeFavorites(): Flow<List<Favorite>> =
-        dao.getAllFavorites().map { list ->
+    override fun observeFavorites(): Flow<List<Favorite>> {
+        return dao.getAllFavorites().map { list ->
             list.map { Favorite(id = it.id, name = it.name, imageUrl = it.imageUrl) }
         }
+    }
 
-    override fun observeIsFavorite(id: Int): Flow<Boolean> = dao.isFavorite(id)
+    override fun observeIsFavorite(id: Int): Flow<Boolean> {
+        return dao.isFavorite(id)
+    }
 
     override suspend fun addFavorite(detail: PokemonDetail) {
         dao.insertFavorite(

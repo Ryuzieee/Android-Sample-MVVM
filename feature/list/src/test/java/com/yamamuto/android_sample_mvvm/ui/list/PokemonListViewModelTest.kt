@@ -34,16 +34,20 @@ class PokemonListViewModelTest {
         pagingSourceFactory = mockk()
     }
 
-    private fun fakePagingSource(items: List<Pokemon>): PagingSource<Int, Pokemon> =
-        object : PagingSource<Int, Pokemon>() {
-            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> =
-                LoadResult.Page(data = items, prevKey = null, nextKey = null)
+    private fun fakePagingSource(items: List<Pokemon>): PagingSource<Int, Pokemon> {
+        return object : PagingSource<Int, Pokemon>() {
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
+                return LoadResult.Page(data = items, prevKey = null, nextKey = null)
+            }
 
-            override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? = null
+            override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? {
+                return null
+            }
         }
+    }
 
     @Test
-    fun `Paging でポケモン一覧を取得できる`() =
+    fun `Paging でポケモン一覧を取得できる`() {
         runTest {
             every { pagingSourceFactory.create() } returns fakePagingSource(fakePokemonList)
 
@@ -56,9 +60,10 @@ class PokemonListViewModelTest {
                 assertEquals("bulbasaur", items[0].name)
             }
         }
+    }
 
     @Test
-    fun `空リストの場合は空のPagingDataになる`() =
+    fun `空リストの場合は空のPagingDataになる`() {
         runTest {
             every { pagingSourceFactory.create() } returns fakePagingSource(emptyList())
 
@@ -70,4 +75,5 @@ class PokemonListViewModelTest {
                 assertEquals(0, items.size)
             }
         }
+    }
 }

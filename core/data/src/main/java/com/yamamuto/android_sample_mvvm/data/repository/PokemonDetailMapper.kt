@@ -8,8 +8,8 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
 import kotlinx.serialization.InternalSerializationApi
 
 /** DTO → Domain */
-internal fun PokemonDetailResponse.toDomain(): PokemonDetail =
-    PokemonDetail(
+internal fun PokemonDetailResponse.toDomain(): PokemonDetail {
+    return PokemonDetail(
         id = id,
         name = name,
         height = height,
@@ -22,10 +22,11 @@ internal fun PokemonDetailResponse.toDomain(): PokemonDetail =
         imageUrl = sprites.other.officialArtwork.frontDefault,
         stats = stats.map { PokemonDetail.Stat(name = it.stat.name, value = it.baseStat) },
     )
+}
 
 /** Entity → Domain */
-internal fun PokemonDetailEntity.toDomain(): PokemonDetail =
-    PokemonDetail(
+internal fun PokemonDetailEntity.toDomain(): PokemonDetail {
+    return PokemonDetail(
         id = id,
         name = name,
         height = height,
@@ -46,10 +47,11 @@ internal fun PokemonDetailEntity.toDomain(): PokemonDetail =
             if (parts.size == 2) PokemonDetail.Stat(parts[0], parts[1].toInt()) else null
         },
     )
+}
 
 /** Domain → Entity */
-internal fun PokemonDetail.toEntity(): PokemonDetailEntity =
-    PokemonDetailEntity(
+internal fun PokemonDetail.toEntity(): PokemonDetailEntity {
+    return PokemonDetailEntity(
         id = id,
         name = name,
         height = height,
@@ -60,3 +62,4 @@ internal fun PokemonDetail.toEntity(): PokemonDetailEntity =
         imageUrl = imageUrl,
         stats = stats.joinToString(";") { "${it.name}:${it.value}" },
     )
+}

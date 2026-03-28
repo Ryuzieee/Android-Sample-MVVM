@@ -62,5 +62,6 @@ internal fun EvolutionChainResponse.toStages(): List<EvolutionStage> {
 }
 
 /** species URL (e.g. "https://pokeapi.co/api/v2/pokemon-species/2/") から ID を抽出 */
-internal fun extractIdFromUrl(url: String): Int =
-    url.trimEnd('/').substringAfterLast('/').toInt()
+internal fun extractIdFromUrl(url: String): Int {
+    return url.trimEnd('/').substringAfterLast('/').toInt()
+}

@@ -65,4 +65,6 @@ fun <T : Any> PagingContent(
 
 /** append（次ページ）が読み込み中かどうか。 */
 val <T : Any> LazyPagingItems<T>.isAppendLoading: Boolean
-    get() = loadState.append is LoadState.Loading
+    get() {
+        return loadState.append is LoadState.Loading
+    }

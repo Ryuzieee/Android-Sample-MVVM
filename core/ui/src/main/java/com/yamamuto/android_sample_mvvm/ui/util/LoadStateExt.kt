@@ -15,11 +15,13 @@ import com.yamamuto.android_sample_mvvm.domain.model.AppException
  * ) { items -> ... }
  * ```
  */
-fun <T> LoadState.asUiState(onNotLoading: () -> T): UiState<T> = when (this) {
-    is LoadState.Loading -> UiState.Loading
-    is LoadState.Error -> UiState.Error(
-        message = error.message ?: "Unknown error",
-        isNetworkError = error is AppException.Network,
-    )
-    is LoadState.NotLoading -> UiState.Success(onNotLoading())
+fun <T> LoadState.asUiState(onNotLoading: () -> T): UiState<T> {
+    return when (this) {
+        is LoadState.Loading -> UiState.Loading
+        is LoadState.Error -> UiState.Error(
+            message = error.message ?: "Unknown error",
+            isNetworkError = error is AppException.Network,
+        )
+        is LoadState.NotLoading -> UiState.Success(onNotLoading())
+    }
 }

@@ -9,8 +9,8 @@ import java.io.IOException
  *
  * 例外を [AppException] に変換して [Result.failure] で返す。
  */
-inline fun <T> safeApiCall(block: () -> T): Result<T> =
-    try {
+inline fun <T> safeApiCall(block: () -> T): Result<T> {
+    return try {
         Result.success(block())
     } catch (e: IOException) {
         Result.failure(AppException.Network(e))
@@ -21,3 +21,4 @@ inline fun <T> safeApiCall(block: () -> T): Result<T> =
     } catch (e: Exception) {
         Result.failure(AppException.Unknown(e))
     }
+}

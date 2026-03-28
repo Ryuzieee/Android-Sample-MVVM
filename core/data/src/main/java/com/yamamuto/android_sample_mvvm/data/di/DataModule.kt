@@ -26,32 +26,43 @@ object DataModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext context: Context,
-    ): PokemonDatabase =
-        Room
+    ): PokemonDatabase {
+        return Room
             .databaseBuilder(context, PokemonDatabase::class.java, "pokemon.db")
             .fallbackToDestructiveMigration()
             .build()
+    }
 
     @Provides
     @Singleton
-    fun providePokemonDao(database: PokemonDatabase): PokemonDao = database.pokemonDao()
+    fun providePokemonDao(database: PokemonDatabase): PokemonDao {
+        return database.pokemonDao()
+    }
 
     @Provides
     @Singleton
-    fun provideFavoriteDao(database: PokemonDatabase): FavoriteDao = database.favoriteDao()
+    fun provideFavoriteDao(database: PokemonDatabase): FavoriteDao {
+        return database.favoriteDao()
+    }
 
     @Provides
     @Singleton
-    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource = PokemonRemoteDataSource(api)
+    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource {
+        return PokemonRemoteDataSource(api)
+    }
 
     @Provides
     @Singleton
     fun providePokemonRepository(
         dataSource: PokemonRemoteDataSource,
         dao: PokemonDao,
-    ): PokemonRepository = PokemonRepositoryImpl(dataSource, dao)
+    ): PokemonRepository {
+        return PokemonRepositoryImpl(dataSource, dao)
+    }
 
     @Provides
     @Singleton
-    fun provideFavoriteRepository(dao: FavoriteDao): FavoriteRepository = FavoriteRepositoryImpl(dao)
+    fun provideFavoriteRepository(dao: FavoriteDao): FavoriteRepository {
+        return FavoriteRepositoryImpl(dao)
+    }
 }

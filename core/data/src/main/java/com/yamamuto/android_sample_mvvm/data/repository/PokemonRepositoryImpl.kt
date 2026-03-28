@@ -26,8 +26,8 @@ class PokemonRepositoryImpl(
 ) : PokemonRepository {
     private var cachedPokemonNames: List<String>? = null
 
-    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetail> =
-        safeApiCall {
+    override suspend fun getPokemonDetail(name: String, forceRefresh: Boolean): Result<PokemonDetail> {
+        return safeApiCall {
             cachedApiCall(
                 forceRefresh = forceRefresh,
                 fromCache = {
@@ -40,21 +40,26 @@ class PokemonRepositoryImpl(
                 saveToCache = { dao.insertPokemonDetail(it.toEntity()) },
             )
         }
+    }
 
-    override suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies> =
-        safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }
+    override suspend fun getPokemonSpecies(name: String): Result<PokemonSpecies> {
+        return safeApiCall { dataSource.getPokemonSpecies(name).toDomain() }
+    }
 
-    override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStage>> =
-        safeApiCall { dataSource.getEvolutionChain(url).toStages() }
+    override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStage>> {
+        return safeApiCall { dataSource.getEvolutionChain(url).toStages() }
+    }
 
-    override suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>> =
-        safeApiCall { dataSource.getAbility(name).toLocalizedNames() }
+    override suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>> {
+        return safeApiCall { dataSource.getAbility(name).toLocalizedNames() }
+    }
 
-    override suspend fun searchPokemonNames(query: String): Result<List<String>> =
-        safeApiCall {
+    override suspend fun searchPokemonNames(query: String): Result<List<String>> {
+        return safeApiCall {
             val names = cachedPokemonNames ?: dataSource.getPokemonList(limit = 2000, offset = 0)
                 .results.map { it.name }
                 .also { cachedPokemonNames = it }
             names.filter { it.contains(query.trim(), ignoreCase = true) }
         }
+    }
 }

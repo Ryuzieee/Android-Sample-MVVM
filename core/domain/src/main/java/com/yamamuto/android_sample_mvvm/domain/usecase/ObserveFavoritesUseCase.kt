@@ -11,5 +11,7 @@ class ObserveFavoritesUseCase
     constructor(
         private val repository: FavoriteRepository,
     ) {
-        operator fun invoke(): Flow<List<Favorite>> = repository.observeFavorites()
+        operator fun invoke(): Flow<List<Favorite>> {
+            return repository.observeFavorites()
+        }
     }

@@ -20,34 +20,39 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideJson(): Json =
-        Json {
+    fun provideJson(): Json {
+        return Json {
             ignoreUnknownKeys = true
         }
+    }
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient
             .Builder()
             .addInterceptor(
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC },
             ).build()
+    }
 
     @Provides
     @Singleton
     fun provideRetrofit(
         client: OkHttpClient,
         json: Json,
-    ): Retrofit =
-        Retrofit
+    ): Retrofit {
+        return Retrofit
             .Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
+    }
 
     @Provides
     @Singleton
-    fun providePokeApiService(retrofit: Retrofit): PokeApiService = retrofit.create(PokeApiService::class.java)
+    fun providePokeApiService(retrofit: Retrofit): PokeApiService {
+        return retrofit.create(PokeApiService::class.java)
+    }
 }

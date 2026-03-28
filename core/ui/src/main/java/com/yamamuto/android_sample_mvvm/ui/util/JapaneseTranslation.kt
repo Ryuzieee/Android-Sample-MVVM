@@ -75,9 +75,23 @@ object JapaneseTranslation {
         "generation-ix" to "第9世代",
     )
 
-    fun type(key: String): String = types[key] ?: key
-    fun stat(key: String): String = stats[key] ?: key
-    fun eggGroup(key: String): String = eggGroups[key] ?: key
-    fun habitat(key: String): String = habitats[key] ?: key
-    fun generation(key: String): String = generations[key] ?: key
+    fun type(key: String): String {
+        return types[key] ?: key
+    }
+
+    fun stat(key: String): String {
+        return stats[key] ?: key
+    }
+
+    fun eggGroup(key: String): String {
+        return eggGroups[key] ?: key
+    }
+
+    fun habitat(key: String): String {
+        return habitats[key] ?: key
+    }
+
+    fun generation(key: String): String {
+        return generations[key] ?: key
+    }
 }

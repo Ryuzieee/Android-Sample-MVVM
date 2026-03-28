@@ -24,7 +24,7 @@ class GetPokemonDetailUseCaseTest {
     }
 
     @Test
-    fun `ポケモン名でリポジトリを呼び出し結果を返す`() =
+    fun `ポケモン名でリポジトリを呼び出し結果を返す`() {
         runTest {
             coEvery { repository.getPokemonDetail("bulbasaur") } returns Result.success(fakePokemonDetail)
 
@@ -34,9 +34,10 @@ class GetPokemonDetailUseCaseTest {
             assertEquals(fakePokemonDetail, result.getOrThrow())
             coVerify(exactly = 1) { repository.getPokemonDetail("bulbasaur") }
         }
+    }
 
     @Test
-    fun `リポジトリがエラーを返した場合は失敗 Result を返す`() =
+    fun `リポジトリがエラーを返した場合は失敗 Result を返す`() {
         runTest {
             coEvery { repository.getPokemonDetail(any()) } returns
                 Result.failure(AppException.Unknown(Exception("Not found")))
@@ -45,4 +46,5 @@ class GetPokemonDetailUseCaseTest {
 
             assertTrue(result.isFailure)
         }
+    }
 }

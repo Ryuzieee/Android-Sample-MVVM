@@ -16,8 +16,8 @@ import kotlinx.serialization.InternalSerializationApi
 class PokemonPagingSource(
     private val dataSource: PokemonRemoteDataSource,
 ) : PagingSource<Int, Pokemon>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> =
-        try {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
+        return try {
             val offset = params.key ?: 0
             val response = dataSource.getPokemonList(limit = params.loadSize, offset = offset)
             val pokemons = response.results.map { Pokemon(name = it.name, url = it.url) }
@@ -29,9 +29,11 @@ class PokemonPagingSource(
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
+    }
 
-    override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? =
-        state.anchorPosition?.let { anchor ->
+    override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? {
+        return state.anchorPosition?.let { anchor ->
             state.closestPageToPosition(anchor)?.prevKey
         }
+    }
 }

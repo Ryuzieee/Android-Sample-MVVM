@@ -22,7 +22,9 @@ abstract class UiStateViewModel<S>(initialState: S) : ViewModel() {
     private val _events = Channel<UiEvent>(Channel.BUFFERED)
     val events: Flow<UiEvent> = _events.receiveAsFlow()
 
-    protected val currentState: S get() = _uiState.value
+    protected val currentState: S get() {
+        return _uiState.value
+    }
 
     protected fun updateState(transform: S.() -> S) {
         _uiState.update(transform)

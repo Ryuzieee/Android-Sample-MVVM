@@ -9,8 +9,8 @@ import timber.log.Timber
  * - 成功時: [UiState.Success]
  * - 失敗時: [UiState.Error]（ネットワークエラー判定 + Timber ログ付き）
  */
-fun <T> Result<T>.toUiState(): UiState<T> =
-    fold(
+fun <T> Result<T>.toUiState(): UiState<T> {
+    return fold(
         onSuccess = { UiState.Success(it) },
         onFailure = { e ->
             Timber.e(e)
@@ -20,3 +20,4 @@ fun <T> Result<T>.toUiState(): UiState<T> =
             )
         },
     )
+}

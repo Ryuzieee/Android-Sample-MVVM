@@ -34,7 +34,7 @@ class PokemonRepositoryImplTest {
     }
 
     @Test
-    fun `getPokemonDetail はDTOをドメインモデルに正しく変換する`() =
+    fun `getPokemonDetail はDTOをドメインモデルに正しく変換する`() {
         runTest {
             coEvery { dao.getPokemonDetail("bulbasaur") } returns null
             coEvery { dataSource.getPokemonDetail("bulbasaur") } returns fakePokemonDetailResponse
@@ -53,4 +53,5 @@ class PokemonRepositoryImplTest {
             assertEquals("hp", detail.stats[0].name)
             assertEquals(45, detail.stats[0].value)
         }
+    }
 }

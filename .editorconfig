@@ -13,3 +13,5 @@ trim_trailing_whitespace = true
 ktlint_standard_package-name = disabled
 # @Composable 関数は Compose の慣習に従い PascalCase を許容する
 ktlint_function_naming_ignore_when_annotated_with = Composable
+# ブロック本体 { return } を統一スタイルとして使用する
+ktlint_standard_function-expression-body = disabled
