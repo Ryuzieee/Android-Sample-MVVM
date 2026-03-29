@@ -2,6 +2,8 @@ package com.yamamuto.android_sample_mvvm.di
 
 import com.yamamuto.android_sample_mvvm.BuildConfig
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
+import com.yamamuto.android_sample_mvvm.network.ForceUpdateInterceptor
+import com.yamamuto.android_sample_mvvm.network.SessionInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,9 +32,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        sessionInterceptor: SessionInterceptor,
+        forceUpdateInterceptor: ForceUpdateInterceptor,
+    ): OkHttpClient {
         return OkHttpClient
             .Builder()
+            .addInterceptor(sessionInterceptor)
+            .addInterceptor(forceUpdateInterceptor)
             .addInterceptor(
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC },
             ).build()
