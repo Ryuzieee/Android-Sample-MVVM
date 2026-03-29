@@ -2,11 +2,9 @@ import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
 
 /**
  * Feature モジュール用 Convention Plugin。
@@ -30,16 +28,6 @@ class FeatureConventionPlugin : Plugin<Project> {
             extensions.configure<LibraryExtension> {
                 // :feature:list → com.yamamuto.android_sample_mvvm.feature.list
                 namespace = "com.yamamuto.android_sample_mvvm.${path.removePrefix(":").replace(":", ".")}"
-
-                testOptions {
-                    unitTests {
-                        isIncludeAndroidResources = true
-                    }
-                }
-            }
-
-            tasks.withType<Test>().configureEach {
-                failOnNoDiscoveredTests.set(false)
             }
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -74,9 +62,9 @@ class FeatureConventionPlugin : Plugin<Project> {
 
                 // Test
                 add("testImplementation", project(":core"))
+                add("testImplementation", libs.findLibrary("junit").get())
                 add("testImplementation", libs.findLibrary("mockk").get())
                 add("testImplementation", libs.findLibrary("turbine").get())
-                add("testImplementation", libs.findLibrary("androidx-core-testing").get())
                 add("testImplementation", libs.findLibrary("kotlinx-coroutines-test").get())
             }
         }
