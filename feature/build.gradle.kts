@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core:data"))
+    implementation(project(":core"))
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
     implementation(libs.timber)

@@ -45,8 +45,7 @@ class FeatureConventionPlugin : Plugin<Project> {
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
             dependencies {
-                add("implementation", project(":core:domain"))
-                add("implementation", project(":core:ui"))
+                add("implementation", project(":core"))
 
                 // Compose
                 add("implementation", platform(libs.findLibrary("androidx-compose-bom").get()))
@@ -74,7 +73,7 @@ class FeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("kotlinx-serialization-json").get())
 
                 // Test
-                add("testImplementation", project(":core:testing"))
+                add("testImplementation", project(":core"))
                 add("testImplementation", libs.findLibrary("mockk").get())
                 add("testImplementation", libs.findLibrary("turbine").get())
                 add("testImplementation", libs.findLibrary("androidx-core-testing").get())

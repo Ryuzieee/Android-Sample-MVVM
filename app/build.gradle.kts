@@ -81,9 +81,7 @@ tasks.named("preBuild").configure {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-    implementation(project(":core:data"))
-    implementation(project(":core:ui"))
+    implementation(project(":core"))
     implementation(project(":feature"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
