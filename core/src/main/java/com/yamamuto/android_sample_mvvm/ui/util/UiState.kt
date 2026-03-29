@@ -18,23 +18,3 @@ sealed interface UiState<out T> {
 fun <T> UiState<T>.getOrNull(): T? {
     return (this as? UiState.Success)?.data
 }
-
-/** Success のデータを変換する。それ以外はそのまま返す。 */
-fun <T, R> UiState<T>.map(transform: (T) -> R): UiState<R> {
-    return when (this) {
-        is UiState.Success -> UiState.Success(transform(data))
-        is UiState.Error -> this
-        is UiState.Loading -> this
-        is UiState.Idle -> this
-    }
-}
-
-val UiState<*>.isLoading: Boolean get() {
-    return this is UiState.Loading
-}
-val UiState<*>.isSuccess: Boolean get() {
-    return this is UiState.Success
-}
-val UiState<*>.isError: Boolean get() {
-    return this is UiState.Error
-}
