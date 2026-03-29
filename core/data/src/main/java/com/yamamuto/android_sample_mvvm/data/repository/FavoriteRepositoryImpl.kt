@@ -10,11 +10,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /** [FavoriteRepository] の実装クラス。Room を使ってお気に入りを永続化する。 */
-class FavoriteRepositoryImpl
-    @Inject
-    constructor(
-        private val dao: FavoriteDao,
-    ) : FavoriteRepository {
+class FavoriteRepositoryImpl @Inject constructor(
+    private val dao: FavoriteDao,
+) : FavoriteRepository {
     override fun observeFavorites(): Flow<List<FavoriteModel>> {
         return dao.getAllFavorites().map { list ->
             list.map { FavoriteModel(id = it.id, name = it.name, imageUrl = it.imageUrl) }

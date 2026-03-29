@@ -10,45 +10,43 @@ import javax.inject.Inject
  *
  * 基本情報取得後、種族情報・進化チェーン・特性日本語名を並列で取得する。
  */
-class GetPokemonFullDetailUseCase
-    @Inject
-    constructor(
-        private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
-        private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
-        private val getEvolutionChainUseCase: GetEvolutionChainUseCase,
-        private val getAbilityJapaneseNameUseCase: GetAbilityJapaneseNameUseCase,
-    ) {
-        suspend operator fun invoke(
-            name: String,
-            forceRefresh: Boolean = false,
-        ): Result<PokemonFullDetailModel> {
-            val detail = getPokemonDetailUseCase(name, forceRefresh)
-                .getOrElse { return Result.failure(it) }
+class GetPokemonFullDetailUseCase @Inject constructor(
+    private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
+    private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
+    private val getEvolutionChainUseCase: GetEvolutionChainUseCase,
+    private val getAbilityJapaneseNameUseCase: GetAbilityJapaneseNameUseCase,
+) {
+    suspend operator fun invoke(
+        name: String,
+        forceRefresh: Boolean = false,
+    ): Result<PokemonFullDetailModel> {
+        val detail = getPokemonDetailUseCase(name, forceRefresh)
+            .getOrElse { return Result.failure(it) }
 
-            return coroutineScope {
-                val speciesDeferred = async { getPokemonSpeciesUseCase(name).getOrNull() }
-                val chainDeferred = async { getEvolutionChainUseCase(name).getOrNull() }
-                val abilitiesDeferred = async { resolveAbilityNames(detail) }
+        return coroutineScope {
+            val speciesDeferred = async { getPokemonSpeciesUseCase(name).getOrNull() }
+            val chainDeferred = async { getEvolutionChainUseCase(name).getOrNull() }
+            val abilitiesDeferred = async { resolveAbilityNames(detail) }
 
-                Result.success(
-                    PokemonFullDetailModel(
-                        detail = abilitiesDeferred.await(),
-                        species = speciesDeferred.await(),
-                        evolutionChain = chainDeferred.await() ?: emptyList(),
-                    ),
-                )
-            }
-        }
-
-        private suspend fun resolveAbilityNames(
-            detail: com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel,
-        ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel = coroutineScope {
-            val jaNames = detail.abilities.map { ability ->
-                async { getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name) }
-            }.map { it.await() }
-            val updatedAbilities = detail.abilities.zip(jaNames) { ability, jaName ->
-                ability.copy(japaneseName = jaName)
-            }
-            detail.copy(abilities = updatedAbilities)
+            Result.success(
+                PokemonFullDetailModel(
+                    detail = abilitiesDeferred.await(),
+                    species = speciesDeferred.await(),
+                    evolutionChain = chainDeferred.await() ?: emptyList(),
+                ),
+            )
         }
     }
+
+    private suspend fun resolveAbilityNames(
+        detail: com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel,
+    ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel = coroutineScope {
+        val jaNames = detail.abilities.map { ability ->
+            async { getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name) }
+        }.map { it.await() }
+        val updatedAbilities = detail.abilities.zip(jaNames) { ability, jaName ->
+            ability.copy(japaneseName = jaName)
+        }
+        detail.copy(abilities = updatedAbilities)
+    }
+}

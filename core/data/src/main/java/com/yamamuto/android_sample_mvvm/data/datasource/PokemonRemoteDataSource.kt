@@ -16,15 +16,10 @@ import javax.inject.Inject
  *
  * APIの呼び出しのみを担当し、データ変換は行わない。
  */
-class PokemonRemoteDataSource
-    @Inject
-    constructor(
-        private val api: PokeApiService,
-    ) {
-    suspend fun getPokemonList(
-        limit: Int,
-        offset: Int,
-    ): PokemonListResponse {
+class PokemonRemoteDataSource @Inject constructor(
+    private val api: PokeApiService,
+) {
+    suspend fun getPokemonList(limit: Int, offset: Int): PokemonListResponse {
         return api.getPokemonList(limit, offset)
     }
 

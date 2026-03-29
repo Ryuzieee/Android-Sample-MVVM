@@ -9,19 +9,17 @@ import javax.inject.Inject
  *
  * [isFavorite] が true なら削除、false なら追加する。
  */
-class ToggleFavoriteUseCase
-    @Inject
-    constructor(
-        private val repository: FavoriteRepository,
+class ToggleFavoriteUseCase @Inject constructor(
+    private val repository: FavoriteRepository,
+) {
+    suspend operator fun invoke(
+        detail: PokemonDetailModel,
+        isFavorite: Boolean,
     ) {
-        suspend operator fun invoke(
-            detail: PokemonDetailModel,
-            isFavorite: Boolean,
-        ) {
-            if (isFavorite) {
-                repository.removeFavorite(detail.id)
-            } else {
-                repository.addFavorite(detail)
-            }
+        if (isFavorite) {
+            repository.removeFavorite(detail.id)
+        } else {
+            repository.addFavorite(detail)
         }
     }
+}

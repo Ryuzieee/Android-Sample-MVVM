@@ -6,12 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /** お気に入り一覧を監視するユースケース。 */
-class ObserveFavoritesUseCase
-    @Inject
-    constructor(
-        private val repository: FavoriteRepository,
-    ) {
-        operator fun invoke(): Flow<List<FavoriteModel>> {
-            return repository.observeFavorites()
-        }
+class ObserveFavoritesUseCase @Inject constructor(
+    private val repository: FavoriteRepository,
+) {
+    operator fun invoke(): Flow<List<FavoriteModel>> {
+        return repository.observeFavorites()
     }
+}
