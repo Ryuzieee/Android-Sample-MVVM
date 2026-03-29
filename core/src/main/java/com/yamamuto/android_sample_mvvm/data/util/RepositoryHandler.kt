@@ -5,15 +5,13 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * Repository メソッドの共通ハンドラ。
+ * キャッシュ付き Repository メソッドの共通ハンドラ。
  *
  * 例外を [AppException] に変換して [Result] で返す。
- * キャッシュの期限チェックは [cachedAt] と [CACHE_DURATION_MS] で handler が一元管理する。
- * [load] と [fetch] は共に [E] を返し、[toModel] で [D] に変換する。
+ * キャッシュの期限チェックは [cachedAt] と [CACHE_DURATION_MS] で一元管理する。
  *
- * ### キャッシュ付き
  * ```
- * repositoryHandler(
+ * handleWithCache(
  *     forceRefresh = forceRefresh,
  *     load = { dao.getFoo(id) },
  *     fetch = { dataSource.getFoo(id).toEntity() },
@@ -23,18 +21,10 @@ import java.io.IOException
  * )
  * ```
  *
- * ### API のみ
- * ```
- * repositoryHandler(
- *     fetch = { dataSource.getFoo(id) },
- *     toModel = { it.toDomain() },
- * )
- * ```
- *
  * @param D ドメインモデル型（[Result] で返す型）
  * @param E ローカルキャッシュの Entity 型（[load] と [fetch] が共に返す型）
  */
-suspend fun <D : Any, E : Any> repositoryHandler(
+suspend fun <D : Any, E : Any> handleWithCache(
     forceRefresh: Boolean = false,
     load: suspend () -> E?,
     fetch: suspend () -> E,
@@ -63,12 +53,21 @@ suspend fun <D : Any, E : Any> repositoryHandler(
     }
 }
 
-/** API のみの Repository メソッド用ハンドラ。キャッシュ版に委譲する。 */
-suspend fun <D : Any, E : Any> repositoryHandler(
+/**
+ * API のみの Repository メソッド用ハンドラ。キャッシュなし。
+ *
+ * ```
+ * handleRemote(
+ *     fetch = { dataSource.getFoo(id) },
+ *     toModel = { it.toDomain() },
+ * )
+ * ```
+ */
+suspend fun <D : Any, E : Any> handleRemote(
     fetch: suspend () -> E,
     toModel: (E) -> D,
 ): Result<D> {
-    return repositoryHandler(
+    return handleWithCache(
         load = { null },
         fetch = fetch,
         toModel = toModel,

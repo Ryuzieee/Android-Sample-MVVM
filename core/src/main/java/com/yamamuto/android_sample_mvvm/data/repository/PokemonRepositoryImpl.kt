@@ -4,7 +4,8 @@ package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
-import com.yamamuto.android_sample_mvvm.data.util.repositoryHandler
+import com.yamamuto.android_sample_mvvm.data.util.handleRemote
+import com.yamamuto.android_sample_mvvm.data.util.handleWithCache
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
@@ -17,7 +18,8 @@ private const val POKEMON_LIST_LIMIT = 2000
 /**
  * [PokemonRepository] の実装クラス。
  *
- * 全メソッドは [repositoryHandler] を使い、例外を [Result.failure] に変換する。
+ * キャッシュ付きは [handleWithCache]、API のみは [handleRemote] を使い、
+ * 例外を [Result.failure] に変換する。
  */
 class PokemonRepositoryImpl @Inject constructor(
     private val dataSource: PokemonRemoteDataSource,
@@ -27,7 +29,7 @@ class PokemonRepositoryImpl @Inject constructor(
         name: String,
         forceRefresh: Boolean,
     ): Result<PokemonDetailModel> {
-        return repositoryHandler(
+        return handleWithCache(
             forceRefresh = forceRefresh,
             load = { dao.getPokemonDetail(name) },
             fetch = { dataSource.getPokemonDetail(name).toEntity() },
@@ -38,28 +40,28 @@ class PokemonRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPokemonSpecies(name: String): Result<PokemonSpeciesModel> {
-        return repositoryHandler(
+        return handleRemote(
             fetch = { dataSource.getPokemonSpecies(name) },
             toModel = { it.toDomain() },
         )
     }
 
     override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStageModel>> {
-        return repositoryHandler(
+        return handleRemote(
             fetch = { dataSource.getEvolutionChain(url) },
             toModel = { it.toStages() },
         )
     }
 
     override suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>> {
-        return repositoryHandler(
+        return handleRemote(
             fetch = { dataSource.getAbility(name) },
             toModel = { it.toLocalizedNames() },
         )
     }
 
     override suspend fun searchPokemonNames(query: String): Result<List<String>> {
-        return repositoryHandler(
+        return handleWithCache(
             load = { dao.getAllPokemonNames().takeIf { it.isNotEmpty() } },
             fetch = {
                 dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0).toEntities()
