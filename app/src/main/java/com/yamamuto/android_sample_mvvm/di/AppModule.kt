@@ -40,16 +40,25 @@ object AppModule {
         forceUpdateInterceptor: ForceUpdateInterceptor,
         mockInterceptor: MockInterceptor,
     ): OkHttpClient {
+        // Interceptor 実行順:
+        // 1. ApiHeader   — リクエストにヘッダーを付与
+        // 2. Session     — レスポンスの 401 を検知（chain.proceed → 内側を実行 → レスポンスを検査）
+        // 3. ForceUpdate — レスポンスの 426 を検知（同上）
+        // 4. Mock        — mock フレーバーのみ。レスポンスを差し替え（chain.proceed を呼ばない）
+        // 5. Logging     — 実際のリクエスト/レスポンスをログ出力
+        //
+        // Session/ForceUpdate が Mock より外側にあるため、
+        // Mock が返した 401/426 レスポンスも正しく検知される。
         return OkHttpClient
             .Builder()
             .addInterceptor(apiHeaderInterceptor)
+            .addInterceptor(sessionInterceptor)
+            .addInterceptor(forceUpdateInterceptor)
             .apply {
                 if (BuildConfig.IS_MOCK) {
                     addInterceptor(mockInterceptor)
                 }
-            }.addInterceptor(sessionInterceptor)
-            .addInterceptor(forceUpdateInterceptor)
-            .addInterceptor(
+            }.addInterceptor(
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC },
             ).build()
     }
