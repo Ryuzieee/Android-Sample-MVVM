@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yamamuto.android_sample_mvvm.ui.Strings
 
 /**
  * エラー表示とリトライボタンを備えた共通コンポーネント。
@@ -33,14 +34,14 @@ fun ErrorContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AppText(
-            text = if (isNetworkError) ErrorStrings.NETWORK_ERROR_MESSAGE else message,
+            text = if (isNetworkError) Strings.Error.NETWORK_MESSAGE else message,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         )
         if (isNetworkError) {
             AppText(
-                text = ErrorStrings.NETWORK_ERROR_SUB_MESSAGE,
+                text = Strings.Error.NETWORK_SUB_MESSAGE,
                 style = MaterialTheme.typography.bodySmall,
                 secondary = true,
                 modifier = Modifier.padding(top = 4.dp),
@@ -48,7 +49,7 @@ fun ErrorContent(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text(ErrorStrings.RETRY_BUTTON)
+            Text(Strings.Common.RETRY)
         }
     }
 }
