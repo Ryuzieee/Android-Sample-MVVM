@@ -10,6 +10,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
 import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonGrid
@@ -28,18 +29,24 @@ fun FavoritesScreen(
         title = { Text(Strings.Favorites.SCREEN_TITLE) },
         onBack = onBack,
     ) { padding ->
-        UiStateContent(
-            state = uiState.content,
+        AppPullRefresh(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = viewModel::refresh,
             modifier = Modifier.padding(padding),
-        ) { favorites ->
-            if (favorites.isEmpty()) {
-                FavoritesEmpty(padding)
-            } else {
-                PokemonGrid(
-                    items = favorites.map { it.toGridItem() },
-                    onPokemonClick = onPokemonClick,
-                    contentPadding = padding,
-                )
+        ) {
+            UiStateContent(
+                state = uiState.content,
+                onRetry = viewModel::retry,
+            ) { favorites ->
+                if (favorites.isEmpty()) {
+                    FavoritesEmpty(padding)
+                } else {
+                    PokemonGrid(
+                        items = favorites.map { it.toGridItem() },
+                        onPokemonClick = onPokemonClick,
+                        contentPadding = padding,
+                    )
+                }
             }
         }
     }
