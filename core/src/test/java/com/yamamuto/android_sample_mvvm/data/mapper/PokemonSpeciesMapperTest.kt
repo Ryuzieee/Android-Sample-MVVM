@@ -10,37 +10,40 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PokemonSpeciesMapperTest {
-
     @Test
     fun `toModel extracts Japanese name, flavor text, and genus`() {
-        val response = PokemonSpeciesResponse(
-            names = listOf(
-                PokemonSpeciesResponse.Name("Bulbasaur", PokemonSpeciesResponse.NamedResource("en")),
-                PokemonSpeciesResponse.Name("フシギダネ", PokemonSpeciesResponse.NamedResource("ja")),
-            ),
-            flavorTextEntries = listOf(
-                PokemonSpeciesResponse.FlavorTextEntry(
-                    "A strange seed.",
-                    PokemonSpeciesResponse.NamedResource("en"),
-                    PokemonSpeciesResponse.NamedResource("red"),
-                ),
-                PokemonSpeciesResponse.FlavorTextEntry(
-                    "たいようの ひかりを\nあびるほど からだに\u000cちからが わいてくる。",
-                    PokemonSpeciesResponse.NamedResource("ja"),
-                    PokemonSpeciesResponse.NamedResource("red"),
-                ),
-            ),
-            evolutionChain = PokemonSpeciesResponse.EvolutionChainRef("https://pokeapi.co/api/v2/evolution-chain/1/"),
-            genera = listOf(
-                PokemonSpeciesResponse.Genus("Seed Pokémon", PokemonSpeciesResponse.NamedResource("en")),
-                PokemonSpeciesResponse.Genus("たねポケモン", PokemonSpeciesResponse.NamedResource("ja")),
-            ),
-            eggGroups = listOf(PokemonSpeciesResponse.NamedResource("monster"), PokemonSpeciesResponse.NamedResource("plant")),
-            genderRate = 1,
-            captureRate = 45,
-            habitat = PokemonSpeciesResponse.NamedResource("grassland"),
-            generation = PokemonSpeciesResponse.NamedResource("generation-i"),
-        )
+        val response =
+            PokemonSpeciesResponse(
+                names =
+                    listOf(
+                        PokemonSpeciesResponse.Name("Bulbasaur", PokemonSpeciesResponse.NamedResource("en")),
+                        PokemonSpeciesResponse.Name("フシギダネ", PokemonSpeciesResponse.NamedResource("ja")),
+                    ),
+                flavorTextEntries =
+                    listOf(
+                        PokemonSpeciesResponse.FlavorTextEntry(
+                            "A strange seed.",
+                            PokemonSpeciesResponse.NamedResource("en"),
+                            PokemonSpeciesResponse.NamedResource("red"),
+                        ),
+                        PokemonSpeciesResponse.FlavorTextEntry(
+                            "たいようの ひかりを\nあびるほど からだに\u000cちからが わいてくる。",
+                            PokemonSpeciesResponse.NamedResource("ja"),
+                            PokemonSpeciesResponse.NamedResource("red"),
+                        ),
+                    ),
+                evolutionChain = PokemonSpeciesResponse.EvolutionChainRef("https://pokeapi.co/api/v2/evolution-chain/1/"),
+                genera =
+                    listOf(
+                        PokemonSpeciesResponse.Genus("Seed Pokémon", PokemonSpeciesResponse.NamedResource("en")),
+                        PokemonSpeciesResponse.Genus("たねポケモン", PokemonSpeciesResponse.NamedResource("ja")),
+                    ),
+                eggGroups = listOf(PokemonSpeciesResponse.NamedResource("monster"), PokemonSpeciesResponse.NamedResource("plant")),
+                genderRate = 1,
+                captureRate = 45,
+                habitat = PokemonSpeciesResponse.NamedResource("grassland"),
+                generation = PokemonSpeciesResponse.NamedResource("generation-i"),
+            )
 
         val model = response.toModel()
 
@@ -57,27 +60,31 @@ class PokemonSpeciesMapperTest {
 
     @Test
     fun `toModel falls back to English when Japanese not available`() {
-        val response = PokemonSpeciesResponse(
-            names = listOf(
-                PokemonSpeciesResponse.Name("Bulbasaur", PokemonSpeciesResponse.NamedResource("en")),
-            ),
-            flavorTextEntries = listOf(
-                PokemonSpeciesResponse.FlavorTextEntry(
-                    "A strange seed.",
-                    PokemonSpeciesResponse.NamedResource("en"),
-                    PokemonSpeciesResponse.NamedResource("red"),
-                ),
-            ),
-            evolutionChain = PokemonSpeciesResponse.EvolutionChainRef("https://pokeapi.co/api/v2/evolution-chain/1/"),
-            genera = listOf(
-                PokemonSpeciesResponse.Genus("Seed Pokémon", PokemonSpeciesResponse.NamedResource("en")),
-            ),
-            eggGroups = emptyList(),
-            genderRate = -1,
-            captureRate = 45,
-            habitat = null,
-            generation = PokemonSpeciesResponse.NamedResource("generation-i"),
-        )
+        val response =
+            PokemonSpeciesResponse(
+                names =
+                    listOf(
+                        PokemonSpeciesResponse.Name("Bulbasaur", PokemonSpeciesResponse.NamedResource("en")),
+                    ),
+                flavorTextEntries =
+                    listOf(
+                        PokemonSpeciesResponse.FlavorTextEntry(
+                            "A strange seed.",
+                            PokemonSpeciesResponse.NamedResource("en"),
+                            PokemonSpeciesResponse.NamedResource("red"),
+                        ),
+                    ),
+                evolutionChain = PokemonSpeciesResponse.EvolutionChainRef("https://pokeapi.co/api/v2/evolution-chain/1/"),
+                genera =
+                    listOf(
+                        PokemonSpeciesResponse.Genus("Seed Pokémon", PokemonSpeciesResponse.NamedResource("en")),
+                    ),
+                eggGroups = emptyList(),
+                genderRate = -1,
+                captureRate = 45,
+                habitat = null,
+                generation = PokemonSpeciesResponse.NamedResource("generation-i"),
+            )
 
         val model = response.toModel()
 
@@ -89,26 +96,34 @@ class PokemonSpeciesMapperTest {
 
     @Test
     fun `EvolutionChainResponse toModel flattens chain`() {
-        val response = EvolutionChainResponse(
-            id = 1,
-            chain = EvolutionChainResponse.ChainLink(
-                species = EvolutionChainResponse.Species("bulbasaur", "https://pokeapi.co/api/v2/pokemon-species/1/"),
-                evolvesTo = listOf(
+        val response =
+            EvolutionChainResponse(
+                id = 1,
+                chain =
                     EvolutionChainResponse.ChainLink(
-                        species = EvolutionChainResponse.Species("ivysaur", "https://pokeapi.co/api/v2/pokemon-species/2/"),
-                        evolvesTo = listOf(
-                            EvolutionChainResponse.ChainLink(
-                                species = EvolutionChainResponse.Species("venusaur", "https://pokeapi.co/api/v2/pokemon-species/3/"),
-                                evolvesTo = emptyList(),
-                                evolutionDetails = listOf(EvolutionChainResponse.EvolutionDetail(minLevel = 32)),
+                        species = EvolutionChainResponse.Species("bulbasaur", "https://pokeapi.co/api/v2/pokemon-species/1/"),
+                        evolvesTo =
+                            listOf(
+                                EvolutionChainResponse.ChainLink(
+                                    species = EvolutionChainResponse.Species("ivysaur", "https://pokeapi.co/api/v2/pokemon-species/2/"),
+                                    evolvesTo =
+                                        listOf(
+                                            EvolutionChainResponse.ChainLink(
+                                                species =
+                                                    EvolutionChainResponse.Species(
+                                                        "venusaur",
+                                                        "https://pokeapi.co/api/v2/pokemon-species/3/",
+                                                    ),
+                                                evolvesTo = emptyList(),
+                                                evolutionDetails = listOf(EvolutionChainResponse.EvolutionDetail(minLevel = 32)),
+                                            ),
+                                        ),
+                                    evolutionDetails = listOf(EvolutionChainResponse.EvolutionDetail(minLevel = 16)),
+                                ),
                             ),
-                        ),
-                        evolutionDetails = listOf(EvolutionChainResponse.EvolutionDetail(minLevel = 16)),
+                        evolutionDetails = emptyList(),
                     ),
-                ),
-                evolutionDetails = emptyList(),
-            ),
-        )
+            )
 
         val stages = response.toModel()
 

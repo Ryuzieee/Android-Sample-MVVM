@@ -37,6 +37,7 @@ import coil3.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
+import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
@@ -46,7 +47,6 @@ import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 import com.yamamuto.android_sample_mvvm.ui.util.JapaneseTranslation
-import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 
 @Composable
@@ -78,7 +78,12 @@ fun PokemonDetailScreen(
             )
             AppIconButton(
                 imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = if (uiState.isFavorite) Strings.Detail.REMOVE_FAVORITE_DESCRIPTION else Strings.Detail.ADD_FAVORITE_DESCRIPTION,
+                contentDescription =
+                    if (uiState.isFavorite) {
+                        Strings.Detail.REMOVE_FAVORITE_DESCRIPTION
+                    } else {
+                        Strings.Detail.ADD_FAVORITE_DESCRIPTION
+                    },
                 onClick = viewModel::toggleFavorite,
                 tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )

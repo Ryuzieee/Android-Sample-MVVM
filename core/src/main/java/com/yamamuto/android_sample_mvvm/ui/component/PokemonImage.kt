@@ -20,9 +20,10 @@ fun PokemonImage(
         model = imageUrl,
         contentDescription = contentDescription,
         contentScale = ContentScale.Fit,
-        modifier = modifier
-            .padding(top = 16.dp)
-            .fillMaxWidth()
-            .aspectRatio(1f),
+        modifier =
+            modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth()
+                .aspectRatio(1f),
     )
 }

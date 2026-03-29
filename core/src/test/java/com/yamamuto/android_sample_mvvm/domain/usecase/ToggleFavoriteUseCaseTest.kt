@@ -8,28 +8,37 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class ToggleFavoriteUseCaseTest {
-
     private val repository = mockk<FavoriteRepository>(relaxed = true)
     private val useCase = ToggleFavoriteUseCase(repository)
 
-    private val detail = PokemonDetailModel(
-        id = 1, name = "bulbasaur", height = 7, weight = 69, baseExperience = 64,
-        types = emptyList(), abilities = emptyList(), imageUrl = "url", stats = emptyList(),
-    )
+    private val detail =
+        PokemonDetailModel(
+            id = 1,
+            name = "bulbasaur",
+            height = 7,
+            weight = 69,
+            baseExperience = 64,
+            types = emptyList(),
+            abilities = emptyList(),
+            imageUrl = "url",
+            stats = emptyList(),
+        )
 
     @Test
-    fun `removes favorite when isFavorite is true`() = runTest {
-        useCase(detail, isFavorite = true)
+    fun `removes favorite when isFavorite is true`() =
+        runTest {
+            useCase(detail, isFavorite = true)
 
-        coVerify { repository.removeFavorite(1) }
-        coVerify(exactly = 0) { repository.addFavorite(any()) }
-    }
+            coVerify { repository.removeFavorite(1) }
+            coVerify(exactly = 0) { repository.addFavorite(any()) }
+        }
 
     @Test
-    fun `adds favorite when isFavorite is false`() = runTest {
-        useCase(detail, isFavorite = false)
+    fun `adds favorite when isFavorite is false`() =
+        runTest {
+            useCase(detail, isFavorite = false)
 
-        coVerify { repository.addFavorite(detail) }
-        coVerify(exactly = 0) { repository.removeFavorite(any()) }
-    }
+            coVerify { repository.addFavorite(detail) }
+            coVerify(exactly = 0) { repository.removeFavorite(any()) }
+        }
 }

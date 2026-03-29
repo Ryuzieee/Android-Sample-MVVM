@@ -11,30 +11,32 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GetFavoritesUseCaseTest {
-
     private val repository = mockk<FavoriteRepository>()
     private val useCase = GetFavoritesUseCase(repository)
 
     @Test
-    fun `returns favorites list on success`() = runTest {
-        val favorites = listOf(
-            FavoriteModel(id = 1, name = "bulbasaur", imageUrl = "url1"),
-            FavoriteModel(id = 25, name = "pikachu", imageUrl = "url25"),
-        )
-        coEvery { repository.getFavorites() } returns Result.success(favorites)
+    fun `returns favorites list on success`() =
+        runTest {
+            val favorites =
+                listOf(
+                    FavoriteModel(id = 1, name = "bulbasaur", imageUrl = "url1"),
+                    FavoriteModel(id = 25, name = "pikachu", imageUrl = "url25"),
+                )
+            coEvery { repository.getFavorites() } returns Result.success(favorites)
 
-        val result = useCase()
+            val result = useCase()
 
-        assertTrue(result.isSuccess)
-        assertEquals(2, result.getOrThrow().size)
-    }
+            assertTrue(result.isSuccess)
+            assertEquals(2, result.getOrThrow().size)
+        }
 
     @Test
-    fun `returns failure on error`() = runTest {
-        coEvery { repository.getFavorites() } returns Result.failure(AppException.Unknown(Exception()))
+    fun `returns failure on error`() =
+        runTest {
+            coEvery { repository.getFavorites() } returns Result.failure(AppException.Unknown(Exception()))
 
-        val result = useCase()
+            val result = useCase()
 
-        assertTrue(result.isFailure)
-    }
+            assertTrue(result.isFailure)
+        }
 }

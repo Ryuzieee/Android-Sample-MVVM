@@ -8,7 +8,10 @@ import javax.inject.Inject
 class GetPokemonDetailUseCase @Inject constructor(
     private val repository: PokemonRepository,
 ) {
-    suspend operator fun invoke(name: String, forceRefresh: Boolean = false): Result<PokemonDetailModel> {
+    suspend operator fun invoke(
+        name: String,
+        forceRefresh: Boolean = false,
+    ): Result<PokemonDetailModel> {
         return repository.getPokemonDetail(name, forceRefresh)
     }
 }

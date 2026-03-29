@@ -10,39 +10,42 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SearchPokemonUseCaseTest {
-
     private val repository = mockk<PokemonRepository>()
     private val useCase = SearchPokemonUseCase(repository)
 
     @Test
-    fun `returns matching names on success`() = runTest {
-        coEvery { repository.searchPokemonNames("pika") } returns Result.success(listOf("pikachu"))
+    fun `returns matching names on success`() =
+        runTest {
+            coEvery { repository.searchPokemonNames("pika") } returns Result.success(listOf("pikachu"))
 
-        val result = useCase("pika")
+            val result = useCase("pika")
 
-        assertTrue(result.isSuccess)
-        assertEquals(listOf("pikachu"), result.getOrThrow())
-    }
-
-    @Test
-    fun `returns NotFound when result is empty`() = runTest {
-        coEvery { repository.searchPokemonNames("xyz") } returns Result.success(emptyList())
-
-        val result = useCase("xyz")
-
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppException.NotFound)
-    }
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("pikachu"), result.getOrThrow())
+        }
 
     @Test
-    fun `returns failure when repository fails`() = runTest {
-        coEvery { repository.searchPokemonNames(any()) } returns Result.failure(
-            AppException.Network(Exception()),
-        )
+    fun `returns NotFound when result is empty`() =
+        runTest {
+            coEvery { repository.searchPokemonNames("xyz") } returns Result.success(emptyList())
 
-        val result = useCase("pika")
+            val result = useCase("xyz")
 
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppException.Network)
-    }
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is AppException.NotFound)
+        }
+
+    @Test
+    fun `returns failure when repository fails`() =
+        runTest {
+            coEvery { repository.searchPokemonNames(any()) } returns
+                Result.failure(
+                    AppException.Network(Exception()),
+                )
+
+            val result = useCase("pika")
+
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is AppException.Network)
+        }
 }

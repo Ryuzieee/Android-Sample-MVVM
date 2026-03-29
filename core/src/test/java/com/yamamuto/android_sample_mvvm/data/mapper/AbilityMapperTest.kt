@@ -9,16 +9,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class AbilityMapperTest {
-
     @Test
     fun `toModel creates language to name map`() {
-        val response = AbilityResponse(
-            names = listOf(
-                AbilityResponse.Name("Overgrow", PokemonSpeciesResponse.NamedResource("en")),
-                AbilityResponse.Name("しんりょく", PokemonSpeciesResponse.NamedResource("ja")),
-                AbilityResponse.Name("おおもり", PokemonSpeciesResponse.NamedResource("ja-Hrkt")),
-            ),
-        )
+        val response =
+            AbilityResponse(
+                names =
+                    listOf(
+                        AbilityResponse.Name("Overgrow", PokemonSpeciesResponse.NamedResource("en")),
+                        AbilityResponse.Name("しんりょく", PokemonSpeciesResponse.NamedResource("ja")),
+                        AbilityResponse.Name("おおもり", PokemonSpeciesResponse.NamedResource("ja-Hrkt")),
+                    ),
+            )
 
         val result = response.toModel()
 

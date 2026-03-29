@@ -24,137 +24,167 @@ import org.junit.Test
 import java.io.IOException
 
 class PokemonRepositoryImplTest {
-
     private val dataSource = mockk<PokemonRemoteDataSource>()
     private val dao = mockk<PokemonDao>(relaxed = true)
     private val repository = PokemonRepositoryImpl(dataSource, dao)
 
-    private val detailEntity = PokemonDetailEntity(
-        id = 1, name = "bulbasaur", height = 7, weight = 69, baseExperience = 64,
-        types = listOf("grass"), abilities = listOf(AbilityEntry("overgrow", "", false)),
-        imageUrl = "url", stats = listOf(StatEntry("hp", 45)),
-        cachedAt = System.currentTimeMillis(),
-    )
-
-    @Test
-    fun `getPokemonDetail returns cached data`() = runTest {
-        coEvery { dao.getPokemonDetail("bulbasaur") } returns detailEntity
-
-        val result = repository.getPokemonDetail("bulbasaur")
-
-        assertTrue(result.isSuccess)
-        assertEquals("bulbasaur", result.getOrThrow().name)
-        coVerify(exactly = 0) { dataSource.getPokemonDetail(any()) }
-    }
-
-    @Test
-    fun `getPokemonDetail fetches from remote when cache is null`() = runTest {
-        coEvery { dao.getPokemonDetail("bulbasaur") } returns null
-        coEvery { dataSource.getPokemonDetail("bulbasaur") } returns createDetailResponse()
-
-        val result = repository.getPokemonDetail("bulbasaur")
-
-        assertTrue(result.isSuccess)
-        assertEquals("bulbasaur", result.getOrThrow().name)
-        coVerify { dao.insertPokemonDetail(any()) }
-    }
-
-    @Test
-    fun `getPokemonDetail returns Network failure on IOException`() = runTest {
-        coEvery { dao.getPokemonDetail("bulbasaur") } returns null
-        coEvery { dataSource.getPokemonDetail("bulbasaur") } throws IOException("timeout")
-
-        val result = repository.getPokemonDetail("bulbasaur")
-
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppException.Network)
-    }
-
-    @Test
-    fun `getPokemonSpecies returns mapped model`() = runTest {
-        coEvery { dataSource.getPokemonSpecies("bulbasaur") } returns createSpeciesResponse()
-
-        val result = repository.getPokemonSpecies("bulbasaur")
-
-        assertTrue(result.isSuccess)
-        assertEquals("フシギダネ", result.getOrThrow().japaneseName)
-    }
-
-    @Test
-    fun `getEvolutionChainByUrl returns stages`() = runTest {
-        coEvery { dataSource.getEvolutionChain("url") } returns EvolutionChainResponse(
+    private val detailEntity =
+        PokemonDetailEntity(
             id = 1,
-            chain = EvolutionChainResponse.ChainLink(
-                species = EvolutionChainResponse.Species("bulbasaur", "https://pokeapi.co/api/v2/pokemon-species/1/"),
-                evolvesTo = emptyList(),
-            ),
+            name = "bulbasaur",
+            height = 7,
+            weight = 69,
+            baseExperience = 64,
+            types = listOf("grass"),
+            abilities = listOf(AbilityEntry("overgrow", "", false)),
+            imageUrl = "url",
+            stats = listOf(StatEntry("hp", 45)),
+            cachedAt = System.currentTimeMillis(),
         )
-
-        val result = repository.getEvolutionChainByUrl("url")
-
-        assertTrue(result.isSuccess)
-        assertEquals(1, result.getOrThrow().size)
-        assertEquals("bulbasaur", result.getOrThrow()[0].name)
-    }
 
     @Test
-    fun `getAbilityLocalizedNames returns name map`() = runTest {
-        coEvery { dataSource.getAbility("overgrow") } returns AbilityResponse(
-            names = listOf(
-                AbilityResponse.Name("しんりょく", PokemonSpeciesResponse.NamedResource("ja")),
-                AbilityResponse.Name("Overgrow", PokemonSpeciesResponse.NamedResource("en")),
-            ),
-        )
+    fun `getPokemonDetail returns cached data`() =
+        runTest {
+            coEvery { dao.getPokemonDetail("bulbasaur") } returns detailEntity
 
-        val result = repository.getAbilityLocalizedNames("overgrow")
+            val result = repository.getPokemonDetail("bulbasaur")
 
-        assertTrue(result.isSuccess)
-        assertEquals("しんりょく", result.getOrThrow()["ja"])
-    }
+            assertTrue(result.isSuccess)
+            assertEquals("bulbasaur", result.getOrThrow().name)
+            coVerify(exactly = 0) { dataSource.getPokemonDetail(any()) }
+        }
 
     @Test
-    fun `searchPokemonNames uses cached names`() = runTest {
-        coEvery { dao.getAllPokemonNames() } returns listOf(
-            PokemonNameEntity("bulbasaur"),
-            PokemonNameEntity("charmander"),
-            PokemonNameEntity("pikachu"),
+    fun `getPokemonDetail fetches from remote when cache is null`() =
+        runTest {
+            coEvery { dao.getPokemonDetail("bulbasaur") } returns null
+            coEvery { dataSource.getPokemonDetail("bulbasaur") } returns createDetailResponse()
+
+            val result = repository.getPokemonDetail("bulbasaur")
+
+            assertTrue(result.isSuccess)
+            assertEquals("bulbasaur", result.getOrThrow().name)
+            coVerify { dao.insertPokemonDetail(any()) }
+        }
+
+    @Test
+    fun `getPokemonDetail returns Network failure on IOException`() =
+        runTest {
+            coEvery { dao.getPokemonDetail("bulbasaur") } returns null
+            coEvery { dataSource.getPokemonDetail("bulbasaur") } throws IOException("timeout")
+
+            val result = repository.getPokemonDetail("bulbasaur")
+
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is AppException.Network)
+        }
+
+    @Test
+    fun `getPokemonSpecies returns mapped model`() =
+        runTest {
+            coEvery { dataSource.getPokemonSpecies("bulbasaur") } returns createSpeciesResponse()
+
+            val result = repository.getPokemonSpecies("bulbasaur")
+
+            assertTrue(result.isSuccess)
+            assertEquals("フシギダネ", result.getOrThrow().japaneseName)
+        }
+
+    @Test
+    fun `getEvolutionChainByUrl returns stages`() =
+        runTest {
+            coEvery { dataSource.getEvolutionChain("url") } returns
+                EvolutionChainResponse(
+                    id = 1,
+                    chain =
+                        EvolutionChainResponse.ChainLink(
+                            species = EvolutionChainResponse.Species("bulbasaur", "https://pokeapi.co/api/v2/pokemon-species/1/"),
+                            evolvesTo = emptyList(),
+                        ),
+                )
+
+            val result = repository.getEvolutionChainByUrl("url")
+
+            assertTrue(result.isSuccess)
+            assertEquals(1, result.getOrThrow().size)
+            assertEquals("bulbasaur", result.getOrThrow()[0].name)
+        }
+
+    @Test
+    fun `getAbilityLocalizedNames returns name map`() =
+        runTest {
+            coEvery { dataSource.getAbility("overgrow") } returns
+                AbilityResponse(
+                    names =
+                        listOf(
+                            AbilityResponse.Name("しんりょく", PokemonSpeciesResponse.NamedResource("ja")),
+                            AbilityResponse.Name("Overgrow", PokemonSpeciesResponse.NamedResource("en")),
+                        ),
+                )
+
+            val result = repository.getAbilityLocalizedNames("overgrow")
+
+            assertTrue(result.isSuccess)
+            assertEquals("しんりょく", result.getOrThrow()["ja"])
+        }
+
+    @Test
+    fun `searchPokemonNames uses cached names`() =
+        runTest {
+            coEvery { dao.getAllPokemonNames() } returns
+                listOf(
+                    PokemonNameEntity("bulbasaur"),
+                    PokemonNameEntity("charmander"),
+                    PokemonNameEntity("pikachu"),
+                )
+
+            val result = repository.searchPokemonNames("char")
+
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("charmander"), result.getOrThrow())
+        }
+
+    private fun createDetailResponse() =
+        PokemonDetailResponse(
+            id = 1,
+            name = "bulbasaur",
+            height = 7,
+            weight = 69,
+            baseExperience = 64,
+            types = listOf(PokemonDetailResponse.TypeSlot(PokemonDetailResponse.TypeInfo("grass"))),
+            abilities =
+                listOf(
+                    PokemonDetailResponse.AbilitySlot(PokemonDetailResponse.AbilityInfo("overgrow"), false),
+                ),
+            sprites =
+                PokemonDetailResponse.Sprites(
+                    PokemonDetailResponse.Sprites.Other(
+                        PokemonDetailResponse.Sprites.Other.OfficialArtwork("url"),
+                    ),
+                ),
+            stats = listOf(PokemonDetailResponse.StatSlot(45, PokemonDetailResponse.StatInfo("hp"))),
         )
 
-        val result = repository.searchPokemonNames("char")
-
-        assertTrue(result.isSuccess)
-        assertEquals(listOf("charmander"), result.getOrThrow())
-    }
-
-    private fun createDetailResponse() = PokemonDetailResponse(
-        id = 1, name = "bulbasaur", height = 7, weight = 69, baseExperience = 64,
-        types = listOf(PokemonDetailResponse.TypeSlot(PokemonDetailResponse.TypeInfo("grass"))),
-        abilities = listOf(
-            PokemonDetailResponse.AbilitySlot(PokemonDetailResponse.AbilityInfo("overgrow"), false),
-        ),
-        sprites = PokemonDetailResponse.Sprites(
-            PokemonDetailResponse.Sprites.Other(
-                PokemonDetailResponse.Sprites.Other.OfficialArtwork("url"),
-            ),
-        ),
-        stats = listOf(PokemonDetailResponse.StatSlot(45, PokemonDetailResponse.StatInfo("hp"))),
-    )
-
-    private fun createSpeciesResponse() = PokemonSpeciesResponse(
-        names = listOf(
-            PokemonSpeciesResponse.Name("フシギダネ", PokemonSpeciesResponse.NamedResource("ja")),
-        ),
-        flavorTextEntries = listOf(
-            PokemonSpeciesResponse.FlavorTextEntry(
-                "はっぱ", PokemonSpeciesResponse.NamedResource("ja"), PokemonSpeciesResponse.NamedResource("red"),
-            ),
-        ),
-        evolutionChain = PokemonSpeciesResponse.EvolutionChainRef("url"),
-        genera = listOf(PokemonSpeciesResponse.Genus("たねポケモン", PokemonSpeciesResponse.NamedResource("ja"))),
-        eggGroups = listOf(PokemonSpeciesResponse.NamedResource("monster")),
-        genderRate = 1,
-        captureRate = 45,
-        habitat = null,
-        generation = PokemonSpeciesResponse.NamedResource("generation-i"),
-    )
+    private fun createSpeciesResponse() =
+        PokemonSpeciesResponse(
+            names =
+                listOf(
+                    PokemonSpeciesResponse.Name("フシギダネ", PokemonSpeciesResponse.NamedResource("ja")),
+                ),
+            flavorTextEntries =
+                listOf(
+                    PokemonSpeciesResponse.FlavorTextEntry(
+                        "はっぱ",
+                        PokemonSpeciesResponse.NamedResource("ja"),
+                        PokemonSpeciesResponse.NamedResource("red"),
+                    ),
+                ),
+            evolutionChain = PokemonSpeciesResponse.EvolutionChainRef("url"),
+            genera = listOf(PokemonSpeciesResponse.Genus("たねポケモン", PokemonSpeciesResponse.NamedResource("ja"))),
+            eggGroups = listOf(PokemonSpeciesResponse.NamedResource("monster")),
+            genderRate = 1,
+            captureRate = 45,
+            habitat = null,
+            generation = PokemonSpeciesResponse.NamedResource("generation-i"),
+        )
 }

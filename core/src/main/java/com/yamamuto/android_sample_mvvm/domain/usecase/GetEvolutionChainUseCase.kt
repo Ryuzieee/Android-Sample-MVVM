@@ -18,18 +18,22 @@ class GetEvolutionChainUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(name: String): Result<List<EvolutionStageModel>> {
         val species = getPokemonSpeciesUseCase(name).getOrElse { return Result.failure(it) }
-        val stages = repository.getEvolutionChainByUrl(species.evolutionChainUrl)
-            .getOrElse { return Result.failure(it) }
+        val stages =
+            repository
+                .getEvolutionChainByUrl(species.evolutionChainUrl)
+                .getOrElse { return Result.failure(it) }
 
-        val jaNames = coroutineScope {
-            stages.map { stage ->
-                async {
-                    getPokemonSpeciesUseCase(stage.name)
-                        .map { it.japaneseName }
-                        .getOrDefault("")
-                }
-            }.awaitAll()
-        }
+        val jaNames =
+            coroutineScope {
+                stages
+                    .map { stage ->
+                        async {
+                            getPokemonSpeciesUseCase(stage.name)
+                                .map { it.japaneseName }
+                                .getOrDefault("")
+                        }
+                    }.awaitAll()
+            }
         return Result.success(
             stages.zip(jaNames) { stage, jaName -> stage.copy(japaneseName = jaName) },
         )

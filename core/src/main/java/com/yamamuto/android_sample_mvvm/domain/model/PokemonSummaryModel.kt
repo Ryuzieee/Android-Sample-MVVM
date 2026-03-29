@@ -9,7 +9,11 @@ data class PokemonSummaryModel(
     val url: String,
 ) {
     val id: Int get() {
-        return url.trimEnd('/').split('/').last().toInt()
+        return url
+            .trimEnd('/')
+            .split('/')
+            .last()
+            .toInt()
     }
     val imageUrl: String get() {
         return "${SPRITE_URL}$id.png"

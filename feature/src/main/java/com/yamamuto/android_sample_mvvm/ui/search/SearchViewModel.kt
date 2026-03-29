@@ -32,10 +32,11 @@ class SearchViewModel @Inject constructor(
     fun onQueryChange(newQuery: String) {
         _uiState.update { it.copy(query = newQuery) }
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(DEBOUNCE_MS)
-            search(newQuery)
-        }
+        searchJob =
+            viewModelScope.launch {
+                delay(DEBOUNCE_MS)
+                search(newQuery)
+            }
     }
 
     /** エラー後の再検索。デバウンスをバイパスして直接実行する。 */

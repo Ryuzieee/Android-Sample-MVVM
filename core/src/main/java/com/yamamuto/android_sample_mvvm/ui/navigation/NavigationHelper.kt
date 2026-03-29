@@ -38,12 +38,18 @@ inline fun <reified T : Any> NavGraphBuilder.pushComposable(
             slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
         },
         exitTransition = {
-            if (targetState.destination.isModal()) ExitTransition.None
-            else slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+            if (targetState.destination.isModal()) {
+                ExitTransition.None
+            } else {
+                slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+            }
         },
         popEnterTransition = {
-            if (initialState.destination.isModal()) EnterTransition.None
-            else slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+            if (initialState.destination.isModal()) {
+                EnterTransition.None
+            } else {
+                slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+            }
         },
         popExitTransition = {
             slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
@@ -84,22 +90,16 @@ inline fun <reified T : Any> NavGraphBuilder.modalComposable(
 // ── 簡易ヘルパー: backStackEntry を隠蔽 ──────────────────────────
 
 /** 引数なしルート用。Screen composable をそのまま渡せる。 */
-inline fun <reified T : Any> NavGraphBuilder.pushScreen(
-    noinline content: @Composable () -> Unit,
-) {
+inline fun <reified T : Any> NavGraphBuilder.pushScreen(noinline content: @Composable () -> Unit) {
     pushComposable<T> { content() }
 }
 
 /** 引数なしモーダルルート用。 */
-inline fun <reified T : Any> NavGraphBuilder.modalScreen(
-    noinline content: @Composable () -> Unit,
-) {
+inline fun <reified T : Any> NavGraphBuilder.modalScreen(noinline content: @Composable () -> Unit) {
     modalComposable<T> { content() }
 }
 
 /** 引数ありルート用。型安全な Route を直接受け取れる。 */
-inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(
-    noinline content: @Composable (route: T) -> Unit,
-) {
+inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(noinline content: @Composable (route: T) -> Unit) {
     pushComposable<T> { backStackEntry -> content(backStackEntry.toRoute<T>()) }
 }

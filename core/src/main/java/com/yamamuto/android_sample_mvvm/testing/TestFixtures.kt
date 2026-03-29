@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.testing
 
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 
 private const val OFFICIAL_ARTWORK_URL =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png"
@@ -24,10 +24,11 @@ object TestFixtures {
             weight = 69,
             baseExperience = 64,
             types = listOf("grass", "poison"),
-            abilities = listOf(
-                PokemonDetailModel.Ability(name = "overgrow", japaneseName = "しんりょく", isHidden = false),
-                PokemonDetailModel.Ability(name = "chlorophyll", japaneseName = "ようりょくそ", isHidden = true),
-            ),
+            abilities =
+                listOf(
+                    PokemonDetailModel.Ability(name = "overgrow", japaneseName = "しんりょく", isHidden = false),
+                    PokemonDetailModel.Ability(name = "chlorophyll", japaneseName = "ようりょくそ", isHidden = true),
+                ),
             imageUrl = OFFICIAL_ARTWORK_URL,
             stats =
                 listOf(

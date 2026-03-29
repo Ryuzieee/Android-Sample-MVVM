@@ -9,9 +9,10 @@ class SearchPokemonUseCase @Inject constructor(
     private val repository: PokemonRepository,
 ) {
     suspend operator fun invoke(query: String): Result<List<String>> {
-        val names = repository.searchPokemonNames(query).getOrElse {
-            return Result.failure(it)
-        }
+        val names =
+            repository.searchPokemonNames(query).getOrElse {
+                return Result.failure(it)
+            }
         if (names.isEmpty()) {
             return Result.failure(AppException.NotFound(query))
         }

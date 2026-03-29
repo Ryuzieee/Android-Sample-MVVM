@@ -10,15 +10,16 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PokemonNameMapperTest {
-
     @Test
     fun `toEntity maps response results to entities`() {
-        val response = PokemonListResponse(
-            results = listOf(
-                PokemonDto("bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/"),
-                PokemonDto("charmander", "https://pokeapi.co/api/v2/pokemon/4/"),
-            ),
-        )
+        val response =
+            PokemonListResponse(
+                results =
+                    listOf(
+                        PokemonDto("bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/"),
+                        PokemonDto("charmander", "https://pokeapi.co/api/v2/pokemon/4/"),
+                    ),
+            )
 
         val entities = response.toEntity()
 
@@ -29,12 +30,13 @@ class PokemonNameMapperTest {
 
     @Test
     fun `toModel filters by query case-insensitively`() {
-        val entities = listOf(
-            PokemonNameEntity(name = "bulbasaur"),
-            PokemonNameEntity(name = "charmander"),
-            PokemonNameEntity(name = "charmeleon"),
-            PokemonNameEntity(name = "pikachu"),
-        )
+        val entities =
+            listOf(
+                PokemonNameEntity(name = "bulbasaur"),
+                PokemonNameEntity(name = "charmander"),
+                PokemonNameEntity(name = "charmeleon"),
+                PokemonNameEntity(name = "pikachu"),
+            )
 
         val result = entities.toModel("char")
 
@@ -43,10 +45,11 @@ class PokemonNameMapperTest {
 
     @Test
     fun `toModel trims query whitespace`() {
-        val entities = listOf(
-            PokemonNameEntity(name = "pikachu"),
-            PokemonNameEntity(name = "raichu"),
-        )
+        val entities =
+            listOf(
+                PokemonNameEntity(name = "pikachu"),
+                PokemonNameEntity(name = "raichu"),
+            )
 
         val result = entities.toModel("  pika  ")
 

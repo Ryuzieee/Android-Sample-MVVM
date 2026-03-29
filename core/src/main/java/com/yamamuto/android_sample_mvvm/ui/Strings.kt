@@ -2,7 +2,6 @@ package com.yamamuto.android_sample_mvvm.ui
 
 /** アプリ全体で使用する UI 文字列定数。画面ごとにグルーピングして管理する。 */
 object Strings {
-
     // ── 共通 ──────────────────────────────────────────────
 
     object Common {
@@ -71,11 +70,15 @@ object Strings {
         const val GENDER_FEMALE = "♀"
         const val GENDER_MALE = "♂"
 
-        fun heightWeight(heightCm: Int, weightKg: Double): String =
-            "$LABEL_HEIGHT: $heightCm $UNIT_CM ・ $LABEL_WEIGHT: $weightKg $UNIT_KG"
+        fun heightWeight(
+            heightCm: Int,
+            weightKg: Double,
+        ): String = "$LABEL_HEIGHT: $heightCm $UNIT_CM ・ $LABEL_WEIGHT: $weightKg $UNIT_KG"
 
-        fun genderRatio(femalePercent: Double, malePercent: Double): String =
-            "$GENDER_FEMALE $femalePercent% / $GENDER_MALE $malePercent%"
+        fun genderRatio(
+            femalePercent: Double,
+            malePercent: Double,
+        ): String = "$GENDER_FEMALE $femalePercent% / $GENDER_MALE $malePercent%"
     }
 
     // ── 検索画面 ──────────────────────────────────────────

@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.component
 
-import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
@@ -46,7 +46,7 @@ fun <T : Any> PagingContent(
     content: @Composable (LazyPagingItems<T>) -> Unit,
 ) {
     val flow = remember { MutableStateFlow(PagingData.empty<T>()) }
-    flow.value = pagingData
+    LaunchedEffect(pagingData) { flow.emit(pagingData) }
     PagingContent(pagingData = flow, modifier = modifier, content = content)
 }
 

@@ -41,4 +41,3 @@ internal fun PokemonDetailEntity.toModel(): PokemonDetailModel {
         stats = stats.map { PokemonDetailModel.Stat(name = it.name, value = it.value) },
     )
 }
-

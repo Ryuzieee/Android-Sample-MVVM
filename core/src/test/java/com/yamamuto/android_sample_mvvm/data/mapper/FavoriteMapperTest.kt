@@ -6,7 +6,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class FavoriteMapperTest {
-
     @Test
     fun `FavoriteEntity toModel maps correctly`() {
         val entity = FavoriteEntity(id = 25, name = "pikachu", imageUrl = "https://example.com/25.png")
@@ -19,17 +18,18 @@ class FavoriteMapperTest {
 
     @Test
     fun `PokemonDetailModel toEntity maps correctly`() {
-        val detail = PokemonDetailModel(
-            id = 1,
-            name = "bulbasaur",
-            height = 7,
-            weight = 69,
-            baseExperience = 64,
-            types = listOf("grass"),
-            abilities = emptyList(),
-            imageUrl = "https://example.com/1.png",
-            stats = emptyList(),
-        )
+        val detail =
+            PokemonDetailModel(
+                id = 1,
+                name = "bulbasaur",
+                height = 7,
+                weight = 69,
+                baseExperience = 64,
+                types = listOf("grass"),
+                abilities = emptyList(),
+                imageUrl = "https://example.com/1.png",
+                stats = emptyList(),
+            )
         val entity = detail.toEntity()
 
         assertEquals(1, entity.id)

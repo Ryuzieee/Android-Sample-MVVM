@@ -11,39 +11,45 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PokemonDetailMapperTest {
-
-    private val response = PokemonDetailResponse(
-        id = 1,
-        name = "bulbasaur",
-        height = 7,
-        weight = 69,
-        baseExperience = 64,
-        types = listOf(
-            PokemonDetailResponse.TypeSlot(PokemonDetailResponse.TypeInfo("grass")),
-            PokemonDetailResponse.TypeSlot(PokemonDetailResponse.TypeInfo("poison")),
-        ),
-        abilities = listOf(
-            PokemonDetailResponse.AbilitySlot(
-                ability = PokemonDetailResponse.AbilityInfo("overgrow"),
-                isHidden = false,
-            ),
-            PokemonDetailResponse.AbilitySlot(
-                ability = PokemonDetailResponse.AbilityInfo("chlorophyll"),
-                isHidden = true,
-            ),
-        ),
-        sprites = PokemonDetailResponse.Sprites(
-            other = PokemonDetailResponse.Sprites.Other(
-                officialArtwork = PokemonDetailResponse.Sprites.Other.OfficialArtwork(
-                    frontDefault = "https://example.com/1.png",
+    private val response =
+        PokemonDetailResponse(
+            id = 1,
+            name = "bulbasaur",
+            height = 7,
+            weight = 69,
+            baseExperience = 64,
+            types =
+                listOf(
+                    PokemonDetailResponse.TypeSlot(PokemonDetailResponse.TypeInfo("grass")),
+                    PokemonDetailResponse.TypeSlot(PokemonDetailResponse.TypeInfo("poison")),
                 ),
-            ),
-        ),
-        stats = listOf(
-            PokemonDetailResponse.StatSlot(baseStat = 45, stat = PokemonDetailResponse.StatInfo("hp")),
-            PokemonDetailResponse.StatSlot(baseStat = 49, stat = PokemonDetailResponse.StatInfo("attack")),
-        ),
-    )
+            abilities =
+                listOf(
+                    PokemonDetailResponse.AbilitySlot(
+                        ability = PokemonDetailResponse.AbilityInfo("overgrow"),
+                        isHidden = false,
+                    ),
+                    PokemonDetailResponse.AbilitySlot(
+                        ability = PokemonDetailResponse.AbilityInfo("chlorophyll"),
+                        isHidden = true,
+                    ),
+                ),
+            sprites =
+                PokemonDetailResponse.Sprites(
+                    other =
+                        PokemonDetailResponse.Sprites.Other(
+                            officialArtwork =
+                                PokemonDetailResponse.Sprites.Other.OfficialArtwork(
+                                    frontDefault = "https://example.com/1.png",
+                                ),
+                        ),
+                ),
+            stats =
+                listOf(
+                    PokemonDetailResponse.StatSlot(baseStat = 45, stat = PokemonDetailResponse.StatInfo("hp")),
+                    PokemonDetailResponse.StatSlot(baseStat = 49, stat = PokemonDetailResponse.StatInfo("attack")),
+                ),
+        )
 
     @Test
     fun `toEntity maps DTO fields correctly`() {
@@ -65,17 +71,18 @@ class PokemonDetailMapperTest {
 
     @Test
     fun `toModel maps Entity fields correctly`() {
-        val entity = PokemonDetailEntity(
-            id = 25,
-            name = "pikachu",
-            height = 4,
-            weight = 60,
-            baseExperience = 112,
-            types = listOf("electric"),
-            abilities = listOf(AbilityEntry(name = "static", japaneseName = "せいでんき", isHidden = false)),
-            imageUrl = "https://example.com/25.png",
-            stats = listOf(StatEntry(name = "hp", value = 35)),
-        )
+        val entity =
+            PokemonDetailEntity(
+                id = 25,
+                name = "pikachu",
+                height = 4,
+                weight = 60,
+                baseExperience = 112,
+                types = listOf("electric"),
+                abilities = listOf(AbilityEntry(name = "static", japaneseName = "せいでんき", isHidden = false)),
+                imageUrl = "https://example.com/25.png",
+                stats = listOf(StatEntry(name = "hp", value = 35)),
+            )
 
         val model = entity.toModel()
 

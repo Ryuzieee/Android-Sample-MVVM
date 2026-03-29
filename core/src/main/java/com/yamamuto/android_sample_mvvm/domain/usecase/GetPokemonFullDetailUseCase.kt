@@ -20,8 +20,9 @@ class GetPokemonFullDetailUseCase @Inject constructor(
         name: String,
         forceRefresh: Boolean = false,
     ): Result<PokemonFullDetailModel> {
-        val detail = getPokemonDetailUseCase(name, forceRefresh)
-            .getOrElse { return Result.failure(it) }
+        val detail =
+            getPokemonDetailUseCase(name, forceRefresh)
+                .getOrElse { return Result.failure(it) }
 
         return coroutineScope {
             val speciesDeferred = async { getPokemonSpeciesUseCase(name).getOrNull() }
@@ -40,13 +41,17 @@ class GetPokemonFullDetailUseCase @Inject constructor(
 
     private suspend fun resolveAbilityNames(
         detail: com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel,
-    ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel = coroutineScope {
-        val jaNames = detail.abilities.map { ability ->
-            async { getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name) }
-        }.map { it.await() }
-        val updatedAbilities = detail.abilities.zip(jaNames) { ability, jaName ->
-            ability.copy(japaneseName = jaName)
+    ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel =
+        coroutineScope {
+            val jaNames =
+                detail.abilities
+                    .map { ability ->
+                        async { getAbilityJapaneseNameUseCase(ability.name).getOrDefault(ability.name) }
+                    }.map { it.await() }
+            val updatedAbilities =
+                detail.abilities.zip(jaNames) { ability, jaName ->
+                    ability.copy(japaneseName = jaName)
+                }
+            detail.copy(abilities = updatedAbilities)
         }
-        detail.copy(abilities = updatedAbilities)
-    }
 }

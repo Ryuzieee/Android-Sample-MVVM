@@ -17,7 +17,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -43,71 +42,76 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `search returns success after debounce`() = runTest {
-        coEvery { searchPokemonUseCase("pikachu") } returns Result.success(listOf("pikachu"))
-        val viewModel = createViewModel()
+    fun `search returns success after debounce`() =
+        runTest {
+            coEvery { searchPokemonUseCase("pikachu") } returns Result.success(listOf("pikachu"))
+            val viewModel = createViewModel()
 
-        viewModel.onQueryChange("pikachu")
-        advanceTimeBy(600)
-        advanceUntilIdle()
+            viewModel.onQueryChange("pikachu")
+            advanceTimeBy(600)
+            advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertTrue(state.content is UiState.Success)
-        assertEquals(listOf("pikachu"), (state.content as UiState.Success).data)
-    }
-
-    @Test
-    fun `blank query resets to idle`() = runTest {
-        coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
-        val viewModel = createViewModel()
-
-        viewModel.onQueryChange("pika")
-        advanceTimeBy(600)
-        advanceUntilIdle()
-
-        viewModel.onQueryChange("")
-        advanceTimeBy(600)
-        advanceUntilIdle()
-
-        assertEquals(UiState.Idle, viewModel.uiState.value.content)
-    }
+            val state = viewModel.uiState.value
+            assertTrue(state.content is UiState.Success)
+            assertEquals(listOf("pikachu"), (state.content as UiState.Success).data)
+        }
 
     @Test
-    fun `search returns error state on failure`() = runTest {
-        coEvery { searchPokemonUseCase("xyz") } returns Result.failure(AppException.NotFound("xyz"))
-        val viewModel = createViewModel()
+    fun `blank query resets to idle`() =
+        runTest {
+            coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
+            val viewModel = createViewModel()
 
-        viewModel.onQueryChange("xyz")
-        advanceTimeBy(600)
-        advanceUntilIdle()
+            viewModel.onQueryChange("pika")
+            advanceTimeBy(600)
+            advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.content is UiState.Error)
-    }
+            viewModel.onQueryChange("")
+            advanceTimeBy(600)
+            advanceUntilIdle()
 
-    @Test
-    fun `retrySearch executes without debounce`() = runTest {
-        coEvery { searchPokemonUseCase("pika") } returns Result.failure(AppException.Network(Exception()))
-        val viewModel = createViewModel()
-
-        viewModel.onQueryChange("pika")
-        advanceTimeBy(600)
-        advanceUntilIdle()
-        assertTrue(viewModel.uiState.value.content is UiState.Error)
-
-        coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
-        viewModel.retrySearch()
-        advanceUntilIdle()
-
-        assertTrue(viewModel.uiState.value.content is UiState.Success)
-    }
+            assertEquals(UiState.Idle, viewModel.uiState.value.content)
+        }
 
     @Test
-    fun `retrySearch does nothing when query is blank`() = runTest {
-        val viewModel = createViewModel()
+    fun `search returns error state on failure`() =
+        runTest {
+            coEvery { searchPokemonUseCase("xyz") } returns Result.failure(AppException.NotFound("xyz"))
+            val viewModel = createViewModel()
 
-        viewModel.retrySearch()
-        advanceUntilIdle()
+            viewModel.onQueryChange("xyz")
+            advanceTimeBy(600)
+            advanceUntilIdle()
 
-        assertEquals(UiState.Idle, viewModel.uiState.value.content)
-    }
+            assertTrue(viewModel.uiState.value.content is UiState.Error)
+        }
+
+    @Test
+    fun `retrySearch executes without debounce`() =
+        runTest {
+            coEvery { searchPokemonUseCase("pika") } returns Result.failure(AppException.Network(Exception()))
+            val viewModel = createViewModel()
+
+            viewModel.onQueryChange("pika")
+            advanceTimeBy(600)
+            advanceUntilIdle()
+            assertTrue(viewModel.uiState.value.content is UiState.Error)
+
+            coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
+            viewModel.retrySearch()
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value.content is UiState.Success)
+        }
+
+    @Test
+    fun `retrySearch does nothing when query is blank`() =
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.retrySearch()
+            advanceUntilIdle()
+
+            assertEquals(UiState.Idle, viewModel.uiState.value.content)
+        }
 }

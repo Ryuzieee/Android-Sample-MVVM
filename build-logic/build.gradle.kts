@@ -22,11 +22,7 @@ gradlePlugin {
             id = "convention.android.compose"
             implementationClass = "AndroidComposeConventionPlugin"
         }
-        register("kotlinLibrary") {
-            id = "convention.kotlin.library"
-            implementationClass = "KotlinLibraryConventionPlugin"
-        }
-        register("feature") {
+register("feature") {
             id = "convention.feature"
             implementationClass = "FeatureConventionPlugin"
         }
