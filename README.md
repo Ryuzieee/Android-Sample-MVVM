@@ -120,8 +120,7 @@ Android-Sample-MVVM/
 │       ├── detail/                # ポケモン詳細画面
 │       ├── search/                # ポケモン検索画面
 │       └── favorites/             # お気に入り一覧画面
-└── build-logic/
-    └── convention/                # Convention Plugins
+└── build-logic/                  # Convention Plugins
 ```
 
 ### Convention Plugins（`build-logic`）
