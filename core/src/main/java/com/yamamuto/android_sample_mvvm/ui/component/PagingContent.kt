@@ -17,19 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * [LazyPagingItems] をそのまま渡すことで、末端到達時の自動 prefetch を維持する。
  * レイアウト (Grid / Column / Row) の選択は呼び出し側に委ねる。
- *
- * ```kotlin
- * PagingContent(pagingData = uiState.pagingData) { pagingItems ->
- *     AppLazyVerticalGrid {
- *         items(pagingItems.itemCount) { index ->
- *             pagingItems[index]?.let { PokemonCard(...) }
- *         }
- *         if (pagingItems.isAppendLoading) {
- *             item { LoadingIndicator() }
- *         }
- *     }
- * }
- * ```
  */
 @Composable
 fun <T : Any> PagingContent(

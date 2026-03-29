@@ -3,20 +3,16 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
-import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
+import com.yamamuto.android_sample_mvvm.ui.util.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,9 +37,6 @@ class PokemonDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PokemonDetailUiState())
     val uiState: StateFlow<PokemonDetailUiState> = _uiState.asStateFlow()
 
-    private val _events = Channel<UiEvent>(Channel.BUFFERED)
-    val events: Flow<UiEvent> = _events.receiveAsFlow()
-
     private val pokemonName: String = checkNotNull(savedStateHandle[KEY_NAME])
 
     init {
@@ -60,33 +53,20 @@ class PokemonDetailViewModel @Inject constructor(
 
     fun toggleFavorite() {
         val state = _uiState.value
-        val fullDetail = state.contentState.getOrNull() ?: return
+        val fullDetail = state.content.getOrNull() ?: return
         viewModelScope.launch { toggleFavoriteUseCase(fullDetail.detail, state.isFavorite) }
     }
 
     private fun load(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            _uiState.update { it.copy(contentState = UiState.Loading, isRefreshing = forceRefresh) }
+            _uiState.update { it.copy(content = UiState.Loading, isRefreshing = forceRefresh) }
 
-            getPokemonFullDetailUseCase(pokemonName, forceRefresh = forceRefresh)
-                .onSuccess { fullDetail ->
-                    _uiState.update {
-                        it.copy(
-                            contentState = UiState.Success(fullDetail),
-                            isRefreshing = false,
-                        )
-                    }
-                    loadFavorite(fullDetail.detail.id)
-                }.onFailure { error ->
-                    val message = error.message ?: Strings.Error.UNKNOWN_ERROR
-                    _uiState.update {
-                        it.copy(
-                            contentState = UiState.Error(message = message),
-                            isRefreshing = false,
-                        )
-                    }
-                    _events.send(UiEvent.ShowSnackbar(message))
-                }
+            val content = getPokemonFullDetailUseCase(pokemonName, forceRefresh = forceRefresh).toUiState()
+            _uiState.update { it.copy(content = content, isRefreshing = false) }
+
+            if (content is UiState.Success) {
+                loadFavorite(content.data.detail.id)
+            }
         }
     }
 

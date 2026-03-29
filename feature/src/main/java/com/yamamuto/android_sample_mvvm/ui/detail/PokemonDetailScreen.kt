@@ -22,12 +22,9 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,11 +46,8 @@ import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 import com.yamamuto.android_sample_mvvm.ui.util.JapaneseTranslation
-import com.yamamuto.android_sample_mvvm.ui.util.ObserveAsEvents
 import com.yamamuto.android_sample_mvvm.ui.Strings
-import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
-import kotlinx.coroutines.launch
 
 @Composable
 fun PokemonDetailScreen(
@@ -62,20 +56,11 @@ fun PokemonDetailScreen(
     onPokemonClick: (String) -> Unit = {},
     viewModel: PokemonDetailViewModel = hiltViewModel(),
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showInfo by rememberSaveable { mutableStateOf(false) }
 
-    val fullDetail = uiState.contentState.getOrNull()
+    val fullDetail = uiState.content.getOrNull()
     val displayName = fullDetail?.species?.japaneseName?.ifEmpty { null } ?: pokemonName
-
-    ObserveAsEvents(viewModel.events) { event ->
-        when (event) {
-            is UiEvent.ShowSnackbar -> scope.launch { snackbarHostState.showSnackbar(event.message) }
-            is UiEvent.NavigateBack -> onBack()
-        }
-    }
 
     AppScaffold(
         title = {
@@ -98,7 +83,6 @@ fun PokemonDetailScreen(
                 tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
         },
-        snackbarHostState = snackbarHostState,
     ) { padding ->
         AppPullRefresh(
             isRefreshing = uiState.isRefreshing,
@@ -106,7 +90,7 @@ fun PokemonDetailScreen(
             modifier = Modifier.padding(padding),
         ) {
             UiStateContent(
-                state = uiState.contentState,
+                state = uiState.content,
                 onRetry = viewModel::retry,
             ) { content ->
                 PokemonDetailContent(

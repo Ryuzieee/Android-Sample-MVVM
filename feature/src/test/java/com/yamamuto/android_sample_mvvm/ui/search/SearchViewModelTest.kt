@@ -30,7 +30,7 @@ class SearchViewModelTest {
         val viewModel = createViewModel()
 
         assertEquals("", viewModel.uiState.value.query)
-        assertEquals(UiState.Idle, viewModel.uiState.value.result)
+        assertEquals(UiState.Idle, viewModel.uiState.value.content)
     }
 
     @Test
@@ -52,8 +52,8 @@ class SearchViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertTrue(state.result is UiState.Success)
-        assertEquals(listOf("pikachu"), (state.result as UiState.Success).data)
+        assertTrue(state.content is UiState.Success)
+        assertEquals(listOf("pikachu"), (state.content as UiState.Success).data)
     }
 
     @Test
@@ -69,7 +69,7 @@ class SearchViewModelTest {
         advanceTimeBy(600)
         advanceUntilIdle()
 
-        assertEquals(UiState.Idle, viewModel.uiState.value.result)
+        assertEquals(UiState.Idle, viewModel.uiState.value.content)
     }
 
     @Test
@@ -81,7 +81,7 @@ class SearchViewModelTest {
         advanceTimeBy(600)
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.result is UiState.Error)
+        assertTrue(viewModel.uiState.value.content is UiState.Error)
     }
 
     @Test
@@ -92,13 +92,13 @@ class SearchViewModelTest {
         viewModel.onQueryChange("pika")
         advanceTimeBy(600)
         advanceUntilIdle()
-        assertTrue(viewModel.uiState.value.result is UiState.Error)
+        assertTrue(viewModel.uiState.value.content is UiState.Error)
 
         coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
         viewModel.retrySearch()
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.result is UiState.Success)
+        assertTrue(viewModel.uiState.value.content is UiState.Success)
     }
 
     @Test
@@ -108,6 +108,6 @@ class SearchViewModelTest {
         viewModel.retrySearch()
         advanceUntilIdle()
 
-        assertEquals(UiState.Idle, viewModel.uiState.value.result)
+        assertEquals(UiState.Idle, viewModel.uiState.value.content)
     }
 }

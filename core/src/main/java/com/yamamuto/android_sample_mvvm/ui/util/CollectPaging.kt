@@ -13,16 +13,6 @@ import kotlinx.coroutines.launch
 
 /**
  * Paging Flow を購読して UiState に反映する ViewModel 拡張関数。
- *
- * ```
- * init {
- *     collectPaging(
- *         state = _uiState,
- *         pageSize = PAGE_SIZE,
- *         source = { pagingSourceFactory.create() },
- *     ) { copy(pagingData = it) }
- * }
- * ```
  */
 fun <S, T : Any> ViewModel.collectPaging(
     state: MutableStateFlow<S>,

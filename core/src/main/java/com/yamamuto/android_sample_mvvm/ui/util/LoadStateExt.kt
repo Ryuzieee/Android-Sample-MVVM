@@ -8,13 +8,6 @@ import com.yamamuto.android_sample_mvvm.ui.Strings
  * [LoadState] を [UiState] に変換する。
  *
  * Paging の refresh 状態を UiStateContent に渡すときに使う。
- *
- * ```kotlin
- * UiStateContent(
- *     state = pagingItems.loadState.refresh.asUiState { pagingItems },
- *     onRetry = { pagingItems.retry() },
- * ) { items -> ... }
- * ```
  */
 fun <T> LoadState.asUiState(onNotLoading: () -> T): UiState<T> {
     return when (this) {

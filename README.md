@@ -19,7 +19,7 @@ PokeAPI を使ったポケモン図鑑アプリ。チーム開発のベースコ
 | **Language** | Kotlin | 2.3.20 |
 | **Build** | Android Gradle Plugin | 9.0.1 |
 | | KSP | 2.0.21-1.0.28 |
-| **UI** | Jetpack Compose BOM | 2026.03.00 |
+| **UI** | Jetpack Compose BOM | 2026.03.01 |
 | | Material3 | BOM 経由 |
 | | Navigation Compose | 2.9.7 |
 | | Coil | 3.4.0 |
@@ -32,7 +32,6 @@ PokeAPI を使ったポケモン図鑑アプリ。チーム開発のベースコ
 | **ページング** | Paging 3 | 3.4.2 |
 | **Logging** | Timber | 5.0.1 |
 | **テスト** | JUnit4 / MockK / Turbine | 4.13.2 / 1.14.9 / 1.2.1 |
-| | Robolectric / Roborazzi | 4.16.1 / 1.59.0 |
 | **品質** | ktlint / Detekt | 14.2.0 / 1.23.8 |
 
 ---
@@ -56,9 +55,9 @@ Clean Architecture + MVVM。3モジュール構成でシンプルに保ちつつ
 ### パッケージ構成
 
 #### `core` — `domain`（ビジネスロジック）
-- **Model**: `PokemonDetailModel`, `PokemonSpeciesModel`, `EvolutionStageModel`, `FavoriteModel`, `PokemonSummaryModel`, `AppEvent`, `AppException`
+- **Model**: `PokemonDetailModel`, `PokemonSpeciesModel`, `EvolutionStageModel`, `FavoriteModel`, `PokemonSummaryModel`, `PokemonFullDetailModel`, `AppException`
 - **Repository Interface**: `PokemonRepository`, `FavoriteRepository`
-- **UseCase**: `GetPokemonDetailUseCase`, `GetPokemonFullDetailUseCase`, `GetPokemonSpeciesUseCase`, `GetEvolutionChainUseCase`, `GetAbilityJapaneseNameUseCase`, `SearchPokemonUseCase`, `ObserveFavoritesUseCase`, `ObserveIsFavoriteUseCase`, `ToggleFavoriteUseCase`
+- **UseCase**: `GetPokemonDetailUseCase`, `GetPokemonFullDetailUseCase`, `GetPokemonSpeciesUseCase`, `GetEvolutionChainUseCase`, `GetAbilityJapaneseNameUseCase`, `SearchPokemonUseCase`, `GetFavoritesUseCase`, `GetIsFavoriteUseCase`, `ToggleFavoriteUseCase`
 
 > ViewModel → UseCase → Repository の一方向データフローを統一。パススルーであっても必ず UseCase を経由する。
 
@@ -66,12 +65,14 @@ Clean Architecture + MVVM。3モジュール構成でシンプルに保ちつつ
 - **API**: Retrofit + kotlinx.serialization で PokeAPI を呼び出し
 - **Paging**: `OffsetPagingSource`（offset/limit ベース、pageSize=20）
 - **Cache**: Room で詳細データをキャッシュ（debug: 1分 / release: 5分）。TypeConverters に kotlinx.serialization を使用
+- **Mapper**: `data/mapper/` パッケージに集約。命名規則は `.toModel()`（→ ドメイン）/ `.toEntity()`（→ Entity）
+- **Repository Handler**: `handleWithCache` / `handleRemote` / `handleLocal` で例外を `AppException` に変換し `Result` で返す
 - **DI**: `DataModule`（Hilt `@Binds` + `@Provides`）
 
 #### `core` — `ui`（共通 UI）
 - **コンポーネント**: `AppScaffold`, `AppText`, `AppBottomSheet`, `EmptyContent`, `ErrorContent`, `LoadingIndicator`, `PokemonCard`, `PokemonImage`, `SearchTextField`, `UiStateContent`, `PagingContent`
 - **文字列定数**: `Strings.kt` にアプリ全体の UI 文字列を画面ごとにグルーピング
-- **ユーティリティ**: `UiState`（Idle / Loading / Success / Error）、`UiEvent` + `ObserveAsEvents`、`CollectPaging`（ViewModel 拡張関数）
+- **ユーティリティ**: `UiState`（Idle / Loading / Success / Error）、`Result<T>.toUiState()` 拡張関数、`CollectPaging`（ViewModel 拡張関数）
 - **テーマ**: Material3 テーマ定義（Color, Type, Theme）
 
 #### `core` — `testing`（テスト補助）
@@ -80,9 +81,10 @@ Clean Architecture + MVVM。3モジュール構成でシンプルに保ちつつ
 #### `feature`（各画面）
 - 各 ViewModel は `ViewModel()` を直接継承し `MutableStateFlow` で状態管理（基底クラスなし）
 - UI 状態は `UiStateContent` で Loading / Error / Success / Idle を統一描画
-- `search`: クエリの `debounce(500ms)` + `flatMapLatest` でリアルタイム検索
-- `favorites`: Room の Flow を `UiState.Success` にラップして公開
-- `detail`: 進化チェーン表示、BottomSheet による詳細情報、`isFavorite` の DB リアルタイム監視
+- UiState のプロパティ名は `content` に統一
+- `search`: `Job` + `delay(500ms)` でデバウンス検索
+- `favorites`: suspend で取得し `toUiState()` で変換
+- `detail`: 進化チェーン表示、BottomSheet による詳細情報、お気に入りトグル
 
 ### データフロー
 
@@ -109,7 +111,7 @@ Android-Sample-MVVM/
 ├── core/
 │   └── src/main/java/
 │       ├── domain/                # ドメイン層（model / repository / usecase）
-│       ├── data/                  # データ層（api / local / repository / paging / di）
+│       ├── data/                  # データ層（api / local / repository / mapper / paging / di）
 │       ├── ui/                    # 共通 UI（component / theme / util / Strings.kt）
 │       └── testing/               # テスト補助（MainDispatcherRule / TestFixtures）
 ├── feature/
@@ -201,28 +203,17 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 
 ## テスト
 
-### ユニットテスト
-
 ```bash
-./gradlew test
+./gradlew :core:testDebugUnitTest :feature:testDebugUnitTest
 ```
 
-| テストクラス | 対象 | ツール |
-|------------|------|--------|
-| `PokemonListViewModelTest` | Paging データの出力検証 | MockK + Paging Testing |
-| `PokemonDetailViewModelTest` | StateFlow の状態遷移・お気に入りトグル検証 | Turbine + MockK |
-
-### スクリーンショットテスト（Roborazzi）
-
-```bash
-# スクリーンショット記録（初回・更新時）
-./gradlew :feature:recordRoborazziDebug
-
-# スクリーンショット比較（CI 等）
-./gradlew :feature:verifyRoborazziDebug
-```
-
-対象：詳細画面の Loading / Error 状態
+| レイヤー | テストクラス | ツール |
+|---------|------------|--------|
+| **Mapper** | `PokemonDetailMapperTest`, `PokemonSpeciesMapperTest`, `AbilityMapperTest`, `FavoriteMapperTest`, `PokemonNameMapperTest` | JUnit |
+| **Repository Handler** | `RepositoryHandlerTest` | JUnit + MockK |
+| **Repository** | `PokemonRepositoryImplTest`, `FavoriteRepositoryImplTest` | MockK |
+| **UseCase** | `GetPokemonFullDetailUseCaseTest`, `GetPokemonSpeciesUseCaseTest`, `GetEvolutionChainUseCaseTest`, `GetAbilityJapaneseNameUseCaseTest`, `SearchPokemonUseCaseTest`, `ToggleFavoriteUseCaseTest`, `GetFavoritesUseCaseTest`, `GetIsFavoriteUseCaseTest` | MockK |
+| **ViewModel** | `PokemonListViewModelTest`, `PokemonDetailViewModelTest`, `SearchViewModelTest`, `FavoritesViewModelTest` | Turbine + MockK |
 
 ---
 

@@ -40,7 +40,7 @@ fun SearchScreen(
         onBack = onBack,
     ) { padding ->
         UiStateContent(
-            state = uiState.result,
+            state = uiState.content,
             onRetry = viewModel::retrySearch,
             modifier = Modifier.padding(padding),
             idleContent = { SearchIdle(padding) },

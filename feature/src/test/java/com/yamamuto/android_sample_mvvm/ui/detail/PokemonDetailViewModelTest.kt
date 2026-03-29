@@ -68,8 +68,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem()
-                assertTrue(state.contentState is UiState.Success)
-                val data = (state.contentState as UiState.Success).data
+                assertTrue(state.content is UiState.Success)
+                val data = (state.content as UiState.Success).data
                 assertEquals(fakePokemonDetail.id, data.detail.id)
                 assertEquals(fakePokemonDetail.name, data.detail.name)
             }
@@ -86,8 +86,8 @@ class PokemonDetailViewModelTest {
 
             viewModel.uiState.test {
                 val state = awaitItem()
-                assertTrue(state.contentState is UiState.Error)
-                assertEquals("Not found", (state.contentState as UiState.Error).message)
+                assertTrue(state.content is UiState.Error)
+                assertEquals("Not found", (state.content as UiState.Error).message)
             }
         }
     }
@@ -104,7 +104,7 @@ class PokemonDetailViewModelTest {
             val viewModel = createViewModel("charizard")
 
             viewModel.uiState.test {
-                val state = awaitItem().contentState as UiState.Success
+                val state = awaitItem().content as UiState.Success
                 assertEquals("charizard", state.data.detail.name)
                 assertEquals(6, state.data.detail.id)
             }
@@ -120,13 +120,13 @@ class PokemonDetailViewModelTest {
             val viewModel = createViewModel("bulbasaur")
 
             viewModel.uiState.test {
-                assertTrue(awaitItem().contentState is UiState.Error)
+                assertTrue(awaitItem().content is UiState.Error)
 
                 coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
                 viewModel.retry()
 
                 val finalState = expectMostRecentItem()
-                assertTrue(finalState.contentState is UiState.Success)
+                assertTrue(finalState.content is UiState.Success)
             }
         }
     }

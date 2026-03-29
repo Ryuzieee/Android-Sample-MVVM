@@ -5,7 +5,7 @@ import com.yamamuto.android_sample_mvvm.ui.util.UiState
 
 /** ポケモン詳細画面のUI状態。 */
 data class PokemonDetailUiState(
-    val contentState: UiState<PokemonFullDetailModel> = UiState.Loading,
+    val content: UiState<PokemonFullDetailModel> = UiState.Loading,
     val isFavorite: Boolean = false,
     val isRefreshing: Boolean = false,
 )
