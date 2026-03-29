@@ -14,6 +14,12 @@ object Strings {
     object Error {
         const val NETWORK_MESSAGE = "ネットワークに接続できません"
         const val NETWORK_SUB_MESSAGE = "接続を確認してリトライしてください"
+        const val SESSION_EXPIRED = "セッションの有効期限が切れました。再度ログインしてください"
+        const val FORCE_UPDATE = "新しいバージョンが利用可能です。アップデートしてください"
+        const val SERVER_ERROR_FORMAT = "サーバーエラー (%d)"
+        const val UNKNOWN_ERROR = "不明なエラーが発生しました"
+
+        fun notFound(query: String): String = "「$query」に一致するポケモンは見つかりませんでした"
     }
 
     // ── ダイアログ ────────────────────────────────────────
@@ -56,6 +62,20 @@ object Strings {
         const val SECTION_EVOLUTION = "しんか"
         const val SECTION_BASE_STATS = "しゅぞくち"
         const val EGG_GROUP_SEPARATOR = "、"
+        const val LABEL_HEIGHT = "たかさ"
+        const val LABEL_WEIGHT = "おもさ"
+        const val UNIT_CM = "cm"
+        const val UNIT_KG = "kg"
+        const val EVOLUTION_ARROW = "→"
+        const val EVOLUTION_LEVEL_PREFIX = "Lv."
+        const val GENDER_FEMALE = "♀"
+        const val GENDER_MALE = "♂"
+
+        fun heightWeight(heightCm: Int, weightKg: Double): String =
+            "$LABEL_HEIGHT: $heightCm $UNIT_CM ・ $LABEL_WEIGHT: $weightKg $UNIT_KG"
+
+        fun genderRatio(femalePercent: Double, malePercent: Double): String =
+            "$GENDER_FEMALE $femalePercent% / $GENDER_MALE $malePercent%"
     }
 
     // ── 検索画面 ──────────────────────────────────────────

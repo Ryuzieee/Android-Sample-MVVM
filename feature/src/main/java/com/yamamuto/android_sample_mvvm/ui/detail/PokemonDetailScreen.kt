@@ -168,7 +168,7 @@ private fun InfoBottomSheet(
                 if (species.genderRate == -1) {
                     Strings.Detail.LABEL_NO_GENDER
                 } else {
-                    "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
+                    Strings.Detail.genderRatio(species.genderRate * 12.5, (8 - species.genderRate) * 12.5)
                 }
             InfoRow(Strings.Detail.LABEL_GENDER_RATIO, genderText)
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -278,7 +278,7 @@ private fun PokemonDetailContent(
         }
 
         AppText(
-            text = "たかさ: ${detail.height * 10} cm ・ おもさ: ${detail.weight / 10.0} kg",
+            text = Strings.Detail.heightWeight(detail.height * 10, detail.weight / 10.0),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp),
         )
@@ -337,12 +337,12 @@ private fun EvolutionChainRow(
             if (stage != stages.first()) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AppText(
-                        text = "→",
+                        text = Strings.Detail.EVOLUTION_ARROW,
                         style = MaterialTheme.typography.titleLarge,
                     )
                     if (stage.minLevel != null) {
                         AppText(
-                            text = "Lv.${stage.minLevel}",
+                            text = "${Strings.Detail.EVOLUTION_LEVEL_PREFIX}${stage.minLevel}",
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }

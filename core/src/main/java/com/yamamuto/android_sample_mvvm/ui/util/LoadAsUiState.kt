@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.util
 
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
-import com.yamamuto.android_sample_mvvm.domain.model.ErrorMessages
+import com.yamamuto.android_sample_mvvm.ui.Strings
 import timber.log.Timber
 
 /**
@@ -16,7 +16,7 @@ fun <T> Result<T>.toUiState(): UiState<T> {
         onFailure = { e ->
             Timber.e(e)
             UiState.Error(
-                message = e.message ?: ErrorMessages.UNKNOWN_ERROR,
+                message = e.message ?: Strings.Error.UNKNOWN_ERROR,
                 isNetworkError = e is AppException.Network,
             )
         },

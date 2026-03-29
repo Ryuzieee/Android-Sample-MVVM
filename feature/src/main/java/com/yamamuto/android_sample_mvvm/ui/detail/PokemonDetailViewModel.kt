@@ -3,7 +3,7 @@ package com.yamamuto.android_sample_mvvm.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yamamuto.android_sample_mvvm.domain.model.ErrorMessages
+import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
@@ -78,7 +78,7 @@ class PokemonDetailViewModel @Inject constructor(
                     }
                     loadFavorite(fullDetail.detail.id)
                 }.onFailure { error ->
-                    val message = error.message ?: ErrorMessages.UNKNOWN_ERROR
+                    val message = error.message ?: Strings.Error.UNKNOWN_ERROR
                     _uiState.update {
                         it.copy(
                             contentState = UiState.Error(message = message),
