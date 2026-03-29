@@ -100,6 +100,44 @@ UI (Compose)
 
 ---
 
+## データモデル
+
+3種類のデータモデルを層ごとに分離し、各レイヤーの関心事を閉じ込める。
+
+| 種類 | パッケージ | 用途 | 命名規則 | 依存 |
+|------|----------|------|---------|------|
+| **Response (DTO)** | `data/api/dto/` | API のレスポンスを忠実に表現する | `~Response`（ネストされた子要素は `~Response.Item` 等） | `kotlinx.serialization` |
+| **Entity** | `data/local/entity/` | Room テーブルの1行に対応するキャッシュ用データ | `~Entity` | `androidx.room` |
+| **Model** | `domain/model/` | ドメインロジック・UI が扱う純粋なデータ | `~Model` | フレームワーク非依存 |
+
+### 変換の流れ
+
+```
+API Response (DTO)  ──toEntity()──▶  Entity  ──toModel()──▶  Model
+                                       ▲                       │
+                                       │                       ▼
+                                    Room DB               ViewModel / UI
+```
+
+- **`.toEntity()`**: DTO → Entity。API レスポンスをキャッシュ可能な形に変換
+- **`.toModel()`**: Entity → Model。DB データをドメインモデルに変換
+- `handleWithCache` はこの変換パイプラインを `fetch` → `toEntity` → `save` + `toModel` として一元管理
+
+### 具体例
+
+| Response (DTO) | Entity | Model |
+|----------------|--------|-------|
+| `PokemonDetailResponse` | `PokemonDetailEntity` | `PokemonDetailModel` |
+| `PokemonListResponse` / `.Item` | `PokemonNameEntity` | `PokemonSummaryModel` |
+| `PokemonSpeciesResponse` | — (キャッシュなし) | `PokemonSpeciesModel` |
+| `EvolutionChainResponse` | — (キャッシュなし) | `EvolutionStageModel` |
+| `AbilityResponse` | — (キャッシュなし) | `Map<String, String>` |
+| — | `FavoriteEntity` | `FavoriteModel` |
+
+> キャッシュ対象でない API レスポンスは Entity を経由せず、`handleRemote` で直接 Model に変換する。
+
+---
+
 ## モジュール構成
 
 ```
@@ -167,8 +205,10 @@ getPokemonDetail(name) の呼び出し時:
   1. Room から該当データを取得
   2. キャッシュが存在 かつ 有効期間内 → キャッシュを返す
      （debug: 1分 / release: 5分）
-  3. それ以外 → API から取得 → Room に保存 → 返す
+  3. それ以外 → API から取得 → toEntity() で変換 → Room に保存 → toModel() で返す
 ```
+
+`handleWithCache` は `fetch` → `toEntity` → `save` + `toModel` のパイプラインを一元管理し、例外を `AppException` に変換して `Result` で返す。
 
 ---
 
@@ -209,10 +249,12 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 | レイヤー | テストクラス | ツール |
 |---------|------------|--------|
 | **Mapper** | `PokemonDetailMapperTest`, `PokemonSpeciesMapperTest`, `AbilityMapperTest`, `FavoriteMapperTest`, `PokemonNameMapperTest` | JUnit |
-| **Repository Handler** | `RepositoryHandlerTest` | JUnit + MockK |
+| **Repository Handler** | `RepositoryHandlerTest` | JUnit |
 | **Repository** | `PokemonRepositoryImplTest`, `FavoriteRepositoryImplTest` | MockK |
 | **UseCase** | `GetPokemonFullDetailUseCaseTest`, `GetPokemonSpeciesUseCaseTest`, `GetEvolutionChainUseCaseTest`, `GetAbilityJapaneseNameUseCaseTest`, `SearchPokemonUseCaseTest`, `ToggleFavoriteUseCaseTest`, `GetFavoritesUseCaseTest`, `GetIsFavoriteUseCaseTest` | MockK |
 | **ViewModel** | `PokemonListViewModelTest`, `PokemonDetailViewModelTest`, `SearchViewModelTest`, `FavoritesViewModelTest` | Turbine + MockK |
+
+ViewModel テストは Turbine の `test {}` ブロックで StateFlow を検証し、`awaitItem()` / `expectMostRecentItem()` で状態遷移を追跡する。
 
 ---
 
