@@ -21,7 +21,9 @@ private const val MOCK_DELAY_MS = 300L
 @Singleton
 class MockInterceptor
     @Inject
-    constructor() : Interceptor {
+    constructor(
+        private val mockData: MockData,
+    ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             Thread.sleep(MOCK_DELAY_MS)
 
@@ -77,19 +79,19 @@ class MockInterceptor
 
         private fun routeMockResponse(path: String): String {
             return when {
-                path == "/api/v2/pokemon" -> MockData.pokemonList()
+                path == "/api/v2/pokemon" -> mockData.pokemonList()
                 path.matches(Regex("/api/v2/pokemon/[^/]+")) -> {
                     val name = path.substringAfterLast("/")
-                    MockData.pokemonDetail(name)
+                    mockData.pokemonDetail(name)
                 }
                 path.matches(Regex("/api/v2/pokemon-species/[^/]+")) -> {
                     val name = path.substringAfterLast("/")
-                    MockData.pokemonSpecies(name)
+                    mockData.pokemonSpecies(name)
                 }
-                path.matches(Regex("/api/v2/evolution-chain/[^/]+")) -> MockData.evolutionChain()
+                path.matches(Regex("/api/v2/evolution-chain/[^/]+")) -> mockData.evolutionChain()
                 path.matches(Regex("/api/v2/ability/[^/]+")) -> {
                     val name = path.substringAfterLast("/")
-                    MockData.ability(name)
+                    mockData.ability(name)
                 }
                 else -> """{"error": "Unknown mock route: $path"}"""
             }
