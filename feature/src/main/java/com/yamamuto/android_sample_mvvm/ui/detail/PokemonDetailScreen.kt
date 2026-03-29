@@ -38,7 +38,6 @@ import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
-import com.yamamuto.android_sample_mvvm.ui.util.JapaneseTranslation
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 
 @Composable
@@ -149,7 +148,7 @@ private fun PokemonDetailContent(
             detail.types.forEach { type ->
                 AssistChip(
                     onClick = {},
-                    label = { AppText(JapaneseTranslation.type(type)) },
+                    label = { AppText(Strings.Translation.type(type)) },
                     modifier = Modifier.padding(horizontal = 4.dp),
                 )
             }
@@ -208,7 +207,7 @@ private fun StatRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppText(
-            text = JapaneseTranslation.stat(stat.name),
+            text = Strings.Translation.stat(stat.name),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.width(80.dp),
         )

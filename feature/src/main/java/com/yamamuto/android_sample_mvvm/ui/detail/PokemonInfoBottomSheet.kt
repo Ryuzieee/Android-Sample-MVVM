@@ -18,7 +18,6 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppText
-import com.yamamuto.android_sample_mvvm.ui.util.JapaneseTranslation
 
 @Composable
 internal fun PokemonInfoBottomSheet(
@@ -41,19 +40,19 @@ internal fun PokemonInfoBottomSheet(
             InfoRow(Strings.Detail.LABEL_CATEGORY, species.genus)
             InfoRow(
                 Strings.Detail.LABEL_GENERATION,
-                JapaneseTranslation.generation(species.generation),
+                Strings.Translation.generation(species.generation),
             )
             species.habitat?.let {
                 InfoRow(
                     Strings.Detail.LABEL_HABITAT,
-                    JapaneseTranslation.habitat(it),
+                    Strings.Translation.habitat(it),
                 )
             }
             InfoRow(Strings.Detail.LABEL_CAPTURE_RATE, "${species.captureRate}")
             InfoRow(
                 Strings.Detail.LABEL_EGG_GROUP,
                 species.eggGroups.joinToString(Strings.Detail.EGG_GROUP_SEPARATOR) {
-                    JapaneseTranslation.eggGroup(it)
+                    Strings.Translation.eggGroup(it)
                 },
             )
             val genderText =
