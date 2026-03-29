@@ -10,18 +10,6 @@ import java.io.IOException
  * 例外を [AppException] に変換して [Result] で返す。
  * キャッシュの期限チェックは [cachedAt] と [CACHE_DURATION_MS] で一元管理する。
  *
- * ```
- * handleWithCache(
- *     forceRefresh = forceRefresh,
- *     load = { dao.getFoo(id) },
- *     fetch = { dataSource.getFoo(id) },
- *     toEntity = { it.toEntity() },
- *     toModel = { it.toDomain() },
- *     cachedAt = { it.cachedAt },
- *     save = { dao.insertFoo(it) },
- * )
- * ```
- *
  * @param D ドメインモデル型（[Result] で返す型）
  * @param E ローカルキャッシュの Entity 型
  * @param R リモート取得時の生データ型（DTO / Response）
@@ -52,12 +40,8 @@ suspend fun <D : Any, E : Any, R : Any> handleWithCache(
 /**
  * API のみの Repository メソッド用ハンドラ。キャッシュなし。
  *
- * ```
- * handleRemote(
- *     fetch = { dataSource.getFoo(id) },
- *     toModel = { it.toDomain() },
- * )
- * ```
+ * @param D ドメインモデル型（[Result] で返す型）
+ * @param R リモート取得時の生データ型（DTO / Response）
  */
 suspend fun <D : Any, R : Any> handleRemote(
     fetch: suspend () -> R,
@@ -71,12 +55,8 @@ suspend fun <D : Any, R : Any> handleRemote(
 /**
  * ローカル DB のみの Repository メソッド用ハンドラ。
  *
- * ```
- * handleLocal(
- *     query = { dao.getAllFavorites() },
- *     toModel = { it.map { e -> e.toDomain() } },
- * )
- * ```
+ * @param D ドメインモデル型（[Result] で返す型）
+ * @param E ローカルキャッシュの Entity 型
  */
 suspend fun <D : Any, E : Any> handleLocal(
     query: suspend () -> E,
