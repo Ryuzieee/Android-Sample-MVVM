@@ -27,7 +27,7 @@ import com.yamamuto.android_sample_mvvm.network.MockScenarioHolder
 @Composable
 fun MockScenarioSelector(onDismiss: () -> Unit) {
     var selected by remember { mutableStateOf(MockScenarioHolder.current) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

@@ -1,7 +1,5 @@
 package com.yamamuto.android_sample_mvvm.di
 
-import android.app.Application
-import android.content.res.AssetManager
 import com.yamamuto.android_sample_mvvm.BuildConfig
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
 import com.yamamuto.android_sample_mvvm.network.ApiHeaderInterceptor
@@ -26,10 +24,6 @@ private const val CONTENT_TYPE_JSON = "application/json"
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    @Provides
-    @Singleton
-    fun provideAssetManager(application: Application): AssetManager = application.assets
-
     @Provides
     @Singleton
     fun provideJson(): Json {

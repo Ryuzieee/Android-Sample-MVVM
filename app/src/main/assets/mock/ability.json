@@ -1,7 +1,0 @@
-{
-  "names": [
-    {"name": "{{jaName}}", "language": {"name": "ja-Hrkt", "url": "https://pokeapi.co/api/v2/language/1/"}},
-    {"name": "{{jaName}}", "language": {"name": "ja", "url": "https://pokeapi.co/api/v2/language/11/"}},
-    {"name": "{{enName}}", "language": {"name": "en", "url": "https://pokeapi.co/api/v2/language/9/"}}
-  ]
-}
