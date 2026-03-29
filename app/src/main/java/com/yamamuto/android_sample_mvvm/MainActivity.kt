@@ -1,7 +1,5 @@
 package com.yamamuto.android_sample_mvvm
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,8 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.yamamuto.android_sample_mvvm.ui.component.mock.MockScenarioSelector
 import com.yamamuto.android_sample_mvvm.ui.navigation.AppNavGraph
 import com.yamamuto.android_sample_mvvm.ui.theme.AndroidSampleMVVMTheme
-import com.yamamuto.android_sample_mvvm.ui.util.AppErrorHandler
-import com.yamamuto.android_sample_mvvm.ui.util.LocalAppErrorHandler
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,28 +31,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AndroidSampleMVVMTheme {
-                CompositionLocalProvider(
-                    LocalAppErrorHandler provides
-                        AppErrorHandler(
-                            onSessionExpired = { handleSessionExpired() },
-                            onForceUpdate = { url -> handleForceUpdate(url) },
-                        ),
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        AppNavGraph()
-                        MockFloatingActionButton()
-                    }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AppNavGraph()
+                    MockFloatingActionButton()
                 }
             }
         }
-    }
-
-    private fun handleSessionExpired() {
-        // TODO: ログイン画面へ遷移する処理を実装
-    }
-
-    private fun handleForceUpdate(storeUrl: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl)))
     }
 
     @Composable

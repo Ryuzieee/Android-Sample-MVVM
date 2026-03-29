@@ -7,9 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.yamamuto.android_sample_mvvm.ui.util.AppErrorHandler
 import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
-import com.yamamuto.android_sample_mvvm.ui.util.LocalAppErrorHandler
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 
 /**
@@ -19,8 +17,7 @@ import com.yamamuto.android_sample_mvvm.ui.util.UiState
  * 前回のコンテンツを維持し、エラーはダイアログとしてオーバーレイ表示する。
  * 初回読み込み時（キャッシュなし）は従来通りフルスクリーンの Loading / Error を表示する。
  *
- * セッション切れ・強制アップデートは [LocalAppErrorHandler] 経由で
- * 非閉じ可能なブロッキングダイアログを表示する。
+ * セッション切れ・強制アップデートは閉じられないブロッキングダイアログを表示する。
  */
 @Composable
 fun <T> UiStateContent(
@@ -46,22 +43,19 @@ fun <T> UiStateContent(
     val cached = cachedData
 
     when {
-        // Success → そのまま表示
         state is UiState.Success -> content(state.data)
 
-        // キャッシュありの Loading → コンテンツ維持（pull-to-refresh インジケータに任せる）
         state is UiState.Loading && cached != null -> content(cached)
 
-        // キャッシュありの Error → コンテンツ維持 + エラーダイアログ
         state is UiState.Error && cached != null -> {
             content(cached)
-            ErrorOverlay(state = state, onRetry = onRetry, onDismiss = { errorDismissed = true })
+            if (!errorDismissed) {
+                ErrorOverlay(state = state, onRetry = onRetry, onDismiss = { errorDismissed = true })
+            }
         }
 
-        // 初回 Loading（キャッシュなし）
         state is UiState.Loading -> LoadingIndicator(modifier = modifier)
 
-        // 初回 Error（キャッシュなし）→ ブロッキングエラーはダイアログ、それ以外はフルスクリーン
         state is UiState.Error -> {
             if (state.type != ErrorType.General) {
                 ErrorOverlay(state = state, onRetry = onRetry, onDismiss = {})
@@ -75,7 +69,6 @@ fun <T> UiStateContent(
             }
         }
 
-        // Idle
         else -> idleContent()
     }
 }
@@ -86,15 +79,9 @@ private fun ErrorOverlay(
     onRetry: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val errorHandler: AppErrorHandler = LocalAppErrorHandler.current
-
     when (state.type) {
-        is ErrorType.SessionExpired -> SessionExpiredDialog(
-            onConfirm = errorHandler.onSessionExpired,
-        )
-        is ErrorType.ForceUpdate -> ForceUpdateDialog(
-            onConfirm = { errorHandler.onForceUpdate(state.type.storeUrl) },
-        )
+        is ErrorType.SessionExpired -> SessionExpiredDialog()
+        is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = state.type.storeUrl)
         is ErrorType.General -> ErrorDialog(
             message = state.message,
             onDismiss = onDismiss,
