@@ -37,7 +37,7 @@ class FavoritesViewModelTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.uiState.value.content
             assertTrue(state is UiState.Success)
             assertEquals(2, (state as UiState.Success).data.size)
         }
@@ -50,7 +50,7 @@ class FavoritesViewModelTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
 
-            assertTrue(viewModel.uiState.value is UiState.Error)
+            assertTrue(viewModel.uiState.value.content is UiState.Error)
         }
 
     @Test
@@ -61,7 +61,7 @@ class FavoritesViewModelTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.uiState.value.content
             assertTrue(state is UiState.Success)
             assertEquals(0, (state as UiState.Success).data.size)
         }
