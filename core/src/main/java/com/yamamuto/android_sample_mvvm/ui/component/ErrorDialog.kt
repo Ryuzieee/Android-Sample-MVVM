@@ -30,3 +30,37 @@ fun ErrorDialog(
         },
     )
 }
+
+/**
+ * セッション切れダイアログ。閉じることはできない。
+ */
+@Composable
+fun SessionExpiredDialog(onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { /* 閉じさせない */ },
+        title = { AppText(text = Strings.Dialog.SESSION_EXPIRED_TITLE) },
+        text = { AppText(text = Strings.Dialog.SESSION_EXPIRED_MESSAGE) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                AppText(text = Strings.Dialog.SESSION_EXPIRED_BUTTON)
+            }
+        },
+    )
+}
+
+/**
+ * 強制アップデートダイアログ。閉じることはできない。
+ */
+@Composable
+fun ForceUpdateDialog(onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { /* 閉じさせない */ },
+        title = { AppText(text = Strings.Dialog.FORCE_UPDATE_TITLE) },
+        text = { AppText(text = Strings.Dialog.FORCE_UPDATE_MESSAGE) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                AppText(text = Strings.Dialog.FORCE_UPDATE_BUTTON)
+            }
+        },
+    )
+}

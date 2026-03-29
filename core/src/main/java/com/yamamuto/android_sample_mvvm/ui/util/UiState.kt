@@ -11,7 +11,15 @@ sealed interface UiState<out T> {
     data class Error(
         val message: String,
         val isNetworkError: Boolean = false,
+        val type: ErrorType = ErrorType.General,
     ) : UiState<Nothing>
+}
+
+/** [UiState.Error] の種別。セッション切れ・強制アップデートはブロッキングダイアログで表示する。 */
+sealed interface ErrorType {
+    data object General : ErrorType
+    data object SessionExpired : ErrorType
+    data class ForceUpdate(val storeUrl: String) : ErrorType
 }
 
 /** Success のデータを返す。それ以外は null。 */

@@ -8,7 +8,7 @@ import timber.log.Timber
  * [Result] を [UiState] に変換する拡張関数。
  *
  * - 成功時: [UiState.Success]
- * - 失敗時: [UiState.Error]（ネットワークエラー判定 + Timber ログ付き）
+ * - 失敗時: [UiState.Error]（エラー種別判定 + Timber ログ付き）
  */
 fun <T> Result<T>.toUiState(): UiState<T> {
     return fold(
@@ -18,7 +18,16 @@ fun <T> Result<T>.toUiState(): UiState<T> {
             UiState.Error(
                 message = e.message ?: Strings.Error.UNKNOWN_ERROR,
                 isNetworkError = e is AppException.Network,
+                type = e.toErrorType(),
             )
         },
     )
+}
+
+private fun Throwable.toErrorType(): ErrorType {
+    return when (this) {
+        is AppException.SessionExpired -> ErrorType.SessionExpired
+        is AppException.ForceUpdate -> ErrorType.ForceUpdate(storeUrl)
+        else -> ErrorType.General
+    }
 }

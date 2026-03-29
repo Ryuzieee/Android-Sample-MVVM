@@ -16,6 +16,13 @@ fun <T> LoadState.asUiState(onNotLoading: () -> T): UiState<T> {
             UiState.Error(
                 message = error.message ?: Strings.Error.UNKNOWN_ERROR,
                 isNetworkError = error is AppException.Network,
+                type = when (error) {
+                    is AppException.SessionExpired -> ErrorType.SessionExpired
+                    is AppException.ForceUpdate -> ErrorType.ForceUpdate(
+                        (error as AppException.ForceUpdate).storeUrl,
+                    )
+                    else -> ErrorType.General
+                },
             )
         is LoadState.NotLoading -> UiState.Success(onNotLoading())
     }

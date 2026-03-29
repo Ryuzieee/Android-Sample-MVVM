@@ -4,6 +4,11 @@ import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import retrofit2.HttpException
 import java.io.IOException
 
+private const val UNAUTHORIZED_CODE = 401
+private const val FORCE_UPDATE_CODE = 426
+private const val HEADER_STORE_URL = "X-Store-Url"
+private const val DEFAULT_STORE_URL = "https://play.google.com/store"
+
 /**
  * キャッシュ付き Repository メソッドの共通ハンドラ。
  *
@@ -76,11 +81,23 @@ private inline fun <D> appRunCatching(block: () -> D): Result<D> {
     } catch (e: IOException) {
         Result.failure(AppException.Network(e))
     } catch (e: HttpException) {
-        Result.failure(AppException.Server(e.code(), e))
+        Result.failure(e.toAppException())
     } catch (e: AppException) {
         Result.failure(e)
     } catch (e: Exception) {
         Result.failure(AppException.Unknown(e))
+    }
+}
+
+/** [HttpException] を適切な [AppException] に変換する。 */
+private fun HttpException.toAppException(): AppException {
+    return when (code()) {
+        UNAUTHORIZED_CODE -> AppException.SessionExpired()
+        FORCE_UPDATE_CODE -> {
+            val storeUrl = response()?.raw()?.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
+            AppException.ForceUpdate(storeUrl)
+        }
+        else -> AppException.Server(code(), this)
     }
 }
 
