@@ -34,7 +34,8 @@ class PokemonRepositoryImpl @Inject constructor(
         return handleWithCache(
             forceRefresh = forceRefresh,
             load = { dao.getPokemonDetail(name) },
-            fetch = { dataSource.getPokemonDetail(name).toEntity() },
+            fetch = { dataSource.getPokemonDetail(name) },
+            toEntity = { it.toEntity() },
             toModel = { it.toModel() },
             cachedAt = { it.cachedAt },
             save = { dao.insertPokemonDetail(it) },
@@ -66,8 +67,9 @@ class PokemonRepositoryImpl @Inject constructor(
         return handleWithCache(
             load = { dao.getAllPokemonNames().takeIf { it.isNotEmpty() } },
             fetch = {
-                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0).toEntity()
+                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0)
             },
+            toEntity = { it.toEntity() },
             toModel = { it.toModel(query) },
             cachedAt = { it.first().cachedAt },
             save = { dao.insertPokemonNames(it) },

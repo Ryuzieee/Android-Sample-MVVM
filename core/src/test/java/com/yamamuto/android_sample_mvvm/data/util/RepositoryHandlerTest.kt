@@ -19,7 +19,8 @@ class RepositoryHandlerTest {
             val result =
                 handleWithCache(
                     load = { "cached" },
-                    fetch = { error("should not fetch") },
+                    fetch = { "raw" },
+                    toEntity = { it },
                     toModel = { it },
                     cachedAt = { System.currentTimeMillis() },
                 )
@@ -35,14 +36,15 @@ class RepositoryHandlerTest {
             val result =
                 handleWithCache(
                     load = { null },
-                    fetch = { "fresh" },
+                    fetch = { "raw" },
+                    toEntity = { "${it}_entity" },
                     toModel = { it },
                     save = { saved = it },
                 )
 
             assertTrue(result.isSuccess)
-            assertEquals("fresh", result.getOrNull())
-            assertEquals("fresh", saved)
+            assertEquals("raw_entity", result.getOrNull())
+            assertEquals("raw_entity", saved)
         }
 
     @Test
@@ -52,12 +54,13 @@ class RepositoryHandlerTest {
                 handleWithCache(
                     forceRefresh = true,
                     load = { "cached" },
-                    fetch = { "fresh" },
+                    fetch = { "raw" },
+                    toEntity = { "${it}_fresh" },
                     toModel = { it },
                 )
 
             assertTrue(result.isSuccess)
-            assertEquals("fresh", result.getOrNull())
+            assertEquals("raw_fresh", result.getOrNull())
         }
 
     @Test
@@ -66,22 +69,24 @@ class RepositoryHandlerTest {
             val result =
                 handleWithCache(
                     load = { "cached" },
-                    fetch = { "fresh" },
+                    fetch = { "raw" },
+                    toEntity = { "${it}_fresh" },
                     toModel = { it },
                     cachedAt = { 0L },
                 )
 
             assertTrue(result.isSuccess)
-            assertEquals("fresh", result.getOrNull())
+            assertEquals("raw_fresh", result.getOrNull())
         }
 
     @Test
     fun `handleWithCache wraps IOException as Network`() =
         runTest {
             val result =
-                handleWithCache<String, String>(
+                handleWithCache<String, String, String>(
                     load = { null },
                     fetch = { throw IOException("timeout") },
+                    toEntity = { it },
                     toModel = { it },
                 )
 
@@ -98,9 +103,10 @@ class RepositoryHandlerTest {
                 )
 
             val result =
-                handleWithCache<String, String>(
+                handleWithCache<String, String, String>(
                     load = { null },
                     fetch = { throw httpException },
+                    toEntity = { it },
                     toModel = { it },
                 )
 
@@ -113,9 +119,10 @@ class RepositoryHandlerTest {
     fun `handleWithCache passes through AppException`() =
         runTest {
             val result =
-                handleWithCache<String, String>(
+                handleWithCache<String, String, String>(
                     load = { null },
                     fetch = { throw AppException.NotFound("pikachu") },
+                    toEntity = { it },
                     toModel = { it },
                 )
 
@@ -127,9 +134,10 @@ class RepositoryHandlerTest {
     fun `handleWithCache wraps unknown exception as Unknown`() =
         runTest {
             val result =
-                handleWithCache<String, String>(
+                handleWithCache<String, String, String>(
                     load = { null },
                     fetch = { throw IllegalStateException("unexpected") },
+                    toEntity = { it },
                     toModel = { it },
                 )
 

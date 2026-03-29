@@ -14,7 +14,8 @@ import java.io.IOException
  * handleWithCache(
  *     forceRefresh = forceRefresh,
  *     load = { dao.getFoo(id) },
- *     fetch = { dataSource.getFoo(id).toEntity() },
+ *     fetch = { dataSource.getFoo(id) },
+ *     toEntity = { it.toEntity() },
  *     toModel = { it.toDomain() },
  *     cachedAt = { it.cachedAt },
  *     save = { dao.insertFoo(it) },
@@ -22,34 +23,29 @@ import java.io.IOException
  * ```
  *
  * @param D ドメインモデル型（[Result] で返す型）
- * @param E ローカルキャッシュの Entity 型（[load] と [fetch] が共に返す型）
+ * @param E ローカルキャッシュの Entity 型
+ * @param R リモート取得時の生データ型（DTO / Response）
  */
-suspend fun <D : Any, E : Any> handleWithCache(
+suspend fun <D : Any, E : Any, R : Any> handleWithCache(
     forceRefresh: Boolean = false,
     load: suspend () -> E?,
-    fetch: suspend () -> E,
+    fetch: suspend () -> R,
+    toEntity: (R) -> E,
     toModel: (E) -> D,
     cachedAt: ((E) -> Long)? = null,
     save: (suspend (E) -> Unit)? = null,
 ): Result<D> {
-    return try {
+    return appRunCatching {
         if (!forceRefresh) {
             val entity = load()
             if (entity != null && !isExpired(cachedAt?.invoke(entity))) {
-                return Result.success(toModel(entity))
+                return@appRunCatching toModel(entity)
             }
         }
-        val entity = fetch()
+        val raw = fetch()
+        val entity = toEntity(raw)
         save?.invoke(entity)
-        Result.success(toModel(entity))
-    } catch (e: IOException) {
-        Result.failure(AppException.Network(e))
-    } catch (e: HttpException) {
-        Result.failure(AppException.Server(e.code(), e))
-    } catch (e: AppException) {
-        Result.failure(e)
-    } catch (e: Exception) {
-        Result.failure(AppException.Unknown(e))
+        toModel(entity)
     }
 }
 
@@ -63,15 +59,13 @@ suspend fun <D : Any, E : Any> handleWithCache(
  * )
  * ```
  */
-suspend fun <D : Any, E : Any> handleRemote(
-    fetch: suspend () -> E,
-    toModel: (E) -> D,
+suspend fun <D : Any, R : Any> handleRemote(
+    fetch: suspend () -> R,
+    toModel: (R) -> D,
 ): Result<D> {
-    return handleWithCache(
-        load = { null },
-        fetch = fetch,
-        toModel = toModel,
-    )
+    return appRunCatching {
+        toModel(fetch())
+    }
 }
 
 /**
@@ -90,6 +84,21 @@ suspend fun <D : Any, E : Any> handleLocal(
 ): Result<D> {
     return try {
         Result.success(toModel(query()))
+    } catch (e: Exception) {
+        Result.failure(AppException.Unknown(e))
+    }
+}
+
+/** Repository 共通の例外 → [AppException] 変換。 */
+private inline fun <D> appRunCatching(block: () -> D): Result<D> {
+    return try {
+        Result.success(block())
+    } catch (e: IOException) {
+        Result.failure(AppException.Network(e))
+    } catch (e: HttpException) {
+        Result.failure(AppException.Server(e.code(), e))
+    } catch (e: AppException) {
+        Result.failure(e)
     } catch (e: Exception) {
         Result.failure(AppException.Unknown(e))
     }
