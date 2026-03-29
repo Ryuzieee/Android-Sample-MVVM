@@ -78,19 +78,23 @@ class MockInterceptor
         }
 
         private fun routeMockResponse(path: String): String {
+            val normalized = path.trimEnd('/')
             return when {
-                path == "/api/v2/pokemon" -> mockData.pokemonList()
-                path.matches(Regex("/api/v2/pokemon/[^/]+")) -> {
-                    val name = path.substringAfterLast("/")
+                normalized == "/api/v2/pokemon" -> mockData.pokemonList()
+                normalized.matches(Regex("/api/v2/pokemon/[^/]+")) -> {
+                    val name = normalized.substringAfterLast("/")
                     mockData.pokemonDetail(name)
                 }
-                path.matches(Regex("/api/v2/pokemon-species/[^/]+")) -> {
-                    val name = path.substringAfterLast("/")
+                normalized.matches(Regex("/api/v2/pokemon-species/[^/]+")) -> {
+                    val name = normalized.substringAfterLast("/")
                     mockData.pokemonSpecies(name)
                 }
-                path.matches(Regex("/api/v2/evolution-chain/[^/]+")) -> mockData.evolutionChain()
-                path.matches(Regex("/api/v2/ability/[^/]+")) -> {
-                    val name = path.substringAfterLast("/")
+                normalized.matches(Regex("/api/v2/evolution-chain/[^/]+")) -> {
+                    val chainId = normalized.substringAfterLast("/").toIntOrNull() ?: 1
+                    mockData.evolutionChain(chainId)
+                }
+                normalized.matches(Regex("/api/v2/ability/[^/]+")) -> {
+                    val name = normalized.substringAfterLast("/")
                     mockData.ability(name)
                 }
                 else -> """{"error": "Unknown mock route: $path"}"""

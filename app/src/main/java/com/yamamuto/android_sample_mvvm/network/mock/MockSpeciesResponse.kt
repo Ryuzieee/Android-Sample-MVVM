@@ -36,7 +36,7 @@ internal fun buildMockSpeciesResponse(
                     FlavorTextEntry(flavorText = p.flavorText, language = JA, version = SWORD),
                     FlavorTextEntry(flavorText = "A mock English flavor text for ${p.name}.", language = EN, version = SWORD),
                 ),
-            evolutionChain = EvolutionChainRef(url = "https://pokeapi.co/api/v2/evolution-chain/1/"),
+            evolutionChain = EvolutionChainRef(url = "https://pokeapi.co/api/v2/evolution-chain/${p.evolutionChainId}/"),
             genera =
                 listOf(
                     Genus(genus = p.genus, language = JA),

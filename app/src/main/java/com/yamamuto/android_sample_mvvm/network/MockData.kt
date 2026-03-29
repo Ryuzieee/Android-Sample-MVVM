@@ -27,7 +27,7 @@ class MockData
 
         fun pokemonSpecies(name: String): String = buildMockSpeciesResponse(json, name)
 
-        fun evolutionChain(): String = buildMockEvolutionResponse(json)
+        fun evolutionChain(chainId: Int): String = buildMockEvolutionResponse(json, chainId)
 
         fun ability(name: String): String = buildMockAbilityResponse(json, name)
     }
