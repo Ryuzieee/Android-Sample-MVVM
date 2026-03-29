@@ -21,10 +21,15 @@ class PokemonListViewModel @Inject constructor(
     val uiState: StateFlow<PokemonListUiState> = _uiState.asStateFlow()
 
     init {
+        collectPaging()
+    }
+
+    private fun collectPaging() {
         collectPaging(
             state = _uiState,
             pageSize = PAGE_SIZE,
             source = { pagingSourceFactory.create() },
-        ) { copy(pagingData = it) }
+            transform = { copy(pagingData = it) }
+        )
     }
 }
