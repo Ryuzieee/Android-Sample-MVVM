@@ -2,15 +2,19 @@
 
 package com.yamamuto.android_sample_mvvm.ui.search
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
-import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import com.yamamuto.android_sample_mvvm.ui.util.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +26,10 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchPokemonUseCase: SearchPokemonUseCase,
-) : UiStateViewModel<SearchUiState>(SearchUiState()) {
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(SearchUiState())
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+
     init {
         observeQuery()
     }
@@ -38,23 +45,23 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onQueryChange(newQuery: String) {
-        updateState { copy(query = newQuery) }
+        _uiState.update { it.copy(query = newQuery) }
     }
 
     /** エラー後の再検索。デバウンスをバイパスして直接実行する。 */
     fun retrySearch() {
-        val query = currentState.query
+        val query = _uiState.value.query
         if (query.isBlank()) return
         viewModelScope.launch { search(query) }
     }
 
     private suspend fun search(query: String) {
         if (query.isBlank()) {
-            updateState { copy(result = UiState.Idle) }
+            _uiState.update { it.copy(result = UiState.Idle) }
             return
         }
-        updateState { copy(result = UiState.Loading) }
+        _uiState.update { it.copy(result = UiState.Loading) }
         val result = searchPokemonUseCase(query).toUiState()
-        updateState { copy(result = result) }
+        _uiState.update { it.copy(result = result) }
     }
 }

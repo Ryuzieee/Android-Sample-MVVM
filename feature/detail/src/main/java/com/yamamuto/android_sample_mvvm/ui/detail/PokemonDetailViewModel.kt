@@ -1,6 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.ErrorMessages
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
@@ -8,9 +9,15 @@ import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
-import com.yamamuto.android_sample_mvvm.ui.util.UiStateViewModel
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,10 +33,16 @@ class PokemonDetailViewModel @Inject constructor(
     private val observeIsFavoriteUseCase: ObserveIsFavoriteUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     savedStateHandle: SavedStateHandle,
-) : UiStateViewModel<PokemonDetailUiState>(PokemonDetailUiState()) {
+) : ViewModel() {
     companion object {
         const val KEY_NAME = "name"
     }
+
+    private val _uiState = MutableStateFlow(PokemonDetailUiState())
+    val uiState: StateFlow<PokemonDetailUiState> = _uiState.asStateFlow()
+
+    private val _events = Channel<UiEvent>(Channel.BUFFERED)
+    val events: Flow<UiEvent> = _events.receiveAsFlow()
 
     private val pokemonName: String = checkNotNull(savedStateHandle[KEY_NAME])
 
@@ -46,21 +59,21 @@ class PokemonDetailViewModel @Inject constructor(
     }
 
     fun toggleFavorite() {
-        val state = currentState
+        val state = _uiState.value
         val fullDetail = state.contentState.getOrNull() ?: return
         viewModelScope.launch { toggleFavoriteUseCase(fullDetail.detail, state.isFavorite) }
     }
 
     private fun load(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            updateState { copy(contentState = UiState.Loading, isRefreshing = forceRefresh) }
+            _uiState.update { it.copy(contentState = UiState.Loading, isRefreshing = forceRefresh) }
 
             val result = getPokemonFullDetailUseCase(pokemonName, forceRefresh = forceRefresh)
             when {
                 result.isSuccess -> {
                     val fullDetail = result.getOrThrow()
-                    updateState {
-                        copy(
+                    _uiState.update {
+                        it.copy(
                             contentState = UiState.Success(fullDetail),
                             isRefreshing = false,
                         )
@@ -70,13 +83,13 @@ class PokemonDetailViewModel @Inject constructor(
 
                 result.isFailure -> {
                     val message = result.exceptionOrNull()?.message ?: ErrorMessages.UNKNOWN_ERROR
-                    updateState {
-                        copy(
+                    _uiState.update {
+                        it.copy(
                             contentState = UiState.Error(message = message),
                             isRefreshing = false,
                         )
                     }
-                    sendEvent(UiEvent.ShowSnackbar(message))
+                    _events.send(UiEvent.ShowSnackbar(message))
                 }
             }
         }
@@ -84,7 +97,7 @@ class PokemonDetailViewModel @Inject constructor(
 
     private suspend fun observeFavorite(pokemonId: Int) {
         observeIsFavoriteUseCase(pokemonId).collect { isFavorite ->
-            updateState { copy(isFavorite = isFavorite) }
+            _uiState.update { it.copy(isFavorite = isFavorite) }
         }
     }
 }
