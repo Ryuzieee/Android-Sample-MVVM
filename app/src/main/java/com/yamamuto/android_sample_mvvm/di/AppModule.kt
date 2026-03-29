@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.di
 
 import com.yamamuto.android_sample_mvvm.BuildConfig
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
+import com.yamamuto.android_sample_mvvm.network.ApiHeaderInterceptor
 import com.yamamuto.android_sample_mvvm.network.ForceUpdateInterceptor
 import com.yamamuto.android_sample_mvvm.network.MockInterceptor
 import com.yamamuto.android_sample_mvvm.network.SessionInterceptor
@@ -34,12 +35,14 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
+        apiHeaderInterceptor: ApiHeaderInterceptor,
         sessionInterceptor: SessionInterceptor,
         forceUpdateInterceptor: ForceUpdateInterceptor,
         mockInterceptor: MockInterceptor,
     ): OkHttpClient {
         return OkHttpClient
             .Builder()
+            .addInterceptor(apiHeaderInterceptor)
             .apply {
                 if (BuildConfig.IS_MOCK) {
                     addInterceptor(mockInterceptor)
