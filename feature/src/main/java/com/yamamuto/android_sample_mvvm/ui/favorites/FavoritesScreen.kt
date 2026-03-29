@@ -2,7 +2,6 @@ package com.yamamuto.android_sample_mvvm.ui.favorites
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,10 +10,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
 import com.yamamuto.android_sample_mvvm.ui.Strings
-import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
-import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonGrid
+import com.yamamuto.android_sample_mvvm.ui.component.PokemonGridItem
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
 @Composable
@@ -36,7 +35,11 @@ fun FavoritesScreen(
             if (favorites.isEmpty()) {
                 FavoritesEmpty(padding)
             } else {
-                FavoritesContent(favorites, onPokemonClick, padding)
+                PokemonGrid(
+                    items = favorites.map { it.toGridItem() },
+                    onPokemonClick = onPokemonClick,
+                    contentPadding = padding,
+                )
             }
         }
     }
@@ -51,20 +54,9 @@ private fun FavoritesEmpty(padding: PaddingValues) {
     )
 }
 
-@Composable
-private fun FavoritesContent(
-    favorites: List<FavoriteModel>,
-    onPokemonClick: (String) -> Unit,
-    padding: PaddingValues,
-) {
-    AppLazyVerticalGrid(contentPadding = padding) {
-        items(favorites, key = { it.id }) { favorite ->
-            PokemonCard(
-                name = favorite.name,
-                id = favorite.id,
-                imageUrl = favorite.imageUrl,
-                onClick = { onPokemonClick(favorite.name) },
-            )
-        }
-    }
-}
+private fun FavoriteModel.toGridItem() =
+    PokemonGridItem(
+        id = id,
+        name = name,
+        imageUrl = imageUrl,
+    )
