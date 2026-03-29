@@ -11,7 +11,7 @@ import org.junit.Test
 
 class PokemonSpeciesMapperTest {
     @Test
-    fun `toModel extracts Japanese name, flavor text, and genus`() {
+    fun `日本語の名前とフレーバーテキストと分類を正しく抽出する`() {
         val response =
             PokemonSpeciesResponse(
                 names =
@@ -59,7 +59,7 @@ class PokemonSpeciesMapperTest {
     }
 
     @Test
-    fun `toModel falls back to English when Japanese not available`() {
+    fun `日本語がない場合に英語にフォールバックする`() {
         val response =
             PokemonSpeciesResponse(
                 names =
@@ -95,7 +95,7 @@ class PokemonSpeciesMapperTest {
     }
 
     @Test
-    fun `EvolutionChainResponse toModel flattens chain`() {
+    fun `進化チェーンを正しくフラット化する`() {
         val response =
             EvolutionChainResponse(
                 id = 1,
@@ -140,7 +140,7 @@ class PokemonSpeciesMapperTest {
     }
 
     @Test
-    fun `extractIdFromUrl extracts id correctly`() {
+    fun `URLからIDを正しく抽出する`() {
         assertEquals(1, extractIdFromUrl("https://pokeapi.co/api/v2/pokemon-species/1/"))
         assertEquals(25, extractIdFromUrl("https://pokeapi.co/api/v2/pokemon-species/25/"))
         assertEquals(150, extractIdFromUrl("https://pokeapi.co/api/v2/pokemon-species/150"))

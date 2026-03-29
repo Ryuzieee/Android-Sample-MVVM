@@ -1,7 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
-import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
@@ -21,18 +20,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [PokemonDetailViewModel] の単体テスト。
- *
- * Turbine を使って StateFlow の状態遷移を検証する。
- */
 class PokemonDetailViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private lateinit var getPokemonFullDetailUseCase: GetPokemonFullDetailUseCase
-    private lateinit var getIsFavoriteUseCase: GetIsFavoriteUseCase
-    private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val getPokemonFullDetailUseCase = mockk<GetPokemonFullDetailUseCase>()
+    private val getIsFavoriteUseCase = mockk<GetIsFavoriteUseCase>()
+    private val toggleFavoriteUseCase = mockk<ToggleFavoriteUseCase>()
 
     private val fakeFullDetail =
         PokemonFullDetailModel(
@@ -43,9 +37,6 @@ class PokemonDetailViewModelTest {
 
     @Before
     fun setUp() {
-        getPokemonFullDetailUseCase = mockk()
-        getIsFavoriteUseCase = mockk()
-        toggleFavoriteUseCase = mockk()
         coEvery { getIsFavoriteUseCase(any()) } returns Result.success(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
     }
@@ -60,40 +51,34 @@ class PokemonDetailViewModelTest {
     }
 
     @Test
-    fun `データ取得成功時は Success 状態になる`() {
+    fun `データ取得成功時はSuccess状態になる`() =
         runTest {
             coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
 
             val viewModel = createViewModel("bulbasaur")
 
-            viewModel.uiState.test {
-                val state = awaitItem()
-                assertTrue(state.content is UiState.Success)
-                val data = (state.content as UiState.Success).data
-                assertEquals(fakePokemonDetail.id, data.detail.id)
-                assertEquals(fakePokemonDetail.name, data.detail.name)
-            }
+            val state = viewModel.uiState.value
+            assertTrue(state.content is UiState.Success)
+            val data = (state.content as UiState.Success).data
+            assertEquals(fakePokemonDetail.id, data.detail.id)
+            assertEquals(fakePokemonDetail.name, data.detail.name)
         }
-    }
 
     @Test
-    fun `データ取得失敗時は Error 状態になる`() {
+    fun `データ取得失敗時はError状態になる`() =
         runTest {
             coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns
                 Result.failure(AppException.Unknown(Exception("Not found")))
 
             val viewModel = createViewModel("bulbasaur")
 
-            viewModel.uiState.test {
-                val state = awaitItem()
-                assertTrue(state.content is UiState.Error)
-                assertEquals("Not found", (state.content as UiState.Error).message)
-            }
+            val state = viewModel.uiState.value
+            assertTrue(state.content is UiState.Error)
+            assertEquals("Not found", (state.content as UiState.Error).message)
         }
-    }
 
     @Test
-    fun `異なるポケモン名で正しくデータを取得する`() {
+    fun `異なるポケモン名で正しくデータを取得する`() =
         runTest {
             val charizardFullDetail =
                 fakeFullDetail.copy(
@@ -103,31 +88,24 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("charizard")
 
-            viewModel.uiState.test {
-                val state = awaitItem().content as UiState.Success
-                assertEquals("charizard", state.data.detail.name)
-                assertEquals(6, state.data.detail.id)
-            }
+            val state = viewModel.uiState.value.content as UiState.Success
+            assertEquals("charizard", state.data.detail.name)
+            assertEquals(6, state.data.detail.id)
         }
-    }
 
     @Test
-    fun `retry で再取得できる`() {
+    fun `retryで再取得できる`() =
         runTest {
             coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns
                 Result.failure(AppException.Unknown(Exception("error")))
 
             val viewModel = createViewModel("bulbasaur")
 
-            viewModel.uiState.test {
-                assertTrue(awaitItem().content is UiState.Error)
+            assertTrue(viewModel.uiState.value.content is UiState.Error)
 
-                coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
-                viewModel.retry()
+            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
+            viewModel.retry()
 
-                val finalState = expectMostRecentItem()
-                assertTrue(finalState.content is UiState.Success)
-            }
+            assertTrue(viewModel.uiState.value.content is UiState.Success)
         }
-    }
 }

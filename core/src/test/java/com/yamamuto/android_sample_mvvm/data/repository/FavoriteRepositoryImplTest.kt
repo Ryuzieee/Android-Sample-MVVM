@@ -4,8 +4,10 @@ import com.yamamuto.android_sample_mvvm.data.local.dao.FavoriteDao
 import com.yamamuto.android_sample_mvvm.data.local.entity.FavoriteEntity
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -13,11 +15,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FavoriteRepositoryImplTest {
-    private val dao = mockk<FavoriteDao>(relaxed = true)
+    private val dao = mockk<FavoriteDao>()
     private val repository = FavoriteRepositoryImpl(dao)
 
     @Test
-    fun `getFavorites returns mapped models`() =
+    fun `お気に入り一覧を正しく取得する`() =
         runTest {
             coEvery { dao.getAllFavorites() } returns
                 listOf(
@@ -35,7 +37,7 @@ class FavoriteRepositoryImplTest {
         }
 
     @Test
-    fun `getFavorites returns failure on exception`() =
+    fun `お気に入り取得時に例外が発生した場合にFailureを返す`() =
         runTest {
             coEvery { dao.getAllFavorites() } throws RuntimeException("db error")
 
@@ -46,7 +48,7 @@ class FavoriteRepositoryImplTest {
         }
 
     @Test
-    fun `isFavorite returns true when favorite exists`() =
+    fun `お気に入りが存在する場合にtrueを返す`() =
         runTest {
             coEvery { dao.isFavorite(1) } returns true
 
@@ -57,7 +59,7 @@ class FavoriteRepositoryImplTest {
         }
 
     @Test
-    fun `isFavorite returns false when not favorite`() =
+    fun `お気に入りが存在しない場合にfalseを返す`() =
         runTest {
             coEvery { dao.isFavorite(1) } returns false
 
@@ -68,8 +70,10 @@ class FavoriteRepositoryImplTest {
         }
 
     @Test
-    fun `addFavorite calls dao insertFavorite`() =
+    fun `お気に入り追加時にDAOのinsertFavoriteを呼び出す`() =
         runTest {
+            coEvery { dao.insertFavorite(any()) } just Runs
+
             val detail =
                 PokemonDetailModel(
                     id = 1,
@@ -89,8 +93,10 @@ class FavoriteRepositoryImplTest {
         }
 
     @Test
-    fun `removeFavorite calls dao deleteFavorite`() =
+    fun `お気に入り削除時にDAOのdeleteFavoriteを呼び出す`() =
         runTest {
+            coEvery { dao.deleteFavorite(any()) } just Runs
+
             repository.removeFavorite(1)
 
             coVerify { dao.deleteFavorite(1) }

@@ -14,7 +14,7 @@ class GetAbilityJapaneseNameUseCaseTest {
     private val useCase = GetAbilityJapaneseNameUseCase(repository)
 
     @Test
-    fun `returns Japanese name when ja key exists`() =
+    fun `jaキーが存在する場合に日本語名を返す`() =
         runTest {
             coEvery { repository.getAbilityLocalizedNames("overgrow") } returns
                 Result.success(
@@ -28,7 +28,7 @@ class GetAbilityJapaneseNameUseCaseTest {
         }
 
     @Test
-    fun `falls back to ja-hrkt when ja not available`() =
+    fun `jaキーがない場合にja-hrktにフォールバックする`() =
         runTest {
             coEvery { repository.getAbilityLocalizedNames("overgrow") } returns
                 Result.success(
@@ -42,7 +42,7 @@ class GetAbilityJapaneseNameUseCaseTest {
         }
 
     @Test
-    fun `falls back to ability name when no Japanese available`() =
+    fun `日本語名がない場合に特性名にフォールバックする`() =
         runTest {
             coEvery { repository.getAbilityLocalizedNames("overgrow") } returns
                 Result.success(
@@ -56,7 +56,7 @@ class GetAbilityJapaneseNameUseCaseTest {
         }
 
     @Test
-    fun `returns failure when repository fails`() =
+    fun `リポジトリ失敗時にエラーを返す`() =
         runTest {
             coEvery { repository.getAbilityLocalizedNames(any()) } returns
                 Result.failure(

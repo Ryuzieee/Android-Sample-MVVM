@@ -52,7 +52,7 @@ class PokemonDetailMapperTest {
         )
 
     @Test
-    fun `toEntity maps DTO fields correctly`() {
+    fun `DTOのフィールドをEntityに正しく変換する`() {
         val entity = response.toEntity()
 
         assertEquals(1, entity.id)
@@ -70,7 +70,7 @@ class PokemonDetailMapperTest {
     }
 
     @Test
-    fun `toModel maps Entity fields correctly`() {
+    fun `EntityのフィールドをModelに正しく変換する`() {
         val entity =
             PokemonDetailEntity(
                 id = 25,

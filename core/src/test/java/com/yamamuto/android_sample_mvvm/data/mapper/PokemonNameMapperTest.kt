@@ -11,7 +11,7 @@ import org.junit.Test
 
 class PokemonNameMapperTest {
     @Test
-    fun `toEntity maps response results to entities`() {
+    fun `レスポンスのresultsをEntityリストに正しく変換する`() {
         val response =
             PokemonListResponse(
                 results =
@@ -29,7 +29,7 @@ class PokemonNameMapperTest {
     }
 
     @Test
-    fun `toModel filters by query case-insensitively`() {
+    fun `クエリで大文字小文字を区別せずフィルタリングする`() {
         val entities =
             listOf(
                 PokemonNameEntity(name = "bulbasaur"),
@@ -44,7 +44,7 @@ class PokemonNameMapperTest {
     }
 
     @Test
-    fun `toModel trims query whitespace`() {
+    fun `クエリの前後の空白をトリムしてフィルタリングする`() {
         val entities =
             listOf(
                 PokemonNameEntity(name = "pikachu"),
@@ -57,7 +57,7 @@ class PokemonNameMapperTest {
     }
 
     @Test
-    fun `toModel returns empty list when no match`() {
+    fun `一致するものがない場合に空リストを返す`() {
         val entities = listOf(PokemonNameEntity(name = "bulbasaur"))
         val result = entities.toModel("xyz")
         assertEquals(emptyList<String>(), result)

@@ -15,7 +15,7 @@ class GetFavoritesUseCaseTest {
     private val useCase = GetFavoritesUseCase(repository)
 
     @Test
-    fun `returns favorites list on success`() =
+    fun `お気に入り取得成功時にリストを返す`() =
         runTest {
             val favorites =
                 listOf(
@@ -31,7 +31,7 @@ class GetFavoritesUseCaseTest {
         }
 
     @Test
-    fun `returns failure on error`() =
+    fun `リポジトリ失敗時にエラーを返す`() =
         runTest {
             coEvery { repository.getFavorites() } returns Result.failure(AppException.Unknown(Exception()))
 

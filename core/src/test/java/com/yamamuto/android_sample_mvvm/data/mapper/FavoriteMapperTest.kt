@@ -7,7 +7,7 @@ import org.junit.Test
 
 class FavoriteMapperTest {
     @Test
-    fun `FavoriteEntity toModel maps correctly`() {
+    fun `FavoriteEntityをModelに正しく変換する`() {
         val entity = FavoriteEntity(id = 25, name = "pikachu", imageUrl = "https://example.com/25.png")
         val model = entity.toModel()
 
@@ -17,7 +17,7 @@ class FavoriteMapperTest {
     }
 
     @Test
-    fun `PokemonDetailModel toEntity maps correctly`() {
+    fun `PokemonDetailModelをEntityに正しく変換する`() {
         val detail =
             PokemonDetailModel(
                 id = 1,

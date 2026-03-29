@@ -3,7 +3,6 @@ package com.yamamuto.android_sample_mvvm.ui.list
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.testing.asSnapshot
-import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.data.paging.PagingSourceFactory
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
@@ -13,25 +12,14 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [PokemonListViewModel] の単体テスト。
- *
- * Paging のデータ取得をテストする。
- */
 class PokemonListViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private lateinit var pagingSourceFactory: PagingSourceFactory<PokemonSummaryModel>
-
-    @Before
-    fun setUp() {
-        pagingSourceFactory = mockk()
-    }
+    private val pagingSourceFactory = mockk<PagingSourceFactory<PokemonSummaryModel>>()
 
     private fun fakePagingSource(items: List<PokemonSummaryModel>): PagingSource<Int, PokemonSummaryModel> {
         return object : PagingSource<Int, PokemonSummaryModel>() {
@@ -45,34 +33,32 @@ class PokemonListViewModelTest {
         }
     }
 
+    private fun createViewModel(): PokemonListViewModel {
+        return PokemonListViewModel(pagingSourceFactory)
+    }
+
     @Test
-    fun `Paging でポケモン一覧を取得できる`() {
+    fun `Pagingでポケモン一覧を取得できる`() =
         runTest {
             every { pagingSourceFactory.create() } returns fakePagingSource(fakePokemonList)
 
-            val viewModel = PokemonListViewModel(pagingSourceFactory)
+            val viewModel = createViewModel()
 
-            viewModel.uiState.test {
-                val pagingData = awaitItem().pagingData
-                val items = flowOf(pagingData).asSnapshot()
-                assertEquals(fakePokemonList.size, items.size)
-                assertEquals("bulbasaur", items[0].name)
-            }
+            val pagingData = viewModel.uiState.value.pagingData
+            val items = flowOf(pagingData).asSnapshot()
+            assertEquals(fakePokemonList.size, items.size)
+            assertEquals("bulbasaur", items[0].name)
         }
-    }
 
     @Test
-    fun `空リストの場合は空のPagingDataになる`() {
+    fun `空リストの場合は空のPagingDataになる`() =
         runTest {
             every { pagingSourceFactory.create() } returns fakePagingSource(emptyList())
 
-            val viewModel = PokemonListViewModel(pagingSourceFactory)
+            val viewModel = createViewModel()
 
-            viewModel.uiState.test {
-                val pagingData = awaitItem().pagingData
-                val items = flowOf(pagingData).asSnapshot()
-                assertEquals(0, items.size)
-            }
+            val pagingData = viewModel.uiState.value.pagingData
+            val items = flowOf(pagingData).asSnapshot()
+            assertEquals(0, items.size)
         }
-    }
 }

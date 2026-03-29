@@ -13,8 +13,10 @@ import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
 import com.yamamuto.android_sample_mvvm.data.local.entity.StatEntry
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.InternalSerializationApi
@@ -25,7 +27,7 @@ import java.io.IOException
 
 class PokemonRepositoryImplTest {
     private val dataSource = mockk<PokemonRemoteDataSource>()
-    private val dao = mockk<PokemonDao>(relaxed = true)
+    private val dao = mockk<PokemonDao>()
     private val repository = PokemonRepositoryImpl(dataSource, dao)
 
     private val detailEntity =
@@ -43,7 +45,7 @@ class PokemonRepositoryImplTest {
         )
 
     @Test
-    fun `getPokemonDetail returns cached data`() =
+    fun `キャッシュが存在する場合にキャッシュデータを返す`() =
         runTest {
             coEvery { dao.getPokemonDetail("bulbasaur") } returns detailEntity
 
@@ -55,10 +57,11 @@ class PokemonRepositoryImplTest {
         }
 
     @Test
-    fun `getPokemonDetail fetches from remote when cache is null`() =
+    fun `キャッシュがnullの場合にリモートから取得する`() =
         runTest {
             coEvery { dao.getPokemonDetail("bulbasaur") } returns null
             coEvery { dataSource.getPokemonDetail("bulbasaur") } returns createDetailResponse()
+            coEvery { dao.insertPokemonDetail(any()) } just Runs
 
             val result = repository.getPokemonDetail("bulbasaur")
 
@@ -68,7 +71,7 @@ class PokemonRepositoryImplTest {
         }
 
     @Test
-    fun `getPokemonDetail returns Network failure on IOException`() =
+    fun `IOExceptionが発生した場合にNetworkエラーを返す`() =
         runTest {
             coEvery { dao.getPokemonDetail("bulbasaur") } returns null
             coEvery { dataSource.getPokemonDetail("bulbasaur") } throws IOException("timeout")
@@ -80,7 +83,7 @@ class PokemonRepositoryImplTest {
         }
 
     @Test
-    fun `getPokemonSpecies returns mapped model`() =
+    fun `ポケモン種族情報を正しく取得する`() =
         runTest {
             coEvery { dataSource.getPokemonSpecies("bulbasaur") } returns createSpeciesResponse()
 
@@ -91,7 +94,7 @@ class PokemonRepositoryImplTest {
         }
 
     @Test
-    fun `getEvolutionChainByUrl returns stages`() =
+    fun `進化チェーンのステージを正しく取得する`() =
         runTest {
             coEvery { dataSource.getEvolutionChain("url") } returns
                 EvolutionChainResponse(
@@ -111,7 +114,7 @@ class PokemonRepositoryImplTest {
         }
 
     @Test
-    fun `getAbilityLocalizedNames returns name map`() =
+    fun `特性のローカライズ名マップを正しく取得する`() =
         runTest {
             coEvery { dataSource.getAbility("overgrow") } returns
                 AbilityResponse(
@@ -129,7 +132,7 @@ class PokemonRepositoryImplTest {
         }
 
     @Test
-    fun `searchPokemonNames uses cached names`() =
+    fun `キャッシュされた名前を使ってポケモン名を検索する`() =
         runTest {
             coEvery { dao.getAllPokemonNames() } returns
                 listOf(

@@ -25,7 +25,7 @@ class SearchViewModelTest {
     private fun createViewModel() = SearchViewModel(searchPokemonUseCase)
 
     @Test
-    fun `initial state is idle with empty query`() {
+    fun `初期状態はクエリが空でIdle状態になる`() {
         val viewModel = createViewModel()
 
         assertEquals("", viewModel.uiState.value.query)
@@ -33,7 +33,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `onQueryChange updates query`() {
+    fun `クエリ変更時にクエリが更新される`() {
         val viewModel = createViewModel()
 
         viewModel.onQueryChange("pika")
@@ -42,7 +42,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `search returns success after debounce`() =
+    fun `デバウンス後に検索成功でSuccess状態になる`() =
         runTest {
             coEvery { searchPokemonUseCase("pikachu") } returns Result.success(listOf("pikachu"))
             val viewModel = createViewModel()
@@ -57,7 +57,7 @@ class SearchViewModelTest {
         }
 
     @Test
-    fun `blank query resets to idle`() =
+    fun `空クエリでIdle状態にリセットされる`() =
         runTest {
             coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
             val viewModel = createViewModel()
@@ -74,7 +74,7 @@ class SearchViewModelTest {
         }
 
     @Test
-    fun `search returns error state on failure`() =
+    fun `検索失敗時にError状態になる`() =
         runTest {
             coEvery { searchPokemonUseCase("xyz") } returns Result.failure(AppException.NotFound("xyz"))
             val viewModel = createViewModel()
@@ -87,7 +87,7 @@ class SearchViewModelTest {
         }
 
     @Test
-    fun `retrySearch executes without debounce`() =
+    fun `retrySearchでデバウンスなしに再検索できる`() =
         runTest {
             coEvery { searchPokemonUseCase("pika") } returns Result.failure(AppException.Network(Exception()))
             val viewModel = createViewModel()
@@ -105,7 +105,7 @@ class SearchViewModelTest {
         }
 
     @Test
-    fun `retrySearch does nothing when query is blank`() =
+    fun `クエリが空の場合retrySearchは何もしない`() =
         runTest {
             val viewModel = createViewModel()
 

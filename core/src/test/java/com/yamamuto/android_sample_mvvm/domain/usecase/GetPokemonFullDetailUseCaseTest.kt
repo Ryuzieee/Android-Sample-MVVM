@@ -57,7 +57,7 @@ class GetPokemonFullDetailUseCaseTest {
         )
 
     @Test
-    fun `returns full detail with species and evolution chain`() =
+    fun `全詳細取得成功時に種族情報と進化チェーンを含む結果を返す`() =
         runTest {
             coEvery { getDetailUseCase("bulbasaur", false) } returns Result.success(fakeDetail)
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.success(fakeSpecies)
@@ -78,7 +78,7 @@ class GetPokemonFullDetailUseCaseTest {
         }
 
     @Test
-    fun `returns failure when detail fetch fails`() =
+    fun `詳細取得失敗時にエラーを返す`() =
         runTest {
             coEvery { getDetailUseCase("unknown", false) } returns
                 Result.failure(
@@ -92,7 +92,7 @@ class GetPokemonFullDetailUseCaseTest {
         }
 
     @Test
-    fun `succeeds with null species when species fetch fails`() =
+    fun `種族情報取得失敗時にspeciesがnullで成功する`() =
         runTest {
             coEvery { getDetailUseCase("bulbasaur", false) } returns Result.success(fakeDetail)
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.failure(AppException.Network(Exception()))
@@ -106,7 +106,7 @@ class GetPokemonFullDetailUseCaseTest {
         }
 
     @Test
-    fun `succeeds with empty chain when evolution fetch fails`() =
+    fun `進化チェーン取得失敗時に空リストで成功する`() =
         runTest {
             coEvery { getDetailUseCase("bulbasaur", false) } returns Result.success(fakeDetail)
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.success(fakeSpecies)

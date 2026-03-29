@@ -28,7 +28,7 @@ class GetPokemonSpeciesUseCaseTest {
         )
 
     @Test
-    fun `returns species on success`() =
+    fun `種族情報取得成功時に結果を返す`() =
         runTest {
             coEvery { repository.getPokemonSpecies("bulbasaur") } returns Result.success(fakeSpecies)
 
@@ -39,7 +39,7 @@ class GetPokemonSpeciesUseCaseTest {
         }
 
     @Test
-    fun `returns failure on error`() =
+    fun `リポジトリ失敗時にエラーを返す`() =
         runTest {
             coEvery { repository.getPokemonSpecies(any()) } returns Result.failure(AppException.Network(Exception()))
 

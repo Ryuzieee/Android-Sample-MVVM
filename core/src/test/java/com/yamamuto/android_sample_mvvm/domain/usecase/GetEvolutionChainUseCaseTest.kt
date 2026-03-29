@@ -32,7 +32,7 @@ class GetEvolutionChainUseCaseTest {
     )
 
     @Test
-    fun `returns evolution stages with Japanese names`() =
+    fun `進化チェーン取得成功時に日本語名付きの進化段階を返す`() =
         runTest {
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.success(fakeSpecies("フシギダネ", "chain-url"))
             coEvery { repository.getEvolutionChainByUrl("chain-url") } returns
@@ -54,7 +54,7 @@ class GetEvolutionChainUseCaseTest {
         }
 
     @Test
-    fun `returns failure when species fetch fails`() =
+    fun `種族情報取得失敗時にエラーを返す`() =
         runTest {
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.failure(AppException.Network(Exception()))
 
@@ -65,7 +65,7 @@ class GetEvolutionChainUseCaseTest {
         }
 
     @Test
-    fun `returns failure when evolution chain fetch fails`() =
+    fun `進化チェーン取得失敗時にエラーを返す`() =
         runTest {
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.success(fakeSpecies("フシギダネ"))
             coEvery { repository.getEvolutionChainByUrl(any()) } returns Result.failure(AppException.Network(Exception()))
@@ -76,7 +76,7 @@ class GetEvolutionChainUseCaseTest {
         }
 
     @Test
-    fun `falls back to empty Japanese name when species lookup fails`() =
+    fun `種族名取得失敗時に既存の日本語名でフォールバックする`() =
         runTest {
             coEvery { getSpeciesUseCase("bulbasaur") } returns Result.success(fakeSpecies("フシギダネ", "chain-url"))
             coEvery { repository.getEvolutionChainByUrl("chain-url") } returns

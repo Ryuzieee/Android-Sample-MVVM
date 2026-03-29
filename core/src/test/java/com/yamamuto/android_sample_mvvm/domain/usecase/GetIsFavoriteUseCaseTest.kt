@@ -13,7 +13,7 @@ class GetIsFavoriteUseCaseTest {
     private val useCase = GetIsFavoriteUseCase(repository)
 
     @Test
-    fun `returns true when favorite exists`() =
+    fun `お気に入り登録済みの場合にtrueを返す`() =
         runTest {
             coEvery { repository.isFavorite(1) } returns Result.success(true)
 
@@ -24,7 +24,7 @@ class GetIsFavoriteUseCaseTest {
         }
 
     @Test
-    fun `returns false when not favorite`() =
+    fun `お気に入り未登録の場合にfalseを返す`() =
         runTest {
             coEvery { repository.isFavorite(1) } returns Result.success(false)
 

@@ -14,7 +14,7 @@ class SearchPokemonUseCaseTest {
     private val useCase = SearchPokemonUseCase(repository)
 
     @Test
-    fun `returns matching names on success`() =
+    fun `検索成功時に一致する名前リストを返す`() =
         runTest {
             coEvery { repository.searchPokemonNames("pika") } returns Result.success(listOf("pikachu"))
 
@@ -25,7 +25,7 @@ class SearchPokemonUseCaseTest {
         }
 
     @Test
-    fun `returns NotFound when result is empty`() =
+    fun `検索結果が空の場合にNotFoundエラーを返す`() =
         runTest {
             coEvery { repository.searchPokemonNames("xyz") } returns Result.success(emptyList())
 
@@ -36,7 +36,7 @@ class SearchPokemonUseCaseTest {
         }
 
     @Test
-    fun `returns failure when repository fails`() =
+    fun `リポジトリ失敗時にエラーを返す`() =
         runTest {
             coEvery { repository.searchPokemonNames(any()) } returns
                 Result.failure(

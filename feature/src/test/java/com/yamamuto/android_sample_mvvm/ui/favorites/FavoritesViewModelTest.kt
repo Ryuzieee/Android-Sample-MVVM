@@ -22,8 +22,10 @@ class FavoritesViewModelTest {
 
     private val getFavoritesUseCase = mockk<GetFavoritesUseCase>()
 
+    private fun createViewModel() = FavoritesViewModel(getFavoritesUseCase)
+
     @Test
-    fun `loads favorites on init and emits Success`() =
+    fun `お気に入り取得成功時にSuccess状態になる`() =
         runTest {
             val favorites =
                 listOf(
@@ -32,7 +34,7 @@ class FavoritesViewModelTest {
                 )
             coEvery { getFavoritesUseCase() } returns Result.success(favorites)
 
-            val viewModel = FavoritesViewModel(getFavoritesUseCase)
+            val viewModel = createViewModel()
             advanceUntilIdle()
 
             val state = viewModel.uiState.value
@@ -41,22 +43,22 @@ class FavoritesViewModelTest {
         }
 
     @Test
-    fun `emits Error when use case fails`() =
+    fun `お気に入り取得失敗時にError状態になる`() =
         runTest {
             coEvery { getFavoritesUseCase() } returns Result.failure(AppException.Unknown(Exception("db error")))
 
-            val viewModel = FavoritesViewModel(getFavoritesUseCase)
+            val viewModel = createViewModel()
             advanceUntilIdle()
 
             assertTrue(viewModel.uiState.value is UiState.Error)
         }
 
     @Test
-    fun `emits Success with empty list when no favorites`() =
+    fun `お気に入りが空の場合は空リストでSuccess状態になる`() =
         runTest {
             coEvery { getFavoritesUseCase() } returns Result.success(emptyList())
 
-            val viewModel = FavoritesViewModel(getFavoritesUseCase)
+            val viewModel = createViewModel()
             advanceUntilIdle()
 
             val state = viewModel.uiState.value

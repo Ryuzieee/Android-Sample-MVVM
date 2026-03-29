@@ -2,13 +2,16 @@ package com.yamamuto.android_sample_mvvm.domain.usecase
 
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
+import io.mockk.Runs
+import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class ToggleFavoriteUseCaseTest {
-    private val repository = mockk<FavoriteRepository>(relaxed = true)
+    private val repository = mockk<FavoriteRepository>()
     private val useCase = ToggleFavoriteUseCase(repository)
 
     private val detail =
@@ -25,8 +28,10 @@ class ToggleFavoriteUseCaseTest {
         )
 
     @Test
-    fun `removes favorite when isFavorite is true`() =
+    fun `お気に入り登録済みの場合に削除する`() =
         runTest {
+            coEvery { repository.removeFavorite(any()) } just Runs
+
             useCase(detail, isFavorite = true)
 
             coVerify { repository.removeFavorite(1) }
@@ -34,8 +39,10 @@ class ToggleFavoriteUseCaseTest {
         }
 
     @Test
-    fun `adds favorite when isFavorite is false`() =
+    fun `お気に入り未登録の場合に追加する`() =
         runTest {
+            coEvery { repository.addFavorite(any()) } just Runs
+
             useCase(detail, isFavorite = false)
 
             coVerify { repository.addFavorite(detail) }

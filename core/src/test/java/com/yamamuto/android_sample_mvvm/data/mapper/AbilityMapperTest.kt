@@ -10,7 +10,7 @@ import org.junit.Test
 
 class AbilityMapperTest {
     @Test
-    fun `toModel creates language to name map`() {
+    fun `言語名マップを正しく生成する`() {
         val response =
             AbilityResponse(
                 names =
@@ -29,7 +29,7 @@ class AbilityMapperTest {
     }
 
     @Test
-    fun `toModel returns empty map for empty names`() {
+    fun `namesが空の場合に空のマップを返す`() {
         val response = AbilityResponse(names = emptyList())
         val result = response.toModel()
         assertEquals(emptyMap<String, String>(), result)
