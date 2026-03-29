@@ -16,6 +16,7 @@ import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -115,6 +116,24 @@ class PokemonDetailViewModelTest {
                 viewModel.retry()
 
                 assertTrue(expectMostRecentItem().content is UiState.Success)
+            }
+        }
+
+    @Test
+    fun `toggleFavoriteでお気に入り状態が反転する`() =
+        runTest {
+            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
+
+            val viewModel = createViewModel("bulbasaur")
+
+            viewModel.uiState.test {
+                assertFalse(awaitItem().isFavorite)
+
+                viewModel.toggleFavorite()
+                assertTrue(awaitItem().isFavorite)
+
+                viewModel.toggleFavorite()
+                assertFalse(awaitItem().isFavorite)
             }
         }
 }
