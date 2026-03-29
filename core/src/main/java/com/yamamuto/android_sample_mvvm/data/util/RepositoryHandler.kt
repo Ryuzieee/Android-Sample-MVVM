@@ -74,6 +74,27 @@ suspend fun <D : Any, E : Any> handleRemote(
     )
 }
 
+/**
+ * ローカル DB のみの Repository メソッド用ハンドラ。
+ *
+ * ```
+ * handleLocal(
+ *     query = { dao.getAllFavorites() },
+ *     toModel = { it.map { e -> e.toDomain() } },
+ * )
+ * ```
+ */
+suspend fun <D : Any, E : Any> handleLocal(
+    query: suspend () -> E,
+    toModel: (E) -> D,
+): Result<D> {
+    return try {
+        Result.success(toModel(query()))
+    } catch (e: Exception) {
+        Result.failure(AppException.Unknown(e))
+    }
+}
+
 private fun isExpired(cachedAt: Long?): Boolean {
     if (cachedAt == null) return false
     return System.currentTimeMillis() - cachedAt >= CACHE_DURATION_MS
