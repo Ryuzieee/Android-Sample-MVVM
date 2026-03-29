@@ -28,12 +28,10 @@ class MockInterceptor
             val request = chain.request()
             val path = request.url.encodedPath
 
-            return when (MockScenarioHolder.current) {
-                MockScenario.SUCCESS -> successResponse(chain, path)
-                MockScenario.SESSION_EXPIRED -> errorResponse(chain, 401, "Unauthorized")
-                MockScenario.FORCE_UPDATE -> forceUpdateResponse(chain)
-                MockScenario.NETWORK_ERROR -> throw IOException("Mock: ネットワークエラー")
-                MockScenario.SERVER_ERROR -> errorResponse(chain, 500, "Internal Server Error")
+            return when (val scenario = MockScenarioHolder.current) {
+                is MockScenario.Success -> successResponse(chain, path)
+                is MockScenario.NetworkError -> throw IOException("Mock: ネットワークエラー")
+                is MockScenario.CustomError -> customErrorResponse(chain, scenario)
             }
         }
 
@@ -47,25 +45,19 @@ class MockInterceptor
                 .newResponse(200, json)
         }
 
-        private fun errorResponse(
+        private fun customErrorResponse(
             chain: Interceptor.Chain,
-            code: Int,
-            message: String,
+            error: MockScenario.CustomError,
         ): Response {
-            return chain
-                .request()
-                .newResponse(code, """{"error": "$message"}""")
-        }
-
-        private fun forceUpdateResponse(chain: Interceptor.Chain): Response {
             return Response
                 .Builder()
                 .request(chain.request())
                 .protocol(Protocol.HTTP_1_1)
-                .code(426)
-                .message("Upgrade Required")
-                .header("X-Store-Url", "https://play.google.com/store/apps/details?id=com.example.app")
-                .body("""{"error": "Upgrade Required"}""".toResponseBody(CONTENT_TYPE_JSON.toMediaType()))
+                .code(error.code)
+                .message(error.message)
+                .apply {
+                    error.headers.forEach { (key, value) -> header(key, value) }
+                }.body(error.body.toResponseBody(CONTENT_TYPE_JSON.toMediaType()))
                 .build()
         }
 
@@ -85,21 +77,16 @@ class MockInterceptor
 
         private fun routeMockResponse(path: String): String {
             return when {
-                // GET /api/v2/pokemon?limit=X&offset=Y
                 path == "/api/v2/pokemon" -> MockData.pokemonList()
-                // GET /api/v2/pokemon/{name}
                 path.matches(Regex("/api/v2/pokemon/[^/]+")) -> {
                     val name = path.substringAfterLast("/")
                     MockData.pokemonDetail(name)
                 }
-                // GET /api/v2/pokemon-species/{name}
                 path.matches(Regex("/api/v2/pokemon-species/[^/]+")) -> {
                     val name = path.substringAfterLast("/")
                     MockData.pokemonSpecies(name)
                 }
-                // GET /api/v2/evolution-chain/{id}
                 path.matches(Regex("/api/v2/evolution-chain/[^/]+")) -> MockData.evolutionChain()
-                // GET /api/v2/ability/{name}
                 path.matches(Regex("/api/v2/ability/[^/]+")) -> {
                     val name = path.substringAfterLast("/")
                     MockData.ability(name)
