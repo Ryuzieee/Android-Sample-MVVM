@@ -39,6 +39,7 @@ class SearchViewModelTest {
     @Test
     fun `クエリ変更時にクエリが更新される`() =
         runTest {
+            coEvery { searchPokemonUseCase(any()) } returns Result.success(emptyList())
             val viewModel = createViewModel()
 
             viewModel.uiState.test {
