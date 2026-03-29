@@ -4,6 +4,9 @@ package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
+import com.yamamuto.android_sample_mvvm.data.mapper.toEntities
+import com.yamamuto.android_sample_mvvm.data.mapper.toEntity
+import com.yamamuto.android_sample_mvvm.data.mapper.toModel
 import com.yamamuto.android_sample_mvvm.data.util.handleRemote
 import com.yamamuto.android_sample_mvvm.data.util.handleWithCache
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
@@ -33,7 +36,7 @@ class PokemonRepositoryImpl @Inject constructor(
             forceRefresh = forceRefresh,
             load = { dao.getPokemonDetail(name) },
             fetch = { dataSource.getPokemonDetail(name).toEntity() },
-            toModel = { it.toDomain() },
+            toModel = { it.toModel() },
             cachedAt = { it.cachedAt },
             save = { dao.insertPokemonDetail(it) },
         )
@@ -42,21 +45,21 @@ class PokemonRepositoryImpl @Inject constructor(
     override suspend fun getPokemonSpecies(name: String): Result<PokemonSpeciesModel> {
         return handleRemote(
             fetch = { dataSource.getPokemonSpecies(name) },
-            toModel = { it.toDomain() },
+            toModel = { it.toModel() },
         )
     }
 
     override suspend fun getEvolutionChainByUrl(url: String): Result<List<EvolutionStageModel>> {
         return handleRemote(
             fetch = { dataSource.getEvolutionChain(url) },
-            toModel = { it.toStages() },
+            toModel = { it.toModel() },
         )
     }
 
     override suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>> {
         return handleRemote(
             fetch = { dataSource.getAbility(name) },
-            toModel = { it.toLocalizedNames() },
+            toModel = { it.toModel() },
         )
     }
 
@@ -66,7 +69,7 @@ class PokemonRepositoryImpl @Inject constructor(
             fetch = {
                 dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0).toEntities()
             },
-            toModel = { it.toModels(query) },
+            toModel = { it.toModel(query) },
             cachedAt = { it.first().cachedAt },
             save = { dao.insertPokemonNames(it) },
         )

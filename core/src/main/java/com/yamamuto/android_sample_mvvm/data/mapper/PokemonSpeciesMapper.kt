@@ -1,6 +1,6 @@
 @file:OptIn(InternalSerializationApi::class)
 
-package com.yamamuto.android_sample_mvvm.data.repository
+package com.yamamuto.android_sample_mvvm.data.mapper
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
@@ -13,8 +13,8 @@ import kotlinx.serialization.InternalSerializationApi
 private const val ARTWORK_URL =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"
 
-/** Species DTO → Domain */
-internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
+/** Species DTO → Model */
+internal fun PokemonSpeciesResponse.toModel(): PokemonSpeciesModel {
     val jaName = names.associate { it.language.name to it.name }.japaneseName()
 
     val jaFlavorText =
@@ -44,8 +44,8 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
     )
 }
 
-/** EvolutionChain DTO → Domain (フラットなリストに展開) */
-internal fun EvolutionChainResponse.toStages(): List<EvolutionStageModel> {
+/** EvolutionChain DTO → Model (フラットなリストに展開) */
+internal fun EvolutionChainResponse.toModel(): List<EvolutionStageModel> {
     val stages = mutableListOf<EvolutionStageModel>()
 
     fun walk(link: EvolutionChainResponse.ChainLink) {

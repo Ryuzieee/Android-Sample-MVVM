@@ -1,6 +1,6 @@
 @file:OptIn(InternalSerializationApi::class)
 
-package com.yamamuto.android_sample_mvvm.data.repository
+package com.yamamuto.android_sample_mvvm.data.mapper
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.data.local.entity.AbilityEntry
@@ -24,8 +24,8 @@ internal fun PokemonDetailResponse.toEntity(): PokemonDetailEntity {
     )
 }
 
-/** Entity → Domain */
-internal fun PokemonDetailEntity.toDomain(): PokemonDetailModel {
+/** Entity → Model */
+internal fun PokemonDetailEntity.toModel(): PokemonDetailModel {
     return PokemonDetailModel(
         id = id,
         name = name,
