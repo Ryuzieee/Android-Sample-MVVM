@@ -21,6 +21,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+        buildConfigField("boolean", "IS_MOCK", "false")
     }
 
     buildFeatures {
@@ -49,9 +50,18 @@ android {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+            buildConfigField("boolean", "IS_MOCK", "false")
+        }
+        create("mock") {
+            dimension = "environment"
+            applicationIdSuffix = ".mock"
+            versionNameSuffix = "-mock"
+            buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
+            buildConfigField("boolean", "IS_MOCK", "true")
         }
         create("prod") {
             dimension = "environment"
+            buildConfigField("boolean", "IS_MOCK", "false")
         }
     }
     compileOptions {
