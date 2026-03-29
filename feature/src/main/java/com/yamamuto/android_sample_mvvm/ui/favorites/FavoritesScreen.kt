@@ -1,6 +1,5 @@
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,12 +38,11 @@ fun FavoritesScreen(
                 onRetry = viewModel::retry,
             ) { favorites ->
                 if (favorites.isEmpty()) {
-                    FavoritesEmpty(padding)
+                    FavoritesEmpty()
                 } else {
                     PokemonGrid(
                         items = favorites.map { it.toGridItem() },
                         onPokemonClick = onPokemonClick,
-                        contentPadding = padding,
                     )
                 }
             }
@@ -53,11 +51,10 @@ fun FavoritesScreen(
 }
 
 @Composable
-private fun FavoritesEmpty(padding: PaddingValues) {
+private fun FavoritesEmpty() {
     EmptyContent(
         message = Strings.Favorites.EMPTY_MESSAGE,
         subMessage = Strings.Favorites.EMPTY_SUB_MESSAGE,
-        modifier = Modifier.padding(padding),
     )
 }
 
