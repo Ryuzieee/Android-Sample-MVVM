@@ -7,6 +7,7 @@ import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.domain.util.LanguageCodes
+import com.yamamuto.android_sample_mvvm.domain.util.LanguageCodes.japaneseName
 import kotlinx.serialization.InternalSerializationApi
 
 private const val ARTWORK_URL =
@@ -14,9 +15,7 @@ private const val ARTWORK_URL =
 
 /** Species DTO → Domain */
 internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
-    val jaName = names.firstOrNull { it.language.name == LanguageCodes.JA }?.name
-        ?: names.firstOrNull { it.language.name == LanguageCodes.JA_HRKT }?.name
-        ?: ""
+    val jaName = names.associate { it.language.name to it.name }.japaneseName()
 
     val jaFlavorText = flavorTextEntries
         .lastOrNull { it.language.name == LanguageCodes.JA }

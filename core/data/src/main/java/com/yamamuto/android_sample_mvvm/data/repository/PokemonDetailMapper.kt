@@ -3,13 +3,11 @@
 package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
+import com.yamamuto.android_sample_mvvm.data.local.entity.AbilityEntry
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
+import com.yamamuto.android_sample_mvvm.data.local.entity.StatEntry
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import kotlinx.serialization.InternalSerializationApi
-
-private const val TYPE_DELIMITER = ","
-private const val ENTRY_DELIMITER = ";"
-private const val FIELD_DELIMITER = ":"
 
 /** DTO → Entity */
 internal fun PokemonDetailResponse.toEntity(): PokemonDetailEntity {
@@ -19,12 +17,10 @@ internal fun PokemonDetailResponse.toEntity(): PokemonDetailEntity {
         height = height,
         weight = weight,
         baseExperience = baseExperience,
-        types = types.map { it.type.name }.joinToString(TYPE_DELIMITER),
-        abilities = abilities.joinToString(ENTRY_DELIMITER) {
-            "${it.ability.name}${FIELD_DELIMITER}${FIELD_DELIMITER}${it.isHidden}"
-        },
+        types = types.map { it.type.name },
+        abilities = abilities.map { AbilityEntry(name = it.ability.name, isHidden = it.isHidden) },
         imageUrl = sprites.other.officialArtwork.frontDefault,
-        stats = stats.joinToString(ENTRY_DELIMITER) { "${it.stat.name}${FIELD_DELIMITER}${it.baseStat}" },
+        stats = stats.map { StatEntry(name = it.stat.name, value = it.baseStat) },
     )
 }
 
@@ -36,20 +32,12 @@ internal fun PokemonDetailEntity.toDomain(): PokemonDetailModel {
         height = height,
         weight = weight,
         baseExperience = baseExperience,
-        types = types.split(TYPE_DELIMITER),
-        abilities = abilities.split(ENTRY_DELIMITER).mapNotNull { entry ->
-            val parts = entry.split(FIELD_DELIMITER)
-            when (parts.size) {
-                3 -> PokemonDetailModel.Ability(parts[0], parts[1], parts[2].toBooleanStrictOrNull() ?: false)
-                2 -> PokemonDetailModel.Ability(parts[0], "", parts[1].toBooleanStrictOrNull() ?: false)
-                else -> null
-            }
+        types = types,
+        abilities = abilities.map {
+            PokemonDetailModel.Ability(name = it.name, japaneseName = it.japaneseName, isHidden = it.isHidden)
         },
         imageUrl = imageUrl,
-        stats = stats.split(ENTRY_DELIMITER).mapNotNull { entry ->
-            val parts = entry.split(FIELD_DELIMITER)
-            if (parts.size == 2) PokemonDetailModel.Stat(parts[0], parts[1].toInt()) else null
-        },
+        stats = stats.map { PokemonDetailModel.Stat(name = it.name, value = it.value) },
     )
 }
 
@@ -61,9 +49,9 @@ internal fun PokemonDetailModel.toEntity(): PokemonDetailEntity {
         height = height,
         weight = weight,
         baseExperience = baseExperience,
-        types = types.joinToString(TYPE_DELIMITER),
-        abilities = abilities.joinToString(ENTRY_DELIMITER) { "${it.name}${FIELD_DELIMITER}${it.japaneseName}${FIELD_DELIMITER}${it.isHidden}" },
+        types = types,
+        abilities = abilities.map { AbilityEntry(name = it.name, japaneseName = it.japaneseName, isHidden = it.isHidden) },
         imageUrl = imageUrl,
-        stats = stats.joinToString(ENTRY_DELIMITER) { "${it.name}${FIELD_DELIMITER}${it.value}" },
+        stats = stats.map { StatEntry(name = it.name, value = it.value) },
     )
 }

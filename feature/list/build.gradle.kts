@@ -2,10 +2,6 @@ plugins {
     id("convention.feature")
 }
 
-android {
-    namespace = "com.yamamuto.android_sample_mvvm.feature.list"
-}
-
 dependencies {
     implementation(project(":core:data"))
     implementation(libs.androidx.paging.runtime)

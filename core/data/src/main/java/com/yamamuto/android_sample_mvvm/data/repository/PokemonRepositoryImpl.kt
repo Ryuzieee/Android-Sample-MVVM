@@ -10,6 +10,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.serialization.InternalSerializationApi
+import javax.inject.Inject
 
 private const val POKEMON_LIST_LIMIT = 2000
 
@@ -18,10 +19,12 @@ private const val POKEMON_LIST_LIMIT = 2000
  *
  * 全メソッドは [repositoryHandler] を使い、例外を [Result.failure] に変換する。
  */
-class PokemonRepositoryImpl(
-    private val dataSource: PokemonRemoteDataSource,
-    private val dao: PokemonDao,
-) : PokemonRepository {
+class PokemonRepositoryImpl
+    @Inject
+    constructor(
+        private val dataSource: PokemonRemoteDataSource,
+        private val dao: PokemonDao,
+    ) : PokemonRepository {
 
     override suspend fun getPokemonDetail(
         name: String,

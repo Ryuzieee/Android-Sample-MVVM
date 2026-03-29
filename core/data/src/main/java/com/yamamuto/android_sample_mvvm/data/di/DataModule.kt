@@ -2,18 +2,17 @@ package com.yamamuto.android_sample_mvvm.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
-import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.PokemonDatabase
-import com.yamamuto.android_sample_mvvm.data.paging.PagingSourceFactory
-import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSourceFactory
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.data.local.dao.FavoriteDao
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
+import com.yamamuto.android_sample_mvvm.data.paging.PagingSourceFactory
+import com.yamamuto.android_sample_mvvm.data.paging.PokemonPagingSourceFactory
 import com.yamamuto.android_sample_mvvm.data.repository.FavoriteRepositoryImpl
 import com.yamamuto.android_sample_mvvm.data.repository.PokemonRepositoryImpl
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,56 +25,43 @@ private const val DATABASE_NAME = "pokemon.db"
 /** データ層の依存関係を定義する Hilt モジュール。 */
 @Module
 @InstallIn(SingletonComponent::class)
-object DataModule {
-    @Provides
+abstract class DataModule {
+    @Binds
     @Singleton
-    fun provideDatabase(
-        @ApplicationContext context: Context,
-    ): PokemonDatabase {
-        return Room
-            .databaseBuilder(context, PokemonDatabase::class.java, DATABASE_NAME)
-            .fallbackToDestructiveMigration()
-            .build()
-    }
+    abstract fun bindPokemonRepository(impl: PokemonRepositoryImpl): PokemonRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun providePokemonDao(database: PokemonDatabase): PokemonDao {
-        return database.pokemonDao()
-    }
+    abstract fun bindFavoriteRepository(impl: FavoriteRepositoryImpl): FavoriteRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideFavoriteDao(database: PokemonDatabase): FavoriteDao {
-        return database.favoriteDao()
-    }
+    abstract fun bindPagingSourceFactory(
+        impl: PokemonPagingSourceFactory,
+    ): PagingSourceFactory<PokemonSummaryModel>
 
-    @Provides
-    @Singleton
-    fun providePokemonRemoteDataSource(api: PokeApiService): PokemonRemoteDataSource {
-        return PokemonRemoteDataSource(api)
-    }
+    companion object {
+        @Provides
+        @Singleton
+        fun provideDatabase(
+            @ApplicationContext context: Context,
+        ): PokemonDatabase {
+            return Room
+                .databaseBuilder(context, PokemonDatabase::class.java, DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .build()
+        }
 
-    @Provides
-    @Singleton
-    fun providePokemonRepository(
-        dataSource: PokemonRemoteDataSource,
-        dao: PokemonDao,
-    ): PokemonRepository {
-        return PokemonRepositoryImpl(dataSource, dao)
-    }
+        @Provides
+        @Singleton
+        fun providePokemonDao(database: PokemonDatabase): PokemonDao {
+            return database.pokemonDao()
+        }
 
-    @Provides
-    @Singleton
-    fun provideFavoriteRepository(dao: FavoriteDao): FavoriteRepository {
-        return FavoriteRepositoryImpl(dao)
-    }
-
-    @Provides
-    @Singleton
-    fun providePokemonPagingSourceFactory(
-        factory: PokemonPagingSourceFactory,
-    ): PagingSourceFactory<PokemonSummaryModel> {
-        return factory
+        @Provides
+        @Singleton
+        fun provideFavoriteDao(database: PokemonDatabase): FavoriteDao {
+            return database.favoriteDao()
+        }
     }
 }

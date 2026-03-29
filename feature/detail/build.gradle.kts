@@ -3,10 +3,6 @@ plugins {
     alias(libs.plugins.roborazzi.plugin)
 }
 
-android {
-    namespace = "com.yamamuto.android_sample_mvvm.feature.detail"
-}
-
 dependencies {
     implementation(libs.timber)
     testImplementation(libs.roborazzi)

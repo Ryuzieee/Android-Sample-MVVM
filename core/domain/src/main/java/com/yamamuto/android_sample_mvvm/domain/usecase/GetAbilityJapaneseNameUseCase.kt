@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
-import com.yamamuto.android_sample_mvvm.domain.util.LanguageCodes
+import com.yamamuto.android_sample_mvvm.domain.util.LanguageCodes.japaneseName
 import javax.inject.Inject
 
 /** 特性の日本語名を取得するユースケース。 */
@@ -12,7 +12,7 @@ class GetAbilityJapaneseNameUseCase
     ) {
         suspend operator fun invoke(name: String): Result<String> {
             return repository.getAbilityLocalizedNames(name).map { names ->
-                names[LanguageCodes.JA] ?: names[LanguageCodes.JA_HRKT] ?: name
+                names.japaneseName(fallback = name)
             }
         }
     }
