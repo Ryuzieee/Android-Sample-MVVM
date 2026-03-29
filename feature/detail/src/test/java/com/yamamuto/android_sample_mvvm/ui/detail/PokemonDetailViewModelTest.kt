@@ -36,11 +36,12 @@ class PokemonDetailViewModelTest {
     private lateinit var observeIsFavoriteUseCase: ObserveIsFavoriteUseCase
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
 
-    private val fakeFullDetail = PokemonFullDetailModel(
-        detail = fakePokemonDetail,
-        species = null,
-        evolutionChain = emptyList(),
-    )
+    private val fakeFullDetail =
+        PokemonFullDetailModel(
+            detail = fakePokemonDetail,
+            species = null,
+            evolutionChain = emptyList(),
+        )
 
     @Before
     fun setUp() {
@@ -96,9 +97,10 @@ class PokemonDetailViewModelTest {
     @Test
     fun `異なるポケモン名で正しくデータを取得する`() {
         runTest {
-            val charizardFullDetail = fakeFullDetail.copy(
-                detail = fakePokemonDetail.copy(id = 6, name = "charizard"),
-            )
+            val charizardFullDetail =
+                fakeFullDetail.copy(
+                    detail = fakePokemonDetail.copy(id = 6, name = "charizard"),
+                )
             coEvery { getPokemonFullDetailUseCase("charizard") } returns Result.success(charizardFullDetail)
 
             val viewModel = createViewModel("charizard")

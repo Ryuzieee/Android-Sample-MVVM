@@ -1,6 +1,5 @@
 package com.yamamuto.android_sample_mvvm.ui.list
 
-import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.testing.asSnapshot

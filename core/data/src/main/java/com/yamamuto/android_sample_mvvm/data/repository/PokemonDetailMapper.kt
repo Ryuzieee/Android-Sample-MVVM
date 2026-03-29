@@ -33,9 +33,10 @@ internal fun PokemonDetailEntity.toDomain(): PokemonDetailModel {
         weight = weight,
         baseExperience = baseExperience,
         types = types,
-        abilities = abilities.map {
-            PokemonDetailModel.Ability(name = it.name, japaneseName = it.japaneseName, isHidden = it.isHidden)
-        },
+        abilities =
+            abilities.map {
+                PokemonDetailModel.Ability(name = it.name, japaneseName = it.japaneseName, isHidden = it.isHidden)
+            },
         imageUrl = imageUrl,
         stats = stats.map { PokemonDetailModel.Stat(name = it.name, value = it.value) },
     )

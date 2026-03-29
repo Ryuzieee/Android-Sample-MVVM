@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
-import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
@@ -149,12 +148,12 @@ private fun InfoBottomSheet(
             InfoRow(DetailStrings.LABEL_CATEGORY, species.genus)
             InfoRow(
                 DetailStrings.LABEL_GENERATION,
-                JapaneseTranslation.generation(species.generation)
+                JapaneseTranslation.generation(species.generation),
             )
             species.habitat?.let {
                 InfoRow(
                     DetailStrings.LABEL_HABITAT,
-                    JapaneseTranslation.habitat(it)
+                    JapaneseTranslation.habitat(it),
                 )
             }
             InfoRow(DetailStrings.LABEL_CAPTURE_RATE, "${species.captureRate}")
@@ -162,9 +161,14 @@ private fun InfoBottomSheet(
                 DetailStrings.LABEL_EGG_GROUP,
                 species.eggGroups.joinToString(DetailStrings.EGG_GROUP_SEPARATOR) {
                     JapaneseTranslation.eggGroup(it)
-                })
-            val genderText = if (species.genderRate == -1) DetailStrings.LABEL_NO_GENDER
-            else "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
+                },
+            )
+            val genderText =
+                if (species.genderRate == -1) {
+                    DetailStrings.LABEL_NO_GENDER
+                } else {
+                    "♀ ${species.genderRate * 12.5}% / ♂ ${(8 - species.genderRate) * 12.5}%"
+                }
             InfoRow(DetailStrings.LABEL_GENDER_RATIO, genderText)
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
@@ -177,9 +181,10 @@ private fun InfoBottomSheet(
         )
         detail.abilities.forEach { ability ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppText(
@@ -207,9 +212,10 @@ private fun InfoRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 2.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 2.dp),
     ) {
         AppText(
             text = label,
@@ -234,9 +240,10 @@ private fun PokemonDetailContent(
     val displayName = species?.japaneseName?.ifEmpty { null } ?: detail.name
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PokemonImage(
@@ -281,9 +288,10 @@ private fun PokemonDetailContent(
                 text = DetailStrings.SECTION_EVOLUTION,
                 style = MaterialTheme.typography.titleMedium,
                 bold = true,
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = 16.dp, bottom = 8.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.Start)
+                        .padding(start = 16.dp, bottom = 8.dp),
             )
             EvolutionChainRow(
                 stages = evolutionChain,
@@ -297,9 +305,10 @@ private fun PokemonDetailContent(
             text = DetailStrings.SECTION_BASE_STATS,
             style = MaterialTheme.typography.titleMedium,
             bold = true,
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 16.dp, bottom = 8.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp, bottom = 8.dp),
         )
 
         detail.stats.forEach { stat ->
@@ -316,9 +325,10 @@ private fun EvolutionChainRow(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -355,9 +365,10 @@ private fun EvolutionStageItem(
 ) {
     val displayName = stage.japaneseName.ifEmpty { stage.name }
     Column(
-        modifier = modifier
-            .clickable(enabled = !isCurrent, onClick = onClick)
-            .padding(horizontal = 8.dp),
+        modifier =
+            modifier
+                .clickable(enabled = !isCurrent, onClick = onClick)
+                .padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
@@ -379,9 +390,10 @@ private fun StatRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppText(

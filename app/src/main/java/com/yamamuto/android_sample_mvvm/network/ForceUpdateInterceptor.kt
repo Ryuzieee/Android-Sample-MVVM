@@ -17,17 +17,15 @@ private const val DEFAULT_STORE_URL = "https://play.google.com/store"
  * バックエンドが 426 を返した場合、[AppEventBus] に [AppEvent.ForceUpdate] を通知する。
  */
 @Singleton
-class ForceUpdateInterceptor
-    @Inject
-    constructor(
-        private val appEventBus: AppEventBus,
-    ) : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val response = chain.proceed(chain.request())
-            if (response.code == FORCE_UPDATE_CODE) {
-                val storeUrl = response.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
-                appEventBus.emit(AppEvent.ForceUpdate(storeUrl))
-            }
-            return response
+class ForceUpdateInterceptor @Inject constructor(
+    private val appEventBus: AppEventBus,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        if (response.code == FORCE_UPDATE_CODE) {
+            val storeUrl = response.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
+            appEventBus.emit(AppEvent.ForceUpdate(storeUrl))
         }
+        return response
     }
+}

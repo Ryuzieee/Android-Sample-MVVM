@@ -40,12 +40,12 @@ fun PokemonListScreen(
             AppIconButton(
                 Icons.Filled.Search,
                 ListStrings.SEARCH_DESCRIPTION,
-                onClick = onSearchClick
+                onClick = onSearchClick,
             )
             AppIconButton(
                 Icons.Filled.Favorite,
                 ListStrings.FAVORITES_DESCRIPTION,
-                onClick = onFavoritesClick
+                onClick = onFavoritesClick,
             )
         },
     ) { padding ->

@@ -15,16 +15,14 @@ private const val UNAUTHORIZED_CODE = 401
  * バックエンドが 401 を返した場合、[AppEventBus] に [AppEvent.SessionExpired] を通知する。
  */
 @Singleton
-class SessionInterceptor
-    @Inject
-    constructor(
-        private val appEventBus: AppEventBus,
-    ) : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val response = chain.proceed(chain.request())
-            if (response.code == UNAUTHORIZED_CODE) {
-                appEventBus.emit(AppEvent.SessionExpired)
-            }
-            return response
+class SessionInterceptor @Inject constructor(
+    private val appEventBus: AppEventBus,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        if (response.code == UNAUTHORIZED_CODE) {
+            appEventBus.emit(AppEvent.SessionExpired)
         }
+        return response
     }
+}

@@ -29,7 +29,7 @@ class PokemonListViewModel @Inject constructor(
             state = _uiState,
             pageSize = PAGE_SIZE,
             source = { pagingSourceFactory.create() },
-            transform = { copy(pagingData = it) }
+            transform = { copy(pagingData = it) },
         )
     }
 }

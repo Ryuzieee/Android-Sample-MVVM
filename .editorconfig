@@ -15,3 +15,6 @@ ktlint_standard_package-name = disabled
 ktlint_function_naming_ignore_when_annotated_with = Composable
 # ブロック本体 { return } を統一スタイルとして使用する
 ktlint_standard_function-expression-body = disabled
+# @Inject constructor をクラス宣言と同一行に書くスタイルを許容する
+ktlint_standard_class-signature = disabled
+ktlint_standard_annotation = disabled

@@ -19,7 +19,10 @@ import javax.inject.Inject
 class PokemonRemoteDataSource @Inject constructor(
     private val api: PokeApiService,
 ) {
-    suspend fun getPokemonList(limit: Int, offset: Int): PokemonListResponse {
+    suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+    ): PokemonListResponse {
         return api.getPokemonList(limit, offset)
     }
 

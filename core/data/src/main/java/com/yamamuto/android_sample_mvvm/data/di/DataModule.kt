@@ -36,9 +36,7 @@ abstract class DataModule {
 
     @Binds
     @Singleton
-    abstract fun bindPagingSourceFactory(
-        impl: PokemonPagingSourceFactory,
-    ): PagingSourceFactory<PokemonSummaryModel>
+    abstract fun bindPagingSourceFactory(impl: PokemonPagingSourceFactory): PagingSourceFactory<PokemonSummaryModel>
 
     companion object {
         @Provides

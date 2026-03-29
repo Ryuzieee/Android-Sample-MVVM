@@ -23,10 +23,9 @@ class PokemonRepositoryImpl @Inject constructor(
     private val dataSource: PokemonRemoteDataSource,
     private val dao: PokemonDao,
 ) : PokemonRepository {
-
     override suspend fun getPokemonDetail(
         name: String,
-        forceRefresh: Boolean
+        forceRefresh: Boolean,
     ): Result<PokemonDetailModel> {
         return repositoryHandler(
             forceRefresh = forceRefresh,

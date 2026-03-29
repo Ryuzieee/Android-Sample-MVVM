@@ -77,8 +77,7 @@ class PokemonDetailViewModel @Inject constructor(
                         )
                     }
                     observeFavorite(fullDetail.detail.id)
-                }
-                .onFailure { error ->
+                }.onFailure { error ->
                     val message = error.message ?: ErrorMessages.UNKNOWN_ERROR
                     _uiState.update {
                         it.copy(

@@ -36,10 +36,11 @@ class PokemonDetailScreenScreenshotTest {
             weight = 69,
             baseExperience = 64,
             types = listOf("grass", "poison"),
-            abilities = listOf(
-                PokemonDetailModel.Ability("overgrow", "しんりょく", isHidden = false),
-                PokemonDetailModel.Ability("chlorophyll", "ようりょくそ", isHidden = true),
-            ),
+            abilities =
+                listOf(
+                    PokemonDetailModel.Ability("overgrow", "しんりょく", isHidden = false),
+                    PokemonDetailModel.Ability("chlorophyll", "ようりょくそ", isHidden = true),
+                ),
             imageUrl = "",
             stats =
                 listOf(

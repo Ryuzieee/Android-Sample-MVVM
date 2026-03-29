@@ -13,8 +13,10 @@ class PokemonPagingSourceFactory @Inject constructor(
 ) : PagingSourceFactory<PokemonSummaryModel> {
     override fun create(): OffsetPagingSource<PokemonSummaryModel> {
         return OffsetPagingSource { offset, limit ->
-            dataSource.getPokemonList(limit = limit, offset = offset)
-                .results.map { PokemonSummaryModel(name = it.name, url = it.url) }
+            dataSource
+                .getPokemonList(limit = limit, offset = offset)
+                .results
+                .map { PokemonSummaryModel(name = it.name, url = it.url) }
         }
     }
 }

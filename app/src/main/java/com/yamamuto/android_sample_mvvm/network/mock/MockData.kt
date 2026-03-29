@@ -11,18 +11,16 @@ import javax.inject.Singleton
  * 本物の API レスポンスと同じ JSON 構造が保証される。
  */
 @Singleton
-class MockData
-    @Inject
-    constructor(
-        private val json: Json,
-    ) {
-        fun pokemonList(): String = buildMockListResponse(json)
+class MockData @Inject constructor(
+    private val json: Json,
+) {
+    fun pokemonList(): String = buildMockListResponse(json)
 
-        fun pokemonDetail(name: String): String = buildMockDetailResponse(json, name)
+    fun pokemonDetail(name: String): String = buildMockDetailResponse(json, name)
 
-        fun pokemonSpecies(name: String): String = buildMockSpeciesResponse(json, name)
+    fun pokemonSpecies(name: String): String = buildMockSpeciesResponse(json, name)
 
-        fun evolutionChain(chainId: Int): String = buildMockEvolutionResponse(json, chainId)
+    fun evolutionChain(chainId: Int): String = buildMockEvolutionResponse(json, chainId)
 
-        fun ability(name: String): String = buildMockAbilityResponse(json, name)
-    }
+    fun ability(name: String): String = buildMockAbilityResponse(json, name)
+}

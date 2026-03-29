@@ -17,17 +17,19 @@ private const val ARTWORK_URL =
 internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
     val jaName = names.associate { it.language.name to it.name }.japaneseName()
 
-    val jaFlavorText = flavorTextEntries
-        .lastOrNull { it.language.name == LanguageCodes.JA }
-        ?.flavorText
-        ?.replace("\n", " ")
-        ?.replace("\u000c", " ")
-        ?: flavorTextEntries.lastOrNull { it.language.name == LanguageCodes.EN }?.flavorText.orEmpty()
+    val jaFlavorText =
+        flavorTextEntries
+            .lastOrNull { it.language.name == LanguageCodes.JA }
+            ?.flavorText
+            ?.replace("\n", " ")
+            ?.replace("\u000c", " ")
+            ?: flavorTextEntries.lastOrNull { it.language.name == LanguageCodes.EN }?.flavorText.orEmpty()
 
-    val jaGenus = genera
-        .firstOrNull { it.language.name == LanguageCodes.JA }
-        ?.genus
-        ?: genera.firstOrNull { it.language.name == LanguageCodes.EN }?.genus.orEmpty()
+    val jaGenus =
+        genera
+            .firstOrNull { it.language.name == LanguageCodes.JA }
+            ?.genus
+            ?: genera.firstOrNull { it.language.name == LanguageCodes.EN }?.genus.orEmpty()
 
     return PokemonSpeciesModel(
         japaneseName = jaName,
@@ -45,16 +47,18 @@ internal fun PokemonSpeciesResponse.toDomain(): PokemonSpeciesModel {
 /** EvolutionChain DTO → Domain (フラットなリストに展開) */
 internal fun EvolutionChainResponse.toStages(): List<EvolutionStageModel> {
     val stages = mutableListOf<EvolutionStageModel>()
+
     fun walk(link: EvolutionChainResponse.ChainLink) {
         val id = extractIdFromUrl(link.species.url)
         val minLevel = link.evolutionDetails.firstOrNull()?.minLevel
-        stages += EvolutionStageModel(
-            name = link.species.name,
-            japaneseName = "",
-            id = id,
-            imageUrl = "${ARTWORK_URL}$id.png",
-            minLevel = minLevel,
-        )
+        stages +=
+            EvolutionStageModel(
+                name = link.species.name,
+                japaneseName = "",
+                id = id,
+                imageUrl = "${ARTWORK_URL}$id.png",
+                minLevel = minLevel,
+            )
         link.evolvesTo.forEach { walk(it) }
     }
     walk(chain)
