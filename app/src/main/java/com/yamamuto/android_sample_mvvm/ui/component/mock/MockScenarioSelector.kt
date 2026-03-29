@@ -41,7 +41,7 @@ fun MockScenarioSelector(onDismiss: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
-                text = "Mock Scenario",
+                text = "発生させたいエラーを選択してください。",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp),
             )

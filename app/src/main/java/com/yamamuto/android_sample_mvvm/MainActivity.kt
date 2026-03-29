@@ -7,10 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,23 +48,7 @@ class MainActivity : ComponentActivity() {
             AndroidSampleMVVMTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppNavGraph()
-
-                    if (BuildConfig.IS_MOCK) {
-                        FloatingActionButton(
-                            onClick = { showMockSelector = true },
-                            modifier =
-                                Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(start = 16.dp, bottom = 96.dp),
-                        ) {
-                            Text("Mock")
-                        }
-                        if (showMockSelector) {
-                            MockScenarioSelector(
-                                onDismiss = { showMockSelector = false },
-                            )
-                        }
-                    }
+                    MockFloatingActionButton()
                 }
 
                 AppEventDialogs(
@@ -91,5 +77,24 @@ class MainActivity : ComponentActivity() {
 
     private fun handleForceUpdate(storeUrl: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl)))
+    }
+
+    @Composable
+    private fun BoxScope.MockFloatingActionButton() {
+        if (!BuildConfig.IS_MOCK) return
+        FloatingActionButton(
+            onClick = { showMockSelector = true },
+            modifier =
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 16.dp, bottom = 96.dp),
+        ) {
+            Text("Mock")
+        }
+        if (showMockSelector) {
+            MockScenarioSelector(
+                onDismiss = { showMockSelector = false },
+            )
+        }
     }
 }
