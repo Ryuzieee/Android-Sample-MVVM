@@ -6,6 +6,8 @@ object Strings {
 
     object Common {
         const val RETRY = "リトライ"
+        const val CLOSE = "閉じる"
+        const val ERROR_TITLE = "エラー"
     }
 
     // ── エラー ────────────────────────────────────────────
