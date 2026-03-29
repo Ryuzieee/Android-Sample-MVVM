@@ -1,5 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.favorites
 
+import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetFavoritesUseCase
@@ -7,15 +8,12 @@ import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class FavoritesViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -35,11 +33,12 @@ class FavoritesViewModelTest {
             coEvery { getFavoritesUseCase() } returns Result.success(favorites)
 
             val viewModel = createViewModel()
-            advanceUntilIdle()
 
-            val state = viewModel.uiState.value.content
-            assertTrue(state is UiState.Success)
-            assertEquals(2, (state as UiState.Success).data.size)
+            viewModel.uiState.test {
+                val state = awaitItem().content
+                assertTrue(state is UiState.Success)
+                assertEquals(2, (state as UiState.Success).data.size)
+            }
         }
 
     @Test
@@ -48,9 +47,10 @@ class FavoritesViewModelTest {
             coEvery { getFavoritesUseCase() } returns Result.failure(AppException.Unknown(Exception("db error")))
 
             val viewModel = createViewModel()
-            advanceUntilIdle()
 
-            assertTrue(viewModel.uiState.value.content is UiState.Error)
+            viewModel.uiState.test {
+                assertTrue(awaitItem().content is UiState.Error)
+            }
         }
 
     @Test
@@ -59,10 +59,11 @@ class FavoritesViewModelTest {
             coEvery { getFavoritesUseCase() } returns Result.success(emptyList())
 
             val viewModel = createViewModel()
-            advanceUntilIdle()
 
-            val state = viewModel.uiState.value.content
-            assertTrue(state is UiState.Success)
-            assertEquals(0, (state as UiState.Success).data.size)
+            viewModel.uiState.test {
+                val state = awaitItem().content
+                assertTrue(state is UiState.Success)
+                assertEquals(0, (state as UiState.Success).data.size)
+            }
         }
 }

@@ -1,6 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
@@ -57,11 +58,13 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            val state = viewModel.uiState.value
-            assertTrue(state.content is UiState.Success)
-            val data = (state.content as UiState.Success).data
-            assertEquals(fakePokemonDetail.id, data.detail.id)
-            assertEquals(fakePokemonDetail.name, data.detail.name)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state.content is UiState.Success)
+                val data = (state.content as UiState.Success).data
+                assertEquals(fakePokemonDetail.id, data.detail.id)
+                assertEquals(fakePokemonDetail.name, data.detail.name)
+            }
         }
 
     @Test
@@ -72,9 +75,11 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            val state = viewModel.uiState.value
-            assertTrue(state.content is UiState.Error)
-            assertEquals("Not found", (state.content as UiState.Error).message)
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state.content is UiState.Error)
+                assertEquals("Not found", (state.content as UiState.Error).message)
+            }
         }
 
     @Test
@@ -88,9 +93,11 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("charizard")
 
-            val state = viewModel.uiState.value.content as UiState.Success
-            assertEquals("charizard", state.data.detail.name)
-            assertEquals(6, state.data.detail.id)
+            viewModel.uiState.test {
+                val state = (awaitItem().content as UiState.Success).data
+                assertEquals("charizard", state.detail.name)
+                assertEquals(6, state.detail.id)
+            }
         }
 
     @Test
@@ -101,11 +108,13 @@ class PokemonDetailViewModelTest {
 
             val viewModel = createViewModel("bulbasaur")
 
-            assertTrue(viewModel.uiState.value.content is UiState.Error)
+            viewModel.uiState.test {
+                assertTrue(awaitItem().content is UiState.Error)
 
-            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
-            viewModel.retry()
+                coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
+                viewModel.retry()
 
-            assertTrue(viewModel.uiState.value.content is UiState.Success)
+                assertTrue(expectMostRecentItem().content is UiState.Success)
+            }
         }
 }

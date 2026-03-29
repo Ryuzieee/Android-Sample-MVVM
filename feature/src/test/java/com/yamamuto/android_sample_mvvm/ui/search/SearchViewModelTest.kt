@@ -1,5 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.search
 
+import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.usecase.SearchPokemonUseCase
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
@@ -8,7 +9,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -25,21 +25,28 @@ class SearchViewModelTest {
     private fun createViewModel() = SearchViewModel(searchPokemonUseCase)
 
     @Test
-    fun `初期状態はクエリが空でIdle状態になる`() {
-        val viewModel = createViewModel()
+    fun `初期状態はクエリが空でIdle状態になる`() =
+        runTest {
+            val viewModel = createViewModel()
 
-        assertEquals("", viewModel.uiState.value.query)
-        assertEquals(UiState.Idle, viewModel.uiState.value.content)
-    }
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertEquals("", state.query)
+                assertEquals(UiState.Idle, state.content)
+            }
+        }
 
     @Test
-    fun `クエリ変更時にクエリが更新される`() {
-        val viewModel = createViewModel()
+    fun `クエリ変更時にクエリが更新される`() =
+        runTest {
+            val viewModel = createViewModel()
 
-        viewModel.onQueryChange("pika")
-
-        assertEquals("pika", viewModel.uiState.value.query)
-    }
+            viewModel.uiState.test {
+                awaitItem() // Initial
+                viewModel.onQueryChange("pika")
+                assertEquals("pika", awaitItem().query)
+            }
+        }
 
     @Test
     fun `デバウンス後に検索成功でSuccess状態になる`() =
@@ -47,13 +54,16 @@ class SearchViewModelTest {
             coEvery { searchPokemonUseCase("pikachu") } returns Result.success(listOf("pikachu"))
             val viewModel = createViewModel()
 
-            viewModel.onQueryChange("pikachu")
-            advanceTimeBy(600)
-            advanceUntilIdle()
+            viewModel.uiState.test {
+                awaitItem() // Initial idle
+                viewModel.onQueryChange("pikachu")
+                awaitItem() // Query updated
 
-            val state = viewModel.uiState.value
-            assertTrue(state.content is UiState.Success)
-            assertEquals(listOf("pikachu"), (state.content as UiState.Success).data)
+                advanceTimeBy(600)
+                val state = expectMostRecentItem()
+                assertTrue(state.content is UiState.Success)
+                assertEquals(listOf("pikachu"), (state.content as UiState.Success).data)
+            }
         }
 
     @Test
@@ -62,15 +72,17 @@ class SearchViewModelTest {
             coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
             val viewModel = createViewModel()
 
-            viewModel.onQueryChange("pika")
-            advanceTimeBy(600)
-            advanceUntilIdle()
+            viewModel.uiState.test {
+                awaitItem() // Initial
+                viewModel.onQueryChange("pika")
+                awaitItem() // Query updated
+                advanceTimeBy(600)
+                expectMostRecentItem() // Success after search
 
-            viewModel.onQueryChange("")
-            advanceTimeBy(600)
-            advanceUntilIdle()
-
-            assertEquals(UiState.Idle, viewModel.uiState.value.content)
+                viewModel.onQueryChange("")
+                advanceTimeBy(600)
+                assertEquals(UiState.Idle, expectMostRecentItem().content)
+            }
         }
 
     @Test
@@ -79,11 +91,13 @@ class SearchViewModelTest {
             coEvery { searchPokemonUseCase("xyz") } returns Result.failure(AppException.NotFound("xyz"))
             val viewModel = createViewModel()
 
-            viewModel.onQueryChange("xyz")
-            advanceTimeBy(600)
-            advanceUntilIdle()
-
-            assertTrue(viewModel.uiState.value.content is UiState.Error)
+            viewModel.uiState.test {
+                awaitItem() // Initial
+                viewModel.onQueryChange("xyz")
+                awaitItem() // Query updated
+                advanceTimeBy(600)
+                assertTrue(expectMostRecentItem().content is UiState.Error)
+            }
         }
 
     @Test
@@ -92,16 +106,18 @@ class SearchViewModelTest {
             coEvery { searchPokemonUseCase("pika") } returns Result.failure(AppException.Network(Exception()))
             val viewModel = createViewModel()
 
-            viewModel.onQueryChange("pika")
-            advanceTimeBy(600)
-            advanceUntilIdle()
-            assertTrue(viewModel.uiState.value.content is UiState.Error)
+            viewModel.uiState.test {
+                awaitItem() // Initial
+                viewModel.onQueryChange("pika")
+                awaitItem() // Query updated
+                advanceTimeBy(600)
+                assertTrue(expectMostRecentItem().content is UiState.Error)
 
-            coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
-            viewModel.retrySearch()
-            advanceUntilIdle()
+                coEvery { searchPokemonUseCase("pika") } returns Result.success(listOf("pikachu"))
+                viewModel.retrySearch()
 
-            assertTrue(viewModel.uiState.value.content is UiState.Success)
+                assertTrue(expectMostRecentItem().content is UiState.Success)
+            }
         }
 
     @Test
@@ -109,9 +125,10 @@ class SearchViewModelTest {
         runTest {
             val viewModel = createViewModel()
 
-            viewModel.retrySearch()
-            advanceUntilIdle()
-
-            assertEquals(UiState.Idle, viewModel.uiState.value.content)
+            viewModel.uiState.test {
+                awaitItem() // Initial idle
+                viewModel.retrySearch()
+                expectNoEvents()
+            }
         }
 }
