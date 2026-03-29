@@ -1,7 +1,7 @@
 package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.local.dao.FavoriteDao
-import com.yamamuto.android_sample_mvvm.data.mapper.toFavoriteEntity
+import com.yamamuto.android_sample_mvvm.data.mapper.toEntity
 import com.yamamuto.android_sample_mvvm.data.mapper.toModel
 import com.yamamuto.android_sample_mvvm.data.util.handleLocal
 import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
@@ -28,7 +28,7 @@ class FavoriteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addFavorite(detail: PokemonDetailModel) {
-        dao.insertFavorite(detail.toFavoriteEntity())
+        dao.insertFavorite(detail.toEntity())
     }
 
     override suspend fun removeFavorite(id: Int) {

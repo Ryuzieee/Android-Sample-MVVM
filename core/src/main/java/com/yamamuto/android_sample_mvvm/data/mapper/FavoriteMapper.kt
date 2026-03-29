@@ -10,6 +10,6 @@ internal fun FavoriteEntity.toModel(): FavoriteModel {
 }
 
 /** Model → Entity */
-internal fun PokemonDetailModel.toFavoriteEntity(): FavoriteEntity {
+internal fun PokemonDetailModel.toEntity(): FavoriteEntity {
     return FavoriteEntity(id = id, name = name, imageUrl = imageUrl)
 }

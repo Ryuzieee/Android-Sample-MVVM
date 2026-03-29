@@ -42,17 +42,3 @@ internal fun PokemonDetailEntity.toModel(): PokemonDetailModel {
     )
 }
 
-/** Domain → Entity */
-internal fun PokemonDetailModel.toEntity(): PokemonDetailEntity {
-    return PokemonDetailEntity(
-        id = id,
-        name = name,
-        height = height,
-        weight = weight,
-        baseExperience = baseExperience,
-        types = types,
-        abilities = abilities.map { AbilityEntry(name = it.name, japaneseName = it.japaneseName, isHidden = it.isHidden) },
-        imageUrl = imageUrl,
-        stats = stats.map { StatEntry(name = it.name, value = it.value) },
-    )
-}
