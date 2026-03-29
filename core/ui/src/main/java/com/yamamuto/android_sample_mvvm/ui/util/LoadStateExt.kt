@@ -20,7 +20,7 @@ fun <T> LoadState.asUiState(onNotLoading: () -> T): UiState<T> {
     return when (this) {
         is LoadState.Loading -> UiState.Loading
         is LoadState.Error -> UiState.Error(
-            message = error.message ?: ErrorMessages.UNKNOWN_ERROR_EN,
+            message = error.message ?: ErrorMessages.UNKNOWN_ERROR,
             isNetworkError = error is AppException.Network,
         )
         is LoadState.NotLoading -> UiState.Success(onNotLoading())

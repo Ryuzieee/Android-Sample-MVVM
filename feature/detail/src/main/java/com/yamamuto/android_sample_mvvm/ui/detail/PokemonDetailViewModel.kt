@@ -68,10 +68,8 @@ class PokemonDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(contentState = UiState.Loading, isRefreshing = forceRefresh) }
 
-            val result = getPokemonFullDetailUseCase(pokemonName, forceRefresh = forceRefresh)
-            when {
-                result.isSuccess -> {
-                    val fullDetail = result.getOrThrow()
+            getPokemonFullDetailUseCase(pokemonName, forceRefresh = forceRefresh)
+                .onSuccess { fullDetail ->
                     _uiState.update {
                         it.copy(
                             contentState = UiState.Success(fullDetail),
@@ -80,9 +78,8 @@ class PokemonDetailViewModel @Inject constructor(
                     }
                     observeFavorite(fullDetail.detail.id)
                 }
-
-                result.isFailure -> {
-                    val message = result.exceptionOrNull()?.message ?: ErrorMessages.UNKNOWN_ERROR
+                .onFailure { error ->
+                    val message = error.message ?: ErrorMessages.UNKNOWN_ERROR
                     _uiState.update {
                         it.copy(
                             contentState = UiState.Error(message = message),
@@ -91,7 +88,6 @@ class PokemonDetailViewModel @Inject constructor(
                     }
                     _events.send(UiEvent.ShowSnackbar(message))
                 }
-            }
         }
     }
 
