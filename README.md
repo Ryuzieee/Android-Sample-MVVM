@@ -1,6 +1,6 @@
 # Android-Sample-MVVM
 
-PokeAPI を使ったポケモン図鑑アプリ。マルチモジュール構成・Clean Architecture・最新の Jetpack ライブラリを組み合わせた Android サンプルプロジェクト。
+PokeAPI を使ったポケモン図鑑アプリ。チーム開発のベースコードとして、Clean Architecture・Jetpack Compose・Hilt を組み合わせた Android サンプルプロジェクト。
 
 ---
 
@@ -8,7 +8,7 @@ PokeAPI を使ったポケモン図鑑アプリ。マルチモジュール構成
 
 | 一覧画面 | 詳細画面 | 検索画面 | お気に入り画面 |
 |---------|---------|---------|------------|
-| ポケモンを2列グリッドで無限スクロール表示 | タイプ・ステータス・高さ・重さをスクロール表示。♡ アイコンでお気に入りトグル | ポケモン名でリアルタイム検索（500ms デバウンス） | お気に入り登録ポケモンを2列グリッドで表示 |
+| ポケモンを2列グリッドで無限スクロール表示 | タイプ・ステータス・進化チェーン・詳細情報をスクロール表示。ハートアイコンでお気に入りトグル | ポケモン名でリアルタイム検索（500ms デバウンス） | お気に入り登録ポケモンを2列グリッドで表示 |
 
 ---
 
@@ -39,49 +39,50 @@ PokeAPI を使ったポケモン図鑑アプリ。マルチモジュール構成
 
 ## アーキテクチャ
 
-Clean Architecture + MVVM をベースにマルチモジュール構成を採用。
+Clean Architecture + MVVM。3モジュール構成でシンプルに保ちつつ、パッケージで責務を分離。
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                        app                            │  ナビゲーション・DI エントリポイント
-├────────────┬────────────┬─────────────┬──────────────┤
-│ feature:   │ feature:   │ feature:    │ feature:     │  画面単位の機能モジュール
-│   list     │   detail   │   search    │   favorites  │
-├────────────┴────────────┴─────────────┴──────────────┤
-│  core:ui                                              │  共通 Compose コンポーネント・テーマ
-├──────────────────────────────────────────────────────┤
-│  core:data                                            │  Repository 実装・API・Room
-├──────────────────────────────────────────────────────┤
-│  core:domain                                          │  ビジネスロジック（Android 非依存）
-└──────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│                     app                       │  ナビゲーション・DI エントリポイント
+├──────────────────────────────────────────────┤
+│                   feature                     │  画面単位の UI・ViewModel
+│   list / detail / search / favorites          │  （パッケージで分離）
+├──────────────────────────────────────────────┤
+│                    core                       │  ドメイン・データ・共通 UI・テスト補助
+│   domain / data / ui / testing                │  （パッケージで分離）
+└──────────────────────────────────────────────┘
 ```
 
-### レイヤー詳細
+### パッケージ構成
 
-#### `core:domain`（Android 非依存の純粋 Kotlin）
-- **Model**: `Pokemon`, `PokemonDetail`, `Favorite`, `UiState`（Idle / Loading / Success / Error）, `AppException`
+#### `core` — `domain`（ビジネスロジック）
+- **Model**: `PokemonDetailModel`, `PokemonSpeciesModel`, `EvolutionStageModel`, `FavoriteModel`, `PokemonSummaryModel`, `AppEvent`, `AppException`
 - **Repository Interface**: `PokemonRepository`, `FavoriteRepository`
-- **UseCase**: `GetPokemonListUseCase`, `GetPokemonDetailUseCase`, `SearchPokemonUseCase`, `GetFavoritesUseCase`, `GetIsFavoriteUseCase`, `ToggleFavoriteUseCase`
+- **UseCase**: `GetPokemonDetailUseCase`, `GetPokemonFullDetailUseCase`, `GetPokemonSpeciesUseCase`, `GetEvolutionChainUseCase`, `GetAbilityJapaneseNameUseCase`, `SearchPokemonUseCase`, `ObserveFavoritesUseCase`, `ObserveIsFavoriteUseCase`, `ToggleFavoriteUseCase`
 
-#### `core:data`
+> ViewModel → UseCase → Repository の一方向データフローを統一。パススルーであっても必ず UseCase を経由する。
+
+#### `core` — `data`（データ層）
 - **API**: Retrofit + kotlinx.serialization で PokeAPI を呼び出し
-- **Paging**: `PokemonPagingSource`（offset/limit ベース、pageSize=20）
-- **Cache**: Room で詳細データを 5 分間キャッシュ（Local-First パターン）
-- **DI**: `DataModule`（Hilt）
+- **Paging**: `OffsetPagingSource`（offset/limit ベース、pageSize=20）
+- **Cache**: Room で詳細データをキャッシュ（debug: 1分 / release: 5分）。TypeConverters に kotlinx.serialization を使用
+- **DI**: `DataModule`（Hilt `@Binds` + `@Provides`）
 
-#### `core:ui`
-- **共通コンポーネント**: `AppScaffold`, `AppText`, `EmptyContent`, `ErrorContent`, `LoadingIndicator`, `PokemonCard`, `PokemonImage`, `PokemonIdText`, `PokemonNameText`, `SearchTextField`, `UiStateContent`
-- **UiEvent / ObserveAsEvents**: 一回限りイベント（Snackbar 等）のライフサイクル安全な配信
-- Material3 テーマ定義 (Color, Type, Theme)
+#### `core` — `ui`（共通 UI）
+- **コンポーネント**: `AppScaffold`, `AppText`, `AppBottomSheet`, `EmptyContent`, `ErrorContent`, `LoadingIndicator`, `PokemonCard`, `PokemonImage`, `SearchTextField`, `UiStateContent`, `PagingContent`
+- **文字列定数**: `Strings.kt` にアプリ全体の UI 文字列を画面ごとにグルーピング
+- **ユーティリティ**: `UiState`（Idle / Loading / Success / Error）、`UiEvent` + `ObserveAsEvents`、`CollectPaging`（ViewModel 拡張関数）
+- **テーマ**: Material3 テーマ定義（Color, Type, Theme）
 
-#### `feature:list` / `feature:detail` / `feature:search` / `feature:favorites`
-- `ViewModel` → `UseCase` → `Repository` の一方向データフロー
+#### `core` — `testing`（テスト補助）
+- `MainDispatcherRule`、`TestFixtures`
+
+#### `feature`（各画面）
 - 各 ViewModel は `ViewModel()` を直接継承し `MutableStateFlow` で状態管理（基底クラスなし）
 - UI 状態は `UiStateContent` で Loading / Error / Success / Idle を統一描画
-- 一度きりのイベント（Snackbar 等）は `Channel` + `ObserveAsEvents` で管理（detail のみ）
-- `feature:search`: クエリの `debounce(500ms)` + `flatMapLatest` でリアルタイム検索。未入力は `UiState.Idle`
-- `feature:favorites`: Room の Flow を `UiState.Success` にラップして公開
-- `feature:detail`: `isFavorite` を `flatMapLatest` で詳細ロード後に DB 監視開始
+- `search`: クエリの `debounce(500ms)` + `flatMapLatest` でリアルタイム検索
+- `favorites`: Room の Flow を `UiState.Success` にラップして公開
+- `detail`: 進化チェーン表示、BottomSheet による詳細情報、`isFavorite` の DB リアルタイム監視
 
 ### データフロー
 
@@ -101,20 +102,24 @@ UI (Compose)
 
 ```
 Android-Sample-MVVM/
-├── app/                        # アプリエントリポイント
-│   ├── di/AppModule.kt         # ネットワーク層 DI
-│   └── ui/navigation/          # ナビゲーショングラフ
+├── app/                           # アプリエントリポイント
+│   ├── di/                        # ネットワーク層 DI（Interceptor 等）
+│   ├── ui/navigation/             # ナビゲーショングラフ
+│   └── ui/component/              # App レベルの Composable（AppEventDialogs）
 ├── core/
-│   ├── domain/                 # ドメイン層（Android 非依存）
-│   ├── data/                   # データ層
-│   └── ui/                     # 共通 UI
+│   └── src/main/java/
+│       ├── domain/                # ドメイン層（model / repository / usecase）
+│       ├── data/                  # データ層（api / local / repository / paging / di）
+│       ├── ui/                    # 共通 UI（component / theme / util / Strings.kt）
+│       └── testing/               # テスト補助（MainDispatcherRule / TestFixtures）
 ├── feature/
-│   ├── list/                   # ポケモン一覧画面
-│   ├── detail/                 # ポケモン詳細画面（お気に入りトグル含む）
-│   ├── search/                 # ポケモン検索画面
-│   └── favorites/              # お気に入り一覧画面
+│   └── src/main/java/
+│       ├── list/                  # ポケモン一覧画面
+│       ├── detail/                # ポケモン詳細画面
+│       ├── search/                # ポケモン検索画面
+│       └── favorites/             # お気に入り一覧画面
 └── build-logic/
-    └── convention/             # Convention Plugins
+    └── convention/                # Convention Plugins
 ```
 
 ### Convention Plugins（`build-logic`）
@@ -124,9 +129,9 @@ Android-Sample-MVVM/
 | プラグイン ID | 適用モジュール | 内容 |
 |-------------|-------------|------|
 | `convention.android.application` | `app` | compileSdk=36, minSdk=29, targetSdk=36, JVM 11 |
-| `convention.android.library` | `core:*`, `feature:*` | ライブラリ向け共通 Android 設定 |
-| `convention.android.compose` | Compose 使用モジュール | `buildFeatures.compose=true`、Stability 設定 |
-| `convention.kotlin.library` | `core:domain` | 純粋 Kotlin（Android 非依存）モジュール向け |
+| `convention.android.library` | `core`, `feature` | ライブラリ向け共通 Android 設定 |
+| `convention.android.compose` | `core`, `feature` | `buildFeatures.compose=true`、Stability 設定 |
+| `convention.feature` | `feature` | Hilt / KSP / ktlint / 共通依存を一括適用。namespace 自動導出 |
 
 ---
 
@@ -159,7 +164,8 @@ navController.navigate(PokemonDetailRoute(pokemonName))
 ```
 getPokemonDetail(name) の呼び出し時:
   1. Room から該当データを取得
-  2. キャッシュが存在 かつ 取得から 5 分以内 → キャッシュを返す
+  2. キャッシュが存在 かつ 有効期間内 → キャッシュを返す
+     （debug: 1分 / release: 5分）
   3. それ以外 → API から取得 → Room に保存 → 返す
 ```
 
@@ -170,9 +176,9 @@ getPokemonDetail(name) の呼び出し時:
 ### Compose Stability（`compose-stability.conf`）
 
 ```
-com.yamamuto.android_sample_mvvm.domain.model.Pokemon
-com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail
-com.yamamuto.android_sample_mvvm.domain.model.PokemonDetail.Stat
+com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
+com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
+com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel.Stat
 ```
 
 ドメインモデルを Stable としてマークし、不要な recomposition を防止。
@@ -188,6 +194,7 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 | Flavor | ApplicationId | 用途 |
 |--------|-------------|------|
 | `dev` | `com.yamamuto.android_sample_mvvm.dev` | 開発・検証 |
+| `mock` | `com.yamamuto.android_sample_mvvm.mock` | モックデータで動作確認 |
 | `prod` | `com.yamamuto.android_sample_mvvm` | 本番リリース |
 
 ---
@@ -204,18 +211,15 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 |------------|------|--------|
 | `PokemonListViewModelTest` | Paging データの出力検証 | MockK + Paging Testing |
 | `PokemonDetailViewModelTest` | StateFlow の状態遷移・お気に入りトグル検証 | Turbine + MockK |
-| `GetPokemonListUseCaseTest` | PagingData の出力検証 | MockK + Paging Testing |
-| `GetPokemonDetailUseCaseTest` | 詳細取得のロジック検証 | MockK |
-| `PokemonRepositoryImplTest` | DTO → Domain マッピング検証 | MockK |
 
 ### スクリーンショットテスト（Roborazzi）
 
 ```bash
 # スクリーンショット記録（初回・更新時）
-./gradlew :feature:detail:recordRoborazziDebug
+./gradlew :feature:recordRoborazziDebug
 
 # スクリーンショット比較（CI 等）
-./gradlew :feature:detail:verifyRoborazziDebug
+./gradlew :feature:verifyRoborazziDebug
 ```
 
 対象：詳細画面の Loading / Error 状態
@@ -238,6 +242,9 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 
 # 開発用 APK
 ./gradlew assembleDevDebug
+
+# モック APK
+./gradlew assembleMockDebug
 
 # 本番 APK
 ./gradlew assembleProdRelease
@@ -265,3 +272,6 @@ Release ビルドでコード圧縮・リソース圧縮を有効化。
 |-------------|------|
 | `GET /pokemon?limit={n}&offset={m}` | ポケモン一覧取得（ページング） |
 | `GET /pokemon/{name}` | ポケモン詳細取得 |
+| `GET /pokemon-species/{name}` | 種族情報（日本語名・分類・世代等） |
+| `GET /evolution-chain/{id}` | 進化チェーン取得 |
+| `GET /ability/{id}` | とくせい（日本語名）取得 |
