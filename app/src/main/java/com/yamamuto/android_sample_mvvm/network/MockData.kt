@@ -504,28 +504,28 @@ object MockData {
                 """{"name":"$eg","url":"https://pokeapi.co/api/v2/egg-group/$eg/"}"""
             }
         return """
-                                {
-                                    "names":[
-                                        {"name":"${p.jaName}","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"}},
-                                        {"name":"${p.name.replaceFirstChar {
+                                            {
+                                                "names":[
+                                                    {"name":"${p.jaName}","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"}},
+                                                    {"name":"${p.name.replaceFirstChar {
             it.uppercase()
         }}","language":{"name":"en","url":"https://pokeapi.co/api/v2/language/9/"}}
-                                    ],
-                                    "flavor_text_entries":[
-                                        {"flavor_text":"${p.flavorText}","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"},"version":{"name":"sword","url":"https://pokeapi.co/api/v2/version/33/"}},
-                                        {"flavor_text":"A mock English flavor text for ${p.name}.","language":{"name":"en","url":"https://pokeapi.co/api/v2/language/9/"},"version":{"name":"sword","url":"https://pokeapi.co/api/v2/version/33/"}}
-                                    ],
-                                    "evolution_chain":{"url":"https://pokeapi.co/api/v2/evolution-chain/1/"},
-                                    "genera":[
-                                        {"genus":"${p.genus}","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"}},
-                                        {"genus":"Seed Pokémon","language":{"name":"en","url":"https://pokeapi.co/api/v2/language/9/"}}
-                                    ],
-                                    "egg_groups":[$eggGroupsJson],
-                                    "gender_rate":${p.genderRate},
-                                    "capture_rate":${p.captureRate},
-                                    "habitat":$habitatJson,
-                                    "generation":{"name":"${p.generation}","url":"https://pokeapi.co/api/v2/generation/${p.generation}/"}
-                                }
+                                                ],
+                                                "flavor_text_entries":[
+                                                    {"flavor_text":"${p.flavorText}","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"},"version":{"name":"sword","url":"https://pokeapi.co/api/v2/version/33/"}},
+                                                    {"flavor_text":"A mock English flavor text for ${p.name}.","language":{"name":"en","url":"https://pokeapi.co/api/v2/language/9/"},"version":{"name":"sword","url":"https://pokeapi.co/api/v2/version/33/"}}
+                                                ],
+                                                "evolution_chain":{"url":"https://pokeapi.co/api/v2/evolution-chain/1/"},
+                                                "genera":[
+                                                    {"genus":"${p.genus}","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"}},
+                                                    {"genus":"Seed Pokémon","language":{"name":"en","url":"https://pokeapi.co/api/v2/language/9/"}}
+                                                ],
+                                                "egg_groups":[$eggGroupsJson],
+                                                "gender_rate":${p.genderRate},
+                                                "capture_rate":${p.captureRate},
+                                                "habitat":$habitatJson,
+                                                "generation":{"name":"${p.generation}","url":"https://pokeapi.co/api/v2/generation/${p.generation}/"}
+                                            }
             """.trimIndent()
     }
 
@@ -553,15 +553,15 @@ object MockData {
     fun ability(name: String): String {
         val jaName = abilityJaNames[name] ?: name
         return """
-                                {
-                                    "names":[
-                                        {"name":"$jaName","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"}},
-                                        {"name":"$jaName","language":{"name":"ja","url":"https://pokeapi.co/api/v2/language/11/"}},
-                                        {"name":"${name.replaceFirstChar {
+                                            {
+                                                "names":[
+                                                    {"name":"$jaName","language":{"name":"ja-Hrkt","url":"https://pokeapi.co/api/v2/language/1/"}},
+                                                    {"name":"$jaName","language":{"name":"ja","url":"https://pokeapi.co/api/v2/language/11/"}},
+                                                    {"name":"${name.replaceFirstChar {
             it.uppercase()
         }}","language":{"name":"en","url":"https://pokeapi.co/api/v2/language/9/"}}
-                                    ]
-                                }
+                                                ]
+                                            }
             """.trimIndent()
     }
 }
