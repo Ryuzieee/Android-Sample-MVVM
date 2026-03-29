@@ -17,77 +17,86 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 
-const val ANIM_DURATION = 350
+private const val ANIM_DURATION = 350
+
+/** モーダルルートの登録・判定を管理するオブジェクト。NavGraph 構築時に登録される。 */
+@PublishedApi internal object ModalRoutes {
+    private val names = mutableSetOf<String?>()
+
+    fun register(name: String?) {
+        names += name
+    }
+
+    fun isModal(destination: NavDestination): Boolean = destination.route in names
+}
+
+// ── Push トランジション ──────────────────────────
 
 @PublishedApi
-internal val modalRouteNames = mutableSetOf<String?>()
+internal fun pushEnterTransition(): EnterTransition =
+    slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
 
-@PublishedApi
-internal fun NavDestination.isModal(): Boolean = route in modalRouteNames
+@PublishedApi internal fun pushExitTransition(target: NavDestination): ExitTransition =
+    if (ModalRoutes.isModal(target)) {
+        ExitTransition.None
+    } else {
+        slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+    }
 
-/**
- * 標準的な横スライドで遷移する composable。
- *
- * モーダル画面へ遷移する際は自身のアニメーションを抑制する。
- */
+@PublishedApi internal fun pushPopEnterTransition(initial: NavDestination): EnterTransition =
+    if (ModalRoutes.isModal(initial)) {
+        EnterTransition.None
+    } else {
+        slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+    }
+
+@PublishedApi internal fun pushPopExitTransition(): ExitTransition =
+    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
+
+// ── Modal トランジション ─────────────────────────
+
+@PublishedApi internal fun modalEnterTransition(): EnterTransition =
+    slideInVertically(initialOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
+
+@PublishedApi internal fun modalExitTransition(): ExitTransition =
+    slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+
+@PublishedApi internal fun modalPopEnterTransition(): EnterTransition =
+    slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+
+@PublishedApi internal fun modalPopExitTransition(): ExitTransition =
+    slideOutVertically(targetOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
+
+// ── NavGraphBuilder 拡張 ─────────────────────────
+
+/** 標準的な横スライドで遷移する composable。モーダル画面へ遷移する際は自身のアニメーションを抑制する。 */
 inline fun <reified T : Any> NavGraphBuilder.pushComposable(
     noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
     composable<T>(
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
-        },
-        exitTransition = {
-            if (targetState.destination.isModal()) {
-                ExitTransition.None
-            } else {
-                slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
-            }
-        },
-        popEnterTransition = {
-            if (initialState.destination.isModal()) {
-                EnterTransition.None
-            } else {
-                slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
-            }
-        },
-        popExitTransition = {
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
-        },
+        enterTransition = { pushEnterTransition() },
+        exitTransition = { pushExitTransition(targetState.destination) },
+        popEnterTransition = { pushPopEnterTransition(initialState.destination) },
+        popExitTransition = { pushPopExitTransition() },
         content = content,
     )
 }
 
-/**
- * モーダル画面用の composable。
- *
- * - open: 下からスライドイン
- * - → 子画面: 横スライド (push)
- * - ← 子画面: 横スライド (pop)
- * - dismiss: 下へスライドアウト
- */
+/** モーダル画面用の composable。下からスライドインし、下へスライドアウトする。 */
 inline fun <reified T : Any> NavGraphBuilder.modalComposable(
     noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
-    modalRouteNames += T::class.qualifiedName
+    ModalRoutes.register(T::class.qualifiedName)
     composable<T>(
-        enterTransition = {
-            slideInVertically(initialOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
-        },
-        exitTransition = {
-            slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
-        },
-        popEnterTransition = {
-            slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
-        },
-        popExitTransition = {
-            slideOutVertically(targetOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
-        },
+        enterTransition = { modalEnterTransition() },
+        exitTransition = { modalExitTransition() },
+        popEnterTransition = { modalPopEnterTransition() },
+        popExitTransition = { modalPopExitTransition() },
         content = content,
     )
 }
 
-// ── 簡易ヘルパー: backStackEntry を隠蔽 ──────────────────────────
+// ── 簡易ヘルパー ─────────────────────────────────
 
 /** 引数なしルート用。Screen composable をそのまま渡せる。 */
 inline fun <reified T : Any> NavGraphBuilder.pushScreen(noinline content: @Composable () -> Unit) {
@@ -100,6 +109,8 @@ inline fun <reified T : Any> NavGraphBuilder.modalScreen(noinline content: @Comp
 }
 
 /** 引数ありルート用。型安全な Route を直接受け取れる。 */
-inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(noinline content: @Composable (route: T) -> Unit) {
+inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(
+    noinline content: @Composable (route: T) -> Unit,
+) {
     pushComposable<T> { backStackEntry -> content(backStackEntry.toRoute<T>()) }
 }
