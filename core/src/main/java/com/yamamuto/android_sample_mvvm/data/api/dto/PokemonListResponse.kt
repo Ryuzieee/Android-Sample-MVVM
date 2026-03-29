@@ -11,13 +11,12 @@ import kotlinx.serialization.Serializable
 @InternalSerializationApi
 @Serializable
 data class PokemonListResponse(
-    val results: List<PokemonDto>,
-)
-
-/** ポケモン一覧の各エントリDTO。 */
-@InternalSerializationApi
-@Serializable
-data class PokemonDto(
-    val name: String,
-    val url: String,
-)
+    val results: List<Item>,
+) {
+    /** ポケモン一覧の各エントリDTO。 */
+    @Serializable
+    data class Item(
+        val name: String,
+        val url: String,
+    )
+}

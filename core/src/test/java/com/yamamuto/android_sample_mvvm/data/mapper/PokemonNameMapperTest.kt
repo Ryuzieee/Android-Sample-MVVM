@@ -2,7 +2,6 @@
 
 package com.yamamuto.android_sample_mvvm.data.mapper
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDto
 import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
 import kotlinx.serialization.InternalSerializationApi
@@ -16,8 +15,8 @@ class PokemonNameMapperTest {
             PokemonListResponse(
                 results =
                     listOf(
-                        PokemonDto("bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/"),
-                        PokemonDto("charmander", "https://pokeapi.co/api/v2/pokemon/4/"),
+                        PokemonListResponse.Item("bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/"),
+                        PokemonListResponse.Item("charmander", "https://pokeapi.co/api/v2/pokemon/4/"),
                     ),
             )
 
