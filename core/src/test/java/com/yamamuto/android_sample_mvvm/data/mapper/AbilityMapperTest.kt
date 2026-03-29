@@ -1,0 +1,36 @@
+@file:OptIn(InternalSerializationApi::class)
+
+package com.yamamuto.android_sample_mvvm.data.mapper
+
+import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
+import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
+import kotlinx.serialization.InternalSerializationApi
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class AbilityMapperTest {
+
+    @Test
+    fun `toModel creates language to name map`() {
+        val response = AbilityResponse(
+            names = listOf(
+                AbilityResponse.Name("Overgrow", PokemonSpeciesResponse.NamedResource("en")),
+                AbilityResponse.Name("しんりょく", PokemonSpeciesResponse.NamedResource("ja")),
+                AbilityResponse.Name("おおもり", PokemonSpeciesResponse.NamedResource("ja-Hrkt")),
+            ),
+        )
+
+        val result = response.toModel()
+
+        assertEquals(3, result.size)
+        assertEquals("Overgrow", result["en"])
+        assertEquals("しんりょく", result["ja"])
+    }
+
+    @Test
+    fun `toModel returns empty map for empty names`() {
+        val response = AbilityResponse(names = emptyList())
+        val result = response.toModel()
+        assertEquals(emptyMap<String, String>(), result)
+    }
+}

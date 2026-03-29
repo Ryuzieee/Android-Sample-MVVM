@@ -74,4 +74,8 @@ dependencies {
     // Test utilities (testing/ package — consumed by other modules via testImplementation)
     implementation(libs.junit)
     implementation(libs.kotlinx.coroutines.test)
+
+    // Unit tests
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
 }

@@ -7,7 +7,7 @@ import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
 import kotlinx.serialization.InternalSerializationApi
 
 /** DTO → Entity リスト。 */
-internal fun PokemonListResponse.toEntities(): List<PokemonNameEntity> {
+internal fun PokemonListResponse.toEntity(): List<PokemonNameEntity> {
     return results.map { PokemonNameEntity(name = it.name) }
 }
 

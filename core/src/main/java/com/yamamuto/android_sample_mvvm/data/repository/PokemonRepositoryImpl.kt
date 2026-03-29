@@ -4,7 +4,6 @@ package com.yamamuto.android_sample_mvvm.data.repository
 
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
-import com.yamamuto.android_sample_mvvm.data.mapper.toEntities
 import com.yamamuto.android_sample_mvvm.data.mapper.toEntity
 import com.yamamuto.android_sample_mvvm.data.mapper.toModel
 import com.yamamuto.android_sample_mvvm.data.util.handleRemote
@@ -67,7 +66,7 @@ class PokemonRepositoryImpl @Inject constructor(
         return handleWithCache(
             load = { dao.getAllPokemonNames().takeIf { it.isNotEmpty() } },
             fetch = {
-                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0).toEntities()
+                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0).toEntity()
             },
             toModel = { it.toModel(query) },
             cachedAt = { it.first().cachedAt },
