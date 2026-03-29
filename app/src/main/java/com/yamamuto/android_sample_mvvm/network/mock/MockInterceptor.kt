@@ -1,8 +1,9 @@
-package com.yamamuto.android_sample_mvvm.network
+package com.yamamuto.android_sample_mvvm.network.mock
 
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.IOException
@@ -63,7 +64,7 @@ class MockInterceptor
                 .build()
         }
 
-        private fun okhttp3.Request.newResponse(
+        private fun Request.newResponse(
             code: Int,
             body: String,
         ): Response {

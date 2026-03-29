@@ -23,7 +23,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.yamamuto.android_sample_mvvm.domain.model.AppEvent
 import com.yamamuto.android_sample_mvvm.domain.model.AppEventBus
 import com.yamamuto.android_sample_mvvm.ui.component.AppEventDialogs
-import com.yamamuto.android_sample_mvvm.ui.component.MockScenarioSelector
+import com.yamamuto.android_sample_mvvm.ui.component.mock.MockScenarioSelector
 import com.yamamuto.android_sample_mvvm.ui.navigation.AppNavGraph
 import com.yamamuto.android_sample_mvvm.ui.theme.AndroidSampleMVVMTheme
 import dagger.hilt.android.AndroidEntryPoint

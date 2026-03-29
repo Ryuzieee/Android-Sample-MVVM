@@ -1,10 +1,5 @@
-package com.yamamuto.android_sample_mvvm.network
+package com.yamamuto.android_sample_mvvm.network.mock
 
-import com.yamamuto.android_sample_mvvm.network.mock.buildMockAbilityResponse
-import com.yamamuto.android_sample_mvvm.network.mock.buildMockDetailResponse
-import com.yamamuto.android_sample_mvvm.network.mock.buildMockEvolutionResponse
-import com.yamamuto.android_sample_mvvm.network.mock.buildMockListResponse
-import com.yamamuto.android_sample_mvvm.network.mock.buildMockSpeciesResponse
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton

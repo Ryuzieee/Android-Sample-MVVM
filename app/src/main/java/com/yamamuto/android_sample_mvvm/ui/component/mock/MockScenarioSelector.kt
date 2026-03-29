@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.ui.component
+package com.yamamuto.android_sample_mvvm.ui.component.mock
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yamamuto.android_sample_mvvm.network.MockScenario
-import com.yamamuto.android_sample_mvvm.network.MockScenarioHolder
+import com.yamamuto.android_sample_mvvm.network.mock.MockScenario
+import com.yamamuto.android_sample_mvvm.network.mock.MockScenarioHolder
 
 /** モックシナリオを実行中に切り替えるボトムシート。選択したら即閉じる。 */
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.network
+package com.yamamuto.android_sample_mvvm.network.mock
 
 /**
  * モックレスポンスのシナリオ。

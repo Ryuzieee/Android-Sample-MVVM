@@ -4,8 +4,8 @@ import com.yamamuto.android_sample_mvvm.BuildConfig
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
 import com.yamamuto.android_sample_mvvm.network.ApiHeaderInterceptor
 import com.yamamuto.android_sample_mvvm.network.ForceUpdateInterceptor
-import com.yamamuto.android_sample_mvvm.network.MockInterceptor
 import com.yamamuto.android_sample_mvvm.network.SessionInterceptor
+import com.yamamuto.android_sample_mvvm.network.mock.MockInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
