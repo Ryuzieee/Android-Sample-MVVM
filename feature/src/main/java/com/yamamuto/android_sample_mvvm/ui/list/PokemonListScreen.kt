@@ -6,15 +6,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
@@ -33,7 +28,6 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var isRefreshing by remember { mutableStateOf(false) }
 
     AppScaffold(
         title = { Text(Strings.List.SCREEN_TITLE) },
@@ -54,17 +48,9 @@ fun PokemonListScreen(
             pagingData = uiState.pagingData,
             modifier = Modifier.padding(padding),
         ) { pagingItems ->
-            LaunchedEffect(pagingItems.loadState.refresh) {
-                if (pagingItems.loadState.refresh !is LoadState.Loading) {
-                    isRefreshing = false
-                }
-            }
             AppPullRefresh(
-                isRefreshing = isRefreshing,
-                onRefresh = {
-                    isRefreshing = true
-                    pagingItems.refresh()
-                },
+                isRefreshing = uiState.isRefreshing,
+                onRefresh = viewModel::refresh,
             ) {
                 AppLazyVerticalGrid(contentPadding = padding) {
                     items(pagingItems.itemCount) { index ->
