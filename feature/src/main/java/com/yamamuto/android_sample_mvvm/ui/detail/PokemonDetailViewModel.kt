@@ -37,7 +37,7 @@ class PokemonDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PokemonDetailUiState())
     val uiState: StateFlow<PokemonDetailUiState> = _uiState.asStateFlow()
 
-    private val pokemonName: String = checkNotNull(savedStateHandle[KEY_NAME])
+    val pokemonName: String = checkNotNull(savedStateHandle[KEY_NAME])
 
     init {
         load()

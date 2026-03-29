@@ -43,7 +43,6 @@ import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 
 @Composable
 fun PokemonDetailScreen(
-    pokemonName: String,
     onBack: () -> Unit,
     onPokemonClick: (String) -> Unit = {},
     viewModel: PokemonDetailViewModel = hiltViewModel(),
@@ -52,7 +51,7 @@ fun PokemonDetailScreen(
     var showInfo by rememberSaveable { mutableStateOf(false) }
 
     val fullDetail = uiState.content.getOrNull()
-    val displayName = fullDetail?.species?.japaneseName?.ifEmpty { null } ?: pokemonName
+    val displayName = fullDetail?.species?.japaneseName?.ifEmpty { null } ?: viewModel.pokemonName
 
     AppScaffold(
         title = {

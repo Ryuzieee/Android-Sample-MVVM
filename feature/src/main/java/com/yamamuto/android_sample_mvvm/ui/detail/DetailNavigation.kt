@@ -15,9 +15,8 @@ fun NavGraphBuilder.pokemonDetailScreen(
     onBack: () -> Unit,
     onPokemonClick: (String) -> Unit,
 ) {
-    pushScreenWithRoute<PokemonDetailRoute> { route ->
+    pushScreenWithRoute<PokemonDetailRoute> {
         PokemonDetailScreen(
-            pokemonName = route.name,
             onBack = onBack,
             onPokemonClick = onPokemonClick,
         )
