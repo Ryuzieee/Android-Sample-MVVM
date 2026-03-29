@@ -1,7 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.util
 
 import androidx.paging.LoadState
-import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.ui.Strings
 
 /**
@@ -15,14 +14,7 @@ fun <T> LoadState.asUiState(onNotLoading: () -> T): UiState<T> {
         is LoadState.Error ->
             UiState.Error(
                 message = error.message ?: Strings.Error.UNKNOWN_ERROR,
-                isNetworkError = error is AppException.Network,
-                type = when (error) {
-                    is AppException.SessionExpired -> ErrorType.SessionExpired
-                    is AppException.ForceUpdate -> ErrorType.ForceUpdate(
-                        (error as AppException.ForceUpdate).storeUrl,
-                    )
-                    else -> ErrorType.General
-                },
+                type = error.toErrorType(),
             )
         is LoadState.NotLoading -> UiState.Success(onNotLoading())
     }

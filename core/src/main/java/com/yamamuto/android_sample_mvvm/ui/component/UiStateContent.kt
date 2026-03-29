@@ -57,15 +57,15 @@ fun <T> UiStateContent(
         state is UiState.Loading -> LoadingIndicator(modifier = modifier)
 
         state is UiState.Error -> {
-            if (state.type != ErrorType.General) {
-                ErrorOverlay(state = state, onRetry = onRetry, onDismiss = {})
-            } else {
-                ErrorContent(
-                    message = state.message,
-                    onRetry = onRetry,
-                    isNetworkError = state.isNetworkError,
-                    modifier = modifier,
-                )
+            when (state.type) {
+                is ErrorType.General, is ErrorType.Network ->
+                    ErrorContent(
+                        message = state.message,
+                        onRetry = onRetry,
+                        errorType = state.type,
+                        modifier = modifier,
+                    )
+                else -> ErrorOverlay(state = state, onRetry = onRetry, onDismiss = {})
             }
         }
 
@@ -82,7 +82,7 @@ private fun ErrorOverlay(
     when (state.type) {
         is ErrorType.SessionExpired -> SessionExpiredDialog()
         is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = state.type.storeUrl)
-        is ErrorType.General -> ErrorDialog(
+        is ErrorType.General, is ErrorType.Network -> ErrorDialog(
             message = state.message,
             onDismiss = onDismiss,
             onRetry = onRetry,

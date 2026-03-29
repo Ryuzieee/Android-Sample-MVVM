@@ -15,31 +15,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
 
 /**
  * エラー表示とリトライボタンを備えた共通コンポーネント。
  *
- * [isNetworkError] が true の場合はオフライン用のメッセージを表示する。
+ * [ErrorType.Network] の場合はオフライン用のメッセージを表示する。
  */
 @Composable
 fun ErrorContent(
     message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    isNetworkError: Boolean = false,
+    errorType: ErrorType = ErrorType.General,
 ) {
+    val isNetwork = errorType is ErrorType.Network
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AppText(
-            text = if (isNetworkError) Strings.Error.NETWORK_MESSAGE else message,
+            text = if (isNetwork) Strings.Error.NETWORK_MESSAGE else message,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         )
-        if (isNetworkError) {
+        if (isNetwork) {
             AppText(
                 text = Strings.Error.NETWORK_SUB_MESSAGE,
                 style = MaterialTheme.typography.bodySmall,

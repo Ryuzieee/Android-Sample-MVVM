@@ -17,15 +17,15 @@ fun <T> Result<T>.toUiState(): UiState<T> {
             Timber.e(e)
             UiState.Error(
                 message = e.message ?: Strings.Error.UNKNOWN_ERROR,
-                isNetworkError = e is AppException.Network,
                 type = e.toErrorType(),
             )
         },
     )
 }
 
-private fun Throwable.toErrorType(): ErrorType {
+fun Throwable.toErrorType(): ErrorType {
     return when (this) {
+        is AppException.Network -> ErrorType.Network
         is AppException.SessionExpired -> ErrorType.SessionExpired
         is AppException.ForceUpdate -> ErrorType.ForceUpdate(storeUrl)
         else -> ErrorType.General
