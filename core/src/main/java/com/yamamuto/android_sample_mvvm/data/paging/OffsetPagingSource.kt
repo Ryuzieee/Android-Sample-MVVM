@@ -2,6 +2,7 @@ package com.yamamuto.android_sample_mvvm.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.yamamuto.android_sample_mvvm.data.util.toAppException
 
 /**
  * offset/limit ベースの汎用 [PagingSource]。
@@ -21,7 +22,7 @@ class OffsetPagingSource<T : Any>(
                 nextKey = if (items.isEmpty()) null else offset + params.loadSize,
             )
         } catch (e: Exception) {
-            LoadResult.Error(e)
+            LoadResult.Error(e.toAppException())
         }
     }
 

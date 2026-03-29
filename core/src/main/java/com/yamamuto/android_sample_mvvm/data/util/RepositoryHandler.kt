@@ -78,26 +78,25 @@ suspend fun <D : Any, E : Any> handleLocal(
 private inline fun <D> appRunCatching(block: () -> D): Result<D> {
     return try {
         Result.success(block())
-    } catch (e: IOException) {
-        Result.failure(AppException.Network(e))
-    } catch (e: HttpException) {
-        Result.failure(e.toAppException())
-    } catch (e: AppException) {
-        Result.failure(e)
     } catch (e: Exception) {
-        Result.failure(AppException.Unknown(e))
+        Result.failure(e.toAppException())
     }
 }
 
-/** [HttpException] を適切な [AppException] に変換する。 */
-private fun HttpException.toAppException(): AppException {
-    return when (code()) {
-        UNAUTHORIZED_CODE -> AppException.SessionExpired()
-        FORCE_UPDATE_CODE -> {
-            val storeUrl = response()?.raw()?.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
-            AppException.ForceUpdate(storeUrl)
+/** 任意の例外を適切な [AppException] に変換する。 */
+fun Exception.toAppException(): AppException {
+    return when (this) {
+        is AppException -> this
+        is IOException -> AppException.Network(this)
+        is HttpException -> when (code()) {
+            UNAUTHORIZED_CODE -> AppException.SessionExpired()
+            FORCE_UPDATE_CODE -> {
+                val storeUrl = response()?.raw()?.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
+                AppException.ForceUpdate(storeUrl)
+            }
+            else -> AppException.Server(code(), this)
         }
-        else -> AppException.Server(code(), this)
+        else -> AppException.Unknown(this)
     }
 }
 
