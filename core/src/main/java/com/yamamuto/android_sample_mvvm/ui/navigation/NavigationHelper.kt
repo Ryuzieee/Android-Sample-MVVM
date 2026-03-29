@@ -33,8 +33,7 @@ private const val ANIM_DURATION = 350
 // ── Push トランジション ──────────────────────────
 
 @PublishedApi
-internal fun pushEnterTransition(): EnterTransition =
-    slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
+internal fun pushEnterTransition(): EnterTransition = slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
 
 @PublishedApi internal fun pushExitTransition(target: NavDestination): ExitTransition =
     if (ModalRoutes.isModal(target)) {
@@ -51,21 +50,33 @@ internal fun pushEnterTransition(): EnterTransition =
     }
 
 @PublishedApi internal fun pushPopExitTransition(): ExitTransition =
-    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(ANIM_DURATION))
+    slideOutHorizontally(
+        targetOffsetX = { it },
+        animationSpec = tween(ANIM_DURATION),
+    )
 
 // ── Modal トランジション ─────────────────────────
 
 @PublishedApi internal fun modalEnterTransition(): EnterTransition =
-    slideInVertically(initialOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
+    slideInVertically(
+        initialOffsetY = { it },
+        animationSpec = tween(ANIM_DURATION),
+    )
 
 @PublishedApi internal fun modalExitTransition(): ExitTransition =
-    slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
+    slideOutHorizontally(
+        targetOffsetX = { -it / 3 },
+        animationSpec = tween(ANIM_DURATION),
+    )
 
 @PublishedApi internal fun modalPopEnterTransition(): EnterTransition =
     slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(ANIM_DURATION))
 
 @PublishedApi internal fun modalPopExitTransition(): ExitTransition =
-    slideOutVertically(targetOffsetY = { it }, animationSpec = tween(ANIM_DURATION))
+    slideOutVertically(
+        targetOffsetY = { it },
+        animationSpec = tween(ANIM_DURATION),
+    )
 
 // ── NavGraphBuilder 拡張 ─────────────────────────
 
@@ -109,8 +120,6 @@ inline fun <reified T : Any> NavGraphBuilder.modalScreen(noinline content: @Comp
 }
 
 /** 引数ありルート用。型安全な Route を直接受け取れる。 */
-inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(
-    noinline content: @Composable (route: T) -> Unit,
-) {
+inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(noinline content: @Composable (route: T) -> Unit) {
     pushComposable<T> { backStackEntry -> content(backStackEntry.toRoute<T>()) }
 }

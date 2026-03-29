@@ -26,7 +26,6 @@ class FeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
 
             extensions.configure<LibraryExtension> {
-                // :feature:list → com.yamamuto.android_sample_mvvm.feature.list
                 namespace = "com.yamamuto.android_sample_mvvm.${path.removePrefix(":").replace(":", ".")}"
             }
 

@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.ui.detail
+package com.yamamuto.android_sample_mvvm.ui.detail.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

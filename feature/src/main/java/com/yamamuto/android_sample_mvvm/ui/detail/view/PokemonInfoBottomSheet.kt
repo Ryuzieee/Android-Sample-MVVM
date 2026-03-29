@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.ui.detail
+package com.yamamuto.android_sample_mvvm.ui.detail.view
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

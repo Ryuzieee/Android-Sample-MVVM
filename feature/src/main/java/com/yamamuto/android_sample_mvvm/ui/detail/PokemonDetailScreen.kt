@@ -38,6 +38,8 @@ import com.yamamuto.android_sample_mvvm.ui.component.AppText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonIdText
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonImage
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
+import com.yamamuto.android_sample_mvvm.ui.detail.view.EvolutionChainRow
+import com.yamamuto.android_sample_mvvm.ui.detail.view.PokemonInfoBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.util.getOrNull
 
 @Composable
