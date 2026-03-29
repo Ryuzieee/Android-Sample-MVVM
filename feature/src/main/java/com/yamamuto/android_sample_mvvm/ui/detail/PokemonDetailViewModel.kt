@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yamamuto.android_sample_mvvm.domain.model.ErrorMessages
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.ui.util.UiEvent
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PokemonDetailViewModel @Inject constructor(
     private val getPokemonFullDetailUseCase: GetPokemonFullDetailUseCase,
-    private val observeIsFavoriteUseCase: ObserveIsFavoriteUseCase,
+    private val getIsFavoriteUseCase: GetIsFavoriteUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -76,7 +76,7 @@ class PokemonDetailViewModel @Inject constructor(
                             isRefreshing = false,
                         )
                     }
-                    observeFavorite(fullDetail.detail.id)
+                    loadFavorite(fullDetail.detail.id)
                 }.onFailure { error ->
                     val message = error.message ?: ErrorMessages.UNKNOWN_ERROR
                     _uiState.update {
@@ -90,9 +90,8 @@ class PokemonDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun observeFavorite(pokemonId: Int) {
-        observeIsFavoriteUseCase(pokemonId).collect { isFavorite ->
-            _uiState.update { it.copy(isFavorite = isFavorite) }
-        }
+    private suspend fun loadFavorite(pokemonId: Int) {
+        val isFavorite = getIsFavoriteUseCase(pokemonId)
+        _uiState.update { it.copy(isFavorite = isFavorite) }
     }
 }

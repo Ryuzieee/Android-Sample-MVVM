@@ -5,17 +5,15 @@ import app.cash.turbine.test
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCase
-import com.yamamuto.android_sample_mvvm.domain.usecase.ObserveIsFavoriteUseCase
+import com.yamamuto.android_sample_mvvm.domain.usecase.GetIsFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonDetail
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -33,7 +31,7 @@ class PokemonDetailViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var getPokemonFullDetailUseCase: GetPokemonFullDetailUseCase
-    private lateinit var observeIsFavoriteUseCase: ObserveIsFavoriteUseCase
+    private lateinit var getIsFavoriteUseCase: GetIsFavoriteUseCase
     private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
 
     private val fakeFullDetail =
@@ -46,16 +44,16 @@ class PokemonDetailViewModelTest {
     @Before
     fun setUp() {
         getPokemonFullDetailUseCase = mockk()
-        observeIsFavoriteUseCase = mockk()
+        getIsFavoriteUseCase = mockk()
         toggleFavoriteUseCase = mockk()
-        every { observeIsFavoriteUseCase(any()) } returns flowOf(false)
+        coEvery { getIsFavoriteUseCase(any()) } returns false
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel {
         return PokemonDetailViewModel(
             getPokemonFullDetailUseCase = getPokemonFullDetailUseCase,
-            observeIsFavoriteUseCase = observeIsFavoriteUseCase,
+            getIsFavoriteUseCase = getIsFavoriteUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             savedStateHandle = SavedStateHandle(mapOf("name" to pokemonName)),
         )
