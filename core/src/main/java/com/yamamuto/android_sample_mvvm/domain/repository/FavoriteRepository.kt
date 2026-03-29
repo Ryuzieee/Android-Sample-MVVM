@@ -7,9 +7,9 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
  * お気に入りデータへのアクセスを抽象化するリポジトリインターフェース。
  */
 interface FavoriteRepository {
-    suspend fun getFavorites(): List<FavoriteModel>
+    suspend fun getFavorites(): Result<List<FavoriteModel>>
 
-    suspend fun isFavorite(id: Int): Boolean
+    suspend fun isFavorite(id: Int): Result<Boolean>
 
     suspend fun addFavorite(detail: PokemonDetailModel)
 

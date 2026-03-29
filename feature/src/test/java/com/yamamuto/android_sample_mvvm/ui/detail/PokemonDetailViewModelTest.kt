@@ -46,7 +46,7 @@ class PokemonDetailViewModelTest {
         getPokemonFullDetailUseCase = mockk()
         getIsFavoriteUseCase = mockk()
         toggleFavoriteUseCase = mockk()
-        coEvery { getIsFavoriteUseCase(any()) } returns false
+        coEvery { getIsFavoriteUseCase(any()) } returns Result.success(false)
         coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
     }
 

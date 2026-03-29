@@ -91,7 +91,7 @@ class PokemonDetailViewModel @Inject constructor(
     }
 
     private suspend fun loadFavorite(pokemonId: Int) {
-        val isFavorite = getIsFavoriteUseCase(pokemonId)
+        val isFavorite = getIsFavoriteUseCase(pokemonId).getOrElse { false }
         _uiState.update { it.copy(isFavorite = isFavorite) }
     }
 }
