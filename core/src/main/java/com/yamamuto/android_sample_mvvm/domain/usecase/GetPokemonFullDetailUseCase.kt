@@ -1,15 +1,12 @@
 package com.yamamuto.android_sample_mvvm.domain.usecase
 
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonFullDetailModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-/**
- * 詳細画面に必要な全データを一括取得するユースケース。
- *
- * 基本情報取得後、種族情報・進化チェーン・特性日本語名を並列で取得する。
- */
+/** 詳細画面に必要な全データを一括取得するユースケース。基本情報取得後、補足情報を並列取得する。 */
 class GetPokemonFullDetailUseCase @Inject constructor(
     private val getPokemonDetailUseCase: GetPokemonDetailUseCase,
     private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
@@ -39,9 +36,7 @@ class GetPokemonFullDetailUseCase @Inject constructor(
         }
     }
 
-    private suspend fun resolveAbilityNames(
-        detail: com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel,
-    ): com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel =
+    private suspend fun resolveAbilityNames(detail: PokemonDetailModel): PokemonDetailModel =
         coroutineScope {
             val jaNames =
                 detail.abilities
