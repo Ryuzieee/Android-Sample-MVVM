@@ -8,7 +8,7 @@ PokeAPI を使ったポケモン図鑑アプリ。チーム開発のベースコ
 
 | 一覧画面 | 詳細画面 | 検索画面 | お気に入り画面 |
 |---------|---------|---------|------------|
-| ポケモンを2列グリッドで無限スクロール表示 | タイプ・ステータス・進化チェーン・詳細情報をスクロール表示。ハートアイコンでお気に入りトグル | ポケモン名でリアルタイム検索（500ms デバウンス） | お気に入り登録ポケモンを2列グリッドで表示 |
+| ポケモンを2列グリッドで無限スクロール表示（自前ページネーション） | タイプ・ステータス・進化チェーン・詳細情報をスクロール表示。ハートアイコンでお気に入りトグル | ポケモン名でリアルタイム検索（500ms デバウンス） | お気に入り登録ポケモンを2列グリッドで表示 |
 
 ---
 
@@ -29,7 +29,6 @@ PokeAPI を使ったポケモン図鑑アプリ。チーム開発のベースコ
 | | kotlinx.serialization | 1.10.0 |
 | **DB** | Room | 2.8.4 |
 | **非同期** | Coroutines | 1.10.2 |
-| **ページング** | Paging 3 | 3.4.2 |
 | **Logging** | Timber | 5.0.1 |
 | **テスト** | JUnit4 / MockK / Turbine | 4.13.2 / 1.14.9 / 1.2.1 |
 | **品質** | ktlint / Detekt | 14.2.0 / 1.23.8 |
@@ -57,22 +56,21 @@ Clean Architecture + MVVM。3モジュール構成でシンプルに保ちつつ
 #### `core` — `domain`（ビジネスロジック）
 - **Model**: `PokemonDetailModel`, `PokemonSpeciesModel`, `EvolutionStageModel`, `FavoriteModel`, `PokemonSummaryModel`, `PokemonFullDetailModel`, `AppException`
 - **Repository Interface**: `PokemonRepository`, `FavoriteRepository`
-- **UseCase**: `GetPokemonDetailUseCase`, `GetPokemonFullDetailUseCase`, `GetPokemonSpeciesUseCase`, `GetEvolutionChainUseCase`, `GetAbilityJapaneseNameUseCase`, `SearchPokemonUseCase`, `GetFavoritesUseCase`, `GetIsFavoriteUseCase`, `ToggleFavoriteUseCase`
+- **UseCase**: `GetPokemonListUseCase`, `GetPokemonDetailUseCase`, `GetPokemonFullDetailUseCase`, `GetPokemonSpeciesUseCase`, `GetEvolutionChainUseCase`, `GetAbilityJapaneseNameUseCase`, `SearchPokemonUseCase`, `GetFavoritesUseCase`, `GetIsFavoriteUseCase`, `ToggleFavoriteUseCase`
 
 > ViewModel → UseCase → Repository の一方向データフローを統一。パススルーであっても必ず UseCase を経由する。
 
 #### `core` — `data`（データ層）
 - **API**: Retrofit + kotlinx.serialization で PokeAPI を呼び出し
-- **Paging**: `OffsetPagingSource`（offset/limit ベース、pageSize=20）
 - **Cache**: Room で詳細データをキャッシュ（debug: 1分 / release: 5分）。TypeConverters に kotlinx.serialization を使用
 - **Mapper**: `data/mapper/` パッケージに集約。命名規則は `.toModel()`（→ ドメイン）/ `.toEntity()`（→ Entity）
 - **Repository Handler**: `handleWithCache` / `handleRemote` / `handleLocal` で例外を `AppException` に変換し `Result` で返す
 - **DI**: `DataModule`（Hilt `@Binds` + `@Provides`）
 
 #### `core` — `ui`（共通 UI）
-- **コンポーネント**: `AppScaffold`, `AppText`, `AppBottomSheet`, `EmptyContent`, `ErrorContent`, `LoadingIndicator`, `PokemonCard`, `PokemonImage`, `SearchTextField`, `UiStateContent`, `PagingContent`
+- **コンポーネント**: `AppScaffold`, `AppText`, `AppBottomSheet`, `AppLazyVerticalGrid`（末尾到達検知付き）, `EmptyContent`, `ErrorContent`, `LoadingIndicator`, `PokemonCard`, `PokemonImage`, `SearchTextField`, `UiStateContent`
 - **文字列定数**: `Strings.kt` にアプリ全体の UI 文字列を画面ごとにグルーピング
-- **ユーティリティ**: `UiState`（Idle / Loading / Success / Error）、`Result<T>.toUiState()` 拡張関数、`CollectPaging`（ViewModel 拡張関数）
+- **ユーティリティ**: `UiState`（Idle / Loading / Success / Error）、`Result<T>.toUiState()` 拡張関数
 - **テーマ**: Material3 テーマ定義（Color, Type, Theme）
 
 #### `core` — `testing`（テスト補助）
@@ -94,7 +92,7 @@ UI (Compose)
        └─ UseCase
             └─ Repository Interface
                  └─ RepositoryImpl
-                      ├─ PagingSource → RemoteDataSource → PokeApiService (Retrofit)
+                      ├─ RemoteDataSource → PokeApiService (Retrofit)
                       └─ PokemonDao (Room Cache)
 ```
 
@@ -149,7 +147,7 @@ Android-Sample-MVVM/
 ├── core/
 │   └── src/main/java/
 │       ├── domain/                # ドメイン層（model / repository / usecase）
-│       ├── data/                  # データ層（api / local / repository / mapper / paging / di）
+│       ├── data/                  # データ層（api / local / repository / mapper / di）
 │       ├── ui/                    # 共通 UI（component / theme / util / Strings.kt）
 │       └── testing/               # テスト補助（MainDispatcherRule / TestFixtures）
 ├── feature/

@@ -45,9 +45,10 @@ class PokemonListViewModelTest {
 
             val viewModel = createViewModel()
 
-            assertTrue(viewModel.uiState.value.loadState is UiState.Success)
-            assertTrue(viewModel.uiState.value.items.isEmpty())
-            assertFalse(viewModel.uiState.value.hasMore)
+            val state = viewModel.uiState.value
+            assertTrue(state.loadState is UiState.Success)
+            assertTrue(state.items.isEmpty())
+            assertFalse(state.hasMore)
         }
 
     @Test
@@ -57,9 +58,10 @@ class PokemonListViewModelTest {
                 Result.failure(AppException.Network(Exception("network error")))
 
             val viewModel = createViewModel()
+            val state = viewModel.uiState.value
 
-            assertTrue(viewModel.uiState.value.loadState is UiState.Error)
-            assertTrue(viewModel.uiState.value.items.isEmpty())
+            assertTrue(state.loadState is UiState.Error)
+            assertTrue(state.items.isEmpty())
         }
 
     @Test
