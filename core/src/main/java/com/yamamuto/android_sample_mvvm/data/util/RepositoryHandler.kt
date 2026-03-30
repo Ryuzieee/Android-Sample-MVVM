@@ -9,16 +9,7 @@ private const val FORCE_UPDATE_CODE = 426
 private const val HEADER_STORE_URL = "X-Store-Url"
 private const val DEFAULT_STORE_URL = "https://play.google.com/store"
 
-/**
- * キャッシュ付き Repository メソッドの共通ハンドラ。
- *
- * 例外を [AppException] に変換して [Result] で返す。
- * キャッシュの期限チェックは [cachedAt] と [CACHE_DURATION_MS] で一元管理する。
- *
- * @param D ドメインモデル型（[Result] で返す型）
- * @param E ローカルキャッシュの Entity 型
- * @param R リモート取得時の生データ型（DTO / Response）
- */
+/** キャッシュ付き Repository メソッドの共通ハンドラ。例外を [AppException] に変換して [Result] で返す。 */
 suspend fun <D : Any, E : Any, R : Any> handleWithCache(
     forceRefresh: Boolean = false,
     load: suspend () -> E?,
@@ -42,12 +33,7 @@ suspend fun <D : Any, E : Any, R : Any> handleWithCache(
     }
 }
 
-/**
- * API のみの Repository メソッド用ハンドラ。キャッシュなし。
- *
- * @param D ドメインモデル型（[Result] で返す型）
- * @param R リモート取得時の生データ型（DTO / Response）
- */
+/** API のみの Repository メソッド用ハンドラ。キャッシュなし。 */
 suspend fun <D : Any, R : Any> handleRemote(
     fetch: suspend () -> R,
     toModel: (R) -> D,
@@ -57,12 +43,7 @@ suspend fun <D : Any, R : Any> handleRemote(
     }
 }
 
-/**
- * ローカル DB のみの Repository メソッド用ハンドラ。
- *
- * @param D ドメインモデル型（[Result] で返す型）
- * @param E ローカルキャッシュの Entity 型
- */
+/** ローカル DB のみの Repository メソッド用ハンドラ。 */
 suspend fun <D : Any, E : Any> handleLocal(
     query: suspend () -> E,
     toModel: (E) -> D,
@@ -74,7 +55,6 @@ suspend fun <D : Any, E : Any> handleLocal(
     }
 }
 
-/** Repository 共通の例外 → [AppException] 変換。 */
 private inline fun <D> appRunCatching(block: () -> D): Result<D> {
     return try {
         Result.success(block())
@@ -83,7 +63,6 @@ private inline fun <D> appRunCatching(block: () -> D): Result<D> {
     }
 }
 
-/** 任意の例外を適切な [AppException] に変換する。 */
 fun Exception.toAppException(): AppException {
     return when (this) {
         is AppException -> this

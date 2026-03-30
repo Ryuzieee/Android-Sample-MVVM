@@ -9,7 +9,6 @@ import com.yamamuto.android_sample_mvvm.data.local.entity.StatEntry
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import kotlinx.serialization.InternalSerializationApi
 
-/** DTO → Entity */
 internal fun PokemonDetailResponse.toEntity(): PokemonDetailEntity {
     return PokemonDetailEntity(
         id = id,
@@ -24,7 +23,6 @@ internal fun PokemonDetailResponse.toEntity(): PokemonDetailEntity {
     )
 }
 
-/** Entity → Model */
 internal fun PokemonDetailEntity.toModel(): PokemonDetailModel {
     return PokemonDetailModel(
         id = id,

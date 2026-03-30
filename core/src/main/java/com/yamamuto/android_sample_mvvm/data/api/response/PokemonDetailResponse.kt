@@ -4,11 +4,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- * ポケモン詳細APIレスポンスのDTO。
- *
- * ドメインモデルへのマッピングは [PokemonRepositoryImpl] で行う。
- */
+/** ポケモン詳細APIレスポンスのDTO。 */
 @InternalSerializationApi
 @Serializable
 data class PokemonDetailResponse(

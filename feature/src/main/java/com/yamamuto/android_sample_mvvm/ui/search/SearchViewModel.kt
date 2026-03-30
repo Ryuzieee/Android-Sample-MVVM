@@ -15,11 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * 検索画面のViewModel。
- *
- * クエリ入力に 500ms のデバウンスを適用し、[SearchPokemonUseCase] でポケモン名をあいまい検索する。
- */
+/** 検索画面のViewModel。クエリ入力に 500ms のデバウンスを適用する。 */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchPokemonUseCase: SearchPokemonUseCase,
@@ -39,7 +35,6 @@ class SearchViewModel @Inject constructor(
             }
     }
 
-    /** エラー後の再検索。デバウンスをバイパスして直接実行する。 */
     fun retrySearch() {
         val query = _uiState.value.query
         if (query.isBlank()) return

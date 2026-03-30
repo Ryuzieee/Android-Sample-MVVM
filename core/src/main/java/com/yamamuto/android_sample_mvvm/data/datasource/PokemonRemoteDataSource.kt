@@ -11,11 +11,7 @@ import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
 
-/**
- * PokeAPI からデータを取得するリモートデータソース。
- *
- * APIの呼び出しのみを担当し、データ変換は行わない。
- */
+/** PokeAPI からデータを取得するリモートデータソース。 */
 class PokemonRemoteDataSource @Inject constructor(
     private val api: PokeApiService,
 ) {

@@ -18,12 +18,7 @@ import javax.inject.Inject
 
 private const val POKEMON_LIST_LIMIT = 2000
 
-/**
- * [PokemonRepository] の実装クラス。
- *
- * キャッシュ付きは [handleWithCache]、API のみは [handleRemote] を使い、
- * 例外を [Result.failure] に変換する。
- */
+/** [PokemonRepository] の実装クラス。 */
 class PokemonRepositoryImpl @Inject constructor(
     private val dataSource: PokemonRemoteDataSource,
     private val dao: PokemonDao,
