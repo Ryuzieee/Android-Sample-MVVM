@@ -13,7 +13,6 @@ import kotlinx.serialization.InternalSerializationApi
 private const val ARTWORK_URL =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"
 
-/** Species DTO → Model */
 internal fun PokemonSpeciesResponse.toModel(): PokemonSpeciesModel {
     val jaName = names.associate { it.language.name to it.name }.japaneseName()
 
@@ -44,7 +43,7 @@ internal fun PokemonSpeciesResponse.toModel(): PokemonSpeciesModel {
     )
 }
 
-/** EvolutionChain DTO → Model (フラットなリストに展開) */
+/** 進化チェーンをフラットなリストに展開する。 */
 internal fun EvolutionChainResponse.toModel(): List<EvolutionStageModel> {
     val stages = mutableListOf<EvolutionStageModel>()
 
@@ -65,7 +64,6 @@ internal fun EvolutionChainResponse.toModel(): List<EvolutionStageModel> {
     return stages
 }
 
-/** species URL (e.g. "https://pokeapi.co/api/v2/pokemon-species/2/") から ID を抽出 */
 internal fun extractIdFromUrl(url: String): Int {
     return url.trimEnd('/').substringAfterLast('/').toInt()
 }

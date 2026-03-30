@@ -19,7 +19,7 @@ import androidx.navigation.toRoute
 
 private const val ANIM_DURATION = 350
 
-/** モーダルルートの登録・判定を管理するオブジェクト。NavGraph 構築時に登録される。 */
+/** モーダルルートの登録・判定を管理するオブジェクト。 */
 @PublishedApi internal object ModalRoutes {
     private val names = mutableSetOf<String?>()
 
@@ -80,7 +80,7 @@ internal fun pushEnterTransition(): EnterTransition = slideInHorizontally(initia
 
 // ── NavGraphBuilder 拡張 ─────────────────────────
 
-/** 標準的な横スライドで遷移する composable。モーダル画面へ遷移する際は自身のアニメーションを抑制する。 */
+/** 横スライドで遷移する composable。 */
 inline fun <reified T : Any> NavGraphBuilder.pushComposable(
     noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
@@ -93,7 +93,7 @@ inline fun <reified T : Any> NavGraphBuilder.pushComposable(
     )
 }
 
-/** モーダル画面用の composable。下からスライドインし、下へスライドアウトする。 */
+/** モーダル画面用の composable。 */
 inline fun <reified T : Any> NavGraphBuilder.modalComposable(
     noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
@@ -109,17 +109,14 @@ inline fun <reified T : Any> NavGraphBuilder.modalComposable(
 
 // ── 簡易ヘルパー ─────────────────────────────────
 
-/** 引数なしルート用。Screen composable をそのまま渡せる。 */
 inline fun <reified T : Any> NavGraphBuilder.pushScreen(noinline content: @Composable () -> Unit) {
     pushComposable<T> { content() }
 }
 
-/** 引数なしモーダルルート用。 */
 inline fun <reified T : Any> NavGraphBuilder.modalScreen(noinline content: @Composable () -> Unit) {
     modalComposable<T> { content() }
 }
 
-/** 引数ありルート用。型安全な Route を直接受け取れる。 */
 inline fun <reified T : Any> NavGraphBuilder.pushScreenWithRoute(noinline content: @Composable (route: T) -> Unit) {
     pushComposable<T> { backStackEntry -> content(backStackEntry.toRoute<T>()) }
 }

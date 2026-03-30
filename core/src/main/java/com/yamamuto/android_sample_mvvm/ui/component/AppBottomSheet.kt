@@ -11,18 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/**
- * アプリ共通のモーダルボトムシート。
- *
- * ```kotlin
- * var show by remember { mutableStateOf(false) }
- * if (show) {
- *     AppBottomSheet(onDismiss = { show = false }) {
- *         Text("Hello")
- *     }
- * }
- * ```
- */
+/** アプリ共通のモーダルボトムシート。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBottomSheet(
@@ -45,7 +34,6 @@ fun AppBottomSheet(
             )
         }
         content()
-        // ナビゲーションバー分の余白
         androidx.compose.foundation.layout.Spacer(
             modifier = Modifier.navigationBarsPadding(),
         )

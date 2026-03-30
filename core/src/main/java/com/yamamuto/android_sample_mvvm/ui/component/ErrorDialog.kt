@@ -8,9 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.yamamuto.android_sample_mvvm.ui.Strings
 
-/**
- * リフレッシュ失敗時などにコンテンツの上にオーバーレイ表示するエラーダイアログ。
- */
+/** コンテンツの上にオーバーレイ表示するエラーダイアログ。 */
 @Composable
 fun ErrorDialog(
     message: String,
@@ -34,9 +32,7 @@ fun ErrorDialog(
     )
 }
 
-/**
- * セッション切れダイアログ。閉じることはできない。
- */
+/** セッション切れダイアログ。 */
 @Composable
 fun SessionExpiredDialog() {
     AlertDialog(
@@ -51,9 +47,7 @@ fun SessionExpiredDialog() {
     )
 }
 
-/**
- * 強制アップデートダイアログ。閉じることはできない。
- */
+/** 強制アップデートダイアログ。 */
 @Composable
 fun ForceUpdateDialog(storeUrl: String) {
     val context = LocalContext.current

@@ -13,11 +13,7 @@ import com.yamamuto.android_sample_mvvm.ui.util.UiState
 /**
  * [UiState] に応じて Idle / Loading / Error / Success を切り替える共通コンポーネント。
  *
- * 一度 Success でコンテンツが表示された後は、Loading や Error になっても
- * 前回のコンテンツを維持し、エラーはダイアログとしてオーバーレイ表示する。
- * 初回読み込み時（キャッシュなし）は従来通りフルスクリーンの Loading / Error を表示する。
- *
- * セッション切れ・強制アップデートは閉じられないブロッキングダイアログを表示する。
+ * 一度 Success になった後は Loading/Error でも前回コンテンツを維持し、エラーはダイアログ表示する。
  */
 @Composable
 fun <T> UiStateContent(
@@ -82,10 +78,11 @@ private fun ErrorOverlay(
     when (state.type) {
         is ErrorType.SessionExpired -> SessionExpiredDialog()
         is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = state.type.storeUrl)
-        is ErrorType.General, is ErrorType.Network -> ErrorDialog(
-            message = state.message,
-            onDismiss = onDismiss,
-            onRetry = onRetry,
-        )
+        is ErrorType.General, is ErrorType.Network ->
+            ErrorDialog(
+                message = state.message,
+                onDismiss = onDismiss,
+                onRetry = onRetry,
+            )
     }
 }

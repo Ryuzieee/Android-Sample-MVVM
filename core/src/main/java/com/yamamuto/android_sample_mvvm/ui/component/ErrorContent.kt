@@ -17,11 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
 
-/**
- * エラー表示とリトライボタンを備えた共通コンポーネント。
- *
- * [ErrorType.Network] の場合はオフライン用のメッセージを表示する。
- */
+/** エラー表示とリトライボタンを備えた共通コンポーネント。 */
 @Composable
 fun ErrorContent(
     message: String,

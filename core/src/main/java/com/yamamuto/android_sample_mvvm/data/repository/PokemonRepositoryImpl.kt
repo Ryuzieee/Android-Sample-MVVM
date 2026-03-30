@@ -11,18 +11,14 @@ import com.yamamuto.android_sample_mvvm.data.util.handleWithCache
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
 
 private const val POKEMON_LIST_LIMIT = 2000
 
-/**
- * [PokemonRepository] の実装クラス。
- *
- * キャッシュ付きは [handleWithCache]、API のみは [handleRemote] を使い、
- * 例外を [Result.failure] に変換する。
- */
+/** [PokemonRepository] の実装クラス。 */
 class PokemonRepositoryImpl @Inject constructor(
     private val dataSource: PokemonRemoteDataSource,
     private val dao: PokemonDao,
@@ -60,6 +56,18 @@ class PokemonRepositoryImpl @Inject constructor(
         return handleRemote(
             fetch = { dataSource.getAbility(name) },
             toModel = { it.toModel() },
+        )
+    }
+
+    override suspend fun getPokemonList(
+        offset: Int,
+        limit: Int,
+    ): Result<List<PokemonSummaryModel>> {
+        return handleRemote(
+            fetch = { dataSource.getPokemonList(limit = limit, offset = offset) },
+            toModel = { response ->
+                response.results.map { PokemonSummaryModel(name = it.name, url = it.url) }
+            },
         )
     }
 

@@ -17,12 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ポケモン詳細画面のViewModel。
- *
- * [GetPokemonFullDetailUseCase] を通じて詳細・種族情報・進化チェーン・特性日本語名を
- * 一括取得し、お気に入り状態とともに [PokemonDetailUiState] として公開する。
- */
+/** ポケモン詳細画面のViewModel。 */
 @HiltViewModel
 class PokemonDetailViewModel @Inject constructor(
     private val getPokemonFullDetailUseCase: GetPokemonFullDetailUseCase,

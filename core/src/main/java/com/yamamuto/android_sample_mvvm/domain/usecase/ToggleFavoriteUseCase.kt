@@ -4,11 +4,7 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.repository.FavoriteRepository
 import javax.inject.Inject
 
-/**
- * お気に入りをトグルするユースケース。
- *
- * [isFavorite] が true なら削除、false なら追加する。
- */
+/** お気に入りをトグルするユースケース。 */
 class ToggleFavoriteUseCase @Inject constructor(
     private val repository: FavoriteRepository,
 ) {

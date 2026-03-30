@@ -7,11 +7,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-/**
- * ポケモンの進化チェーンを取得するユースケース。
- *
- * Species → 進化チェーンURL → チェーン取得 → 各ステージの日本語名を並列解決。
- */
+/** ポケモンの進化チェーンを取得し、各ステージの日本語名を並列解決する。 */
 class GetEvolutionChainUseCase @Inject constructor(
     private val getPokemonSpeciesUseCase: GetPokemonSpeciesUseCase,
     private val repository: PokemonRepository,

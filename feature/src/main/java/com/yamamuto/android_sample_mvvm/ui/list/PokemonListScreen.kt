@@ -15,10 +15,8 @@ import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
-import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
-import com.yamamuto.android_sample_mvvm.ui.component.PagingContent
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
-import com.yamamuto.android_sample_mvvm.ui.component.isAppendLoading
+import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
 @Composable
 fun PokemonListScreen(
@@ -44,27 +42,28 @@ fun PokemonListScreen(
             )
         },
     ) { padding ->
-        PagingContent(
-            pagingData = uiState.pagingData,
+        UiStateContent(
+            state = uiState.loadState,
+            onRetry = viewModel::refresh,
             modifier = Modifier.padding(padding),
-        ) { pagingItems ->
+        ) {
             AppPullRefresh(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = viewModel::refresh,
             ) {
-                AppLazyVerticalGrid(contentPadding = padding) {
-                    items(pagingItems.itemCount) { index ->
-                        pagingItems[index]?.let { pokemon ->
-                            PokemonCard(
-                                name = pokemon.name,
-                                id = pokemon.id,
-                                imageUrl = pokemon.imageUrl,
-                                onClick = { onPokemonClick(pokemon.name) },
-                            )
-                        }
-                    }
-                    if (pagingItems.isAppendLoading) {
-                        item { LoadingIndicator() }
+                AppLazyVerticalGrid(
+                    contentPadding = padding,
+                    onLoadMore = viewModel::loadMore,
+                    isLoadingMore = uiState.isLoadingMore,
+                ) {
+                    items(uiState.items.size) { index ->
+                        val pokemon = uiState.items[index]
+                        PokemonCard(
+                            name = pokemon.name,
+                            id = pokemon.id,
+                            imageUrl = pokemon.imageUrl,
+                            onClick = { onPokemonClick(pokemon.name) },
+                        )
                     }
                 }
             }

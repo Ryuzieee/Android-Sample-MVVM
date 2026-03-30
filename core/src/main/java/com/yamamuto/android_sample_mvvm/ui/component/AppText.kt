@@ -10,13 +10,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 
-/**
- * アプリ共通のテキストコンポーネント。
- *
- * - [style]: サイズや行間など。省略するとコンテキストのスタイルを継承。
- * - [secondary]: true にすると outline カラー（補助テキスト用）。
- * - [bold]: true にすると FontWeight.Bold。
- */
+/** アプリ共通のテキストコンポーネント。 */
 @Composable
 fun AppText(
     text: String,
