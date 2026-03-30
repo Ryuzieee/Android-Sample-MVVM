@@ -82,10 +82,11 @@ private fun ErrorOverlay(
     when (state.type) {
         is ErrorType.SessionExpired -> SessionExpiredDialog()
         is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = state.type.storeUrl)
-        is ErrorType.General, is ErrorType.Network -> ErrorDialog(
-            message = state.message,
-            onDismiss = onDismiss,
-            onRetry = onRetry,
-        )
+        is ErrorType.General, is ErrorType.Network ->
+            ErrorDialog(
+                message = state.message,
+                onDismiss = onDismiss,
+                onRetry = onRetry,
+            )
     }
 }

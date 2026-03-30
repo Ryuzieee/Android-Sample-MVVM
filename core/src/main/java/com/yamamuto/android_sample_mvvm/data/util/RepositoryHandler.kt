@@ -88,14 +88,15 @@ fun Exception.toAppException(): AppException {
     return when (this) {
         is AppException -> this
         is IOException -> AppException.Network(this)
-        is HttpException -> when (code()) {
-            UNAUTHORIZED_CODE -> AppException.SessionExpired()
-            FORCE_UPDATE_CODE -> {
-                val storeUrl = response()?.raw()?.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
-                AppException.ForceUpdate(storeUrl)
+        is HttpException ->
+            when (code()) {
+                UNAUTHORIZED_CODE -> AppException.SessionExpired()
+                FORCE_UPDATE_CODE -> {
+                    val storeUrl = response()?.raw()?.header(HEADER_STORE_URL) ?: DEFAULT_STORE_URL
+                    AppException.ForceUpdate(storeUrl)
+                }
+                else -> AppException.Server(code(), this)
             }
-            else -> AppException.Server(code(), this)
-        }
         else -> AppException.Unknown(this)
     }
 }

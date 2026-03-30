@@ -17,8 +17,11 @@ sealed interface UiState<out T> {
 /** [UiState.Error] の種別。 */
 sealed interface ErrorType {
     data object General : ErrorType
+
     data object Network : ErrorType
+
     data object SessionExpired : ErrorType
+
     data class ForceUpdate(val storeUrl: String) : ErrorType
 }
 
