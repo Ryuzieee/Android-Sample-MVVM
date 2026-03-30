@@ -20,6 +20,7 @@ private const val LOAD_MORE_THRESHOLD = 4
  * アプリ共通の LazyVerticalGrid。2カラムをデフォルトで適用。
  *
  * [onLoadMore] を指定すると、末尾付近までスクロールしたときに自動で呼び出される。
+ * [isLoadingMore] が true の場合、リスト末尾にローディングインジケータを表示する。
  */
 @Composable
 fun AppLazyVerticalGrid(
@@ -28,6 +29,7 @@ fun AppLazyVerticalGrid(
     state: LazyGridState = rememberLazyGridState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     onLoadMore: (() -> Unit)? = null,
+    isLoadingMore: Boolean = false,
     content: LazyGridScope.() -> Unit,
 ) {
     if (onLoadMore != null) {
@@ -51,6 +53,10 @@ fun AppLazyVerticalGrid(
         modifier = modifier,
         state = state,
         contentPadding = contentPadding,
-        content = content,
-    )
+    ) {
+        content()
+        if (isLoadingMore) {
+            item { LoadingIndicator() }
+        }
+    }
 }

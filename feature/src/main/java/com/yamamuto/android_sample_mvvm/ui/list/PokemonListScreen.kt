@@ -15,7 +15,6 @@ import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
-import com.yamamuto.android_sample_mvvm.ui.component.LoadingIndicator
 import com.yamamuto.android_sample_mvvm.ui.component.PokemonCard
 import com.yamamuto.android_sample_mvvm.ui.component.UiStateContent
 
@@ -55,6 +54,7 @@ fun PokemonListScreen(
                 AppLazyVerticalGrid(
                     contentPadding = padding,
                     onLoadMore = viewModel::loadMore,
+                    isLoadingMore = uiState.isLoadingMore,
                 ) {
                     items(uiState.items.size) { index ->
                         val pokemon = uiState.items[index]
@@ -64,9 +64,6 @@ fun PokemonListScreen(
                             imageUrl = pokemon.imageUrl,
                             onClick = { onPokemonClick(pokemon.name) },
                         )
-                    }
-                    if (uiState.isLoadingMore) {
-                        item { LoadingIndicator() }
                     }
                 }
             }
