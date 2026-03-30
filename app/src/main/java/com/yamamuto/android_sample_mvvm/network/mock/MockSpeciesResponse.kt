@@ -2,14 +2,13 @@
 
 package com.yamamuto.android_sample_mvvm.network.mock
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse.EvolutionChainRef
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse.FlavorTextEntry
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse.Genus
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse.Name
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse.NamedResource
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse.EvolutionChainRef
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse.FlavorTextEntry
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse.Genus
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse.Name
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse.NamedResource
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private fun lang(name: String) = NamedResource(name = name)

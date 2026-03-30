@@ -2,7 +2,7 @@
 
 package com.yamamuto.android_sample_mvvm.data.mapper
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.AbilityResponse
 import kotlinx.serialization.InternalSerializationApi
 
 /** Ability DTO → Model（language → name マップ）。 */

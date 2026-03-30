@@ -2,10 +2,9 @@
 
 package com.yamamuto.android_sample_mvvm.network.mock
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse.NamedResource
+import com.yamamuto.android_sample_mvvm.data.api.response.AbilityResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse.NamedResource
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 internal fun buildMockAbilityResponse(

@@ -2,7 +2,7 @@
 
 package com.yamamuto.android_sample_mvvm.data.mapper
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse
 import com.yamamuto.android_sample_mvvm.data.local.entity.AbilityEntry
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonDetailEntity
 import com.yamamuto.android_sample_mvvm.data.local.entity.StatEntry

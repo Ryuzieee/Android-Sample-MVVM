@@ -2,9 +2,8 @@
 
 package com.yamamuto.android_sample_mvvm.network.mock
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonListResponse
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 internal fun buildMockListResponse(json: Json): String {

@@ -1,4 +1,4 @@
-package com.yamamuto.android_sample_mvvm.data.api.dto
+package com.yamamuto.android_sample_mvvm.data.api.response
 
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable

@@ -2,7 +2,7 @@
 
 package com.yamamuto.android_sample_mvvm.data.mapper
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonListResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonListResponse
 import com.yamamuto.android_sample_mvvm.data.local.entity.PokemonNameEntity
 import kotlinx.serialization.InternalSerializationApi
 import org.junit.Assert.assertEquals

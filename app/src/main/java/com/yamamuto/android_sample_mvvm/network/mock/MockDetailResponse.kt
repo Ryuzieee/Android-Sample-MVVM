@@ -3,16 +3,15 @@
 
 package com.yamamuto.android_sample_mvvm.network.mock
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.AbilityInfo
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.AbilitySlot
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.Sprites
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.StatInfo
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.StatSlot
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.TypeInfo
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse.TypeSlot
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.AbilityInfo
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.AbilitySlot
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.Sprites
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.StatInfo
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.StatSlot
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.TypeInfo
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse.TypeSlot
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private val STAT_NAMES = listOf("hp", "attack", "defense", "special-attack", "special-defense", "speed")

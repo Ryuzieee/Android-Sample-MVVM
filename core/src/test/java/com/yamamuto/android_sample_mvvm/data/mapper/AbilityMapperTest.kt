@@ -2,8 +2,8 @@
 
 package com.yamamuto.android_sample_mvvm.data.mapper
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.AbilityResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse
 import kotlinx.serialization.InternalSerializationApi
 import org.junit.Assert.assertEquals
 import org.junit.Test

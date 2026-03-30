@@ -2,8 +2,8 @@
 
 package com.yamamuto.android_sample_mvvm.data.mapper
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
 import com.yamamuto.android_sample_mvvm.domain.util.LanguageCodes

@@ -2,13 +2,12 @@
 
 package com.yamamuto.android_sample_mvvm.network.mock
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse.ChainLink
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse.EvolutionDetail
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse.Species
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse.Trigger
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse.ChainLink
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse.EvolutionDetail
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse.Species
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse.Trigger
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private fun species(

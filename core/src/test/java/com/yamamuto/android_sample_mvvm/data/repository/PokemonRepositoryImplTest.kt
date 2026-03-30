@@ -2,10 +2,10 @@
 
 package com.yamamuto.android_sample_mvvm.data.repository
 
-import com.yamamuto.android_sample_mvvm.data.api.dto.AbilityResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.EvolutionChainResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonDetailResponse
-import com.yamamuto.android_sample_mvvm.data.api.dto.PokemonSpeciesResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.AbilityResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.EvolutionChainResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonDetailResponse
+import com.yamamuto.android_sample_mvvm.data.api.response.PokemonSpeciesResponse
 import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.local.entity.AbilityEntry
