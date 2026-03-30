@@ -9,6 +9,9 @@ plugins {
 
 android {
     namespace = "com.yamamuto.android_sample_mvvm.core"
+    testFixtures {
+        enable = true
+    }
     buildFeatures {
         buildConfig = true
     }
@@ -71,11 +74,15 @@ dependencies {
     // Logging
     implementation(libs.timber)
 
-    // Test utilities (testing/ package — consumed by other modules via testImplementation)
-    implementation(libs.junit)
-    implementation(libs.kotlinx.coroutines.test)
+    // Test fixtures (testing/ package — consumed by other modules via testFixtures)
+    testFixturesImplementation(platform(libs.androidx.compose.bom))
+    testFixturesImplementation(libs.androidx.compose.runtime)
+    testFixturesImplementation(libs.junit)
+    testFixturesImplementation(libs.kotlinx.coroutines.test)
 
     // Unit tests
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
 }

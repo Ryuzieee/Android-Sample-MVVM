@@ -60,7 +60,7 @@ class FeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("kotlinx-serialization-json").get())
 
                 // Test
-                add("testImplementation", project(":core"))
+                add("testImplementation", testFixtures(project(":core")))
                 add("testImplementation", libs.findLibrary("junit").get())
                 add("testImplementation", libs.findLibrary("mockk").get())
                 add("testImplementation", libs.findLibrary("turbine").get())
