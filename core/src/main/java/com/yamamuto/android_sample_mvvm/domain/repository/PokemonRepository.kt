@@ -3,6 +3,7 @@ package com.yamamuto.android_sample_mvvm.domain.repository
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 
 /**
  * ポケモンデータへのアクセスを抽象化するリポジトリインターフェース。
@@ -25,4 +26,10 @@ interface PokemonRepository {
     suspend fun getAbilityLocalizedNames(name: String): Result<Map<String, String>>
 
     suspend fun searchPokemonNames(query: String): Result<List<String>>
+
+    /** ポケモン一覧を offset/limit で取得する。 */
+    suspend fun getPokemonList(
+        offset: Int,
+        limit: Int,
+    ): Result<List<PokemonSummaryModel>>
 }

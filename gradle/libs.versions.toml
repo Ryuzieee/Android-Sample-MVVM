@@ -16,7 +16,6 @@ hiltNavigationCompose = "1.3.0"
 ksp = "2.0.21-1.0.28"
 mockk = "1.14.9"
 turbine = "1.2.1"
-paging = "3.4.2"
 kotlinxSerialization = "1.10.0"
 javaxInject = "1"
 timber = "5.0.1"
@@ -49,9 +48,6 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
-androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
-androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
-androidx-paging-testing = { group = "androidx.paging", name = "paging-testing", version.ref = "paging" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

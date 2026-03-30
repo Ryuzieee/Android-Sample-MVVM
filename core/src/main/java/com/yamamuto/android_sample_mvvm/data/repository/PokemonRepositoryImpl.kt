@@ -11,6 +11,7 @@ import com.yamamuto.android_sample_mvvm.data.util.handleWithCache
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
+import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
@@ -60,6 +61,18 @@ class PokemonRepositoryImpl @Inject constructor(
         return handleRemote(
             fetch = { dataSource.getAbility(name) },
             toModel = { it.toModel() },
+        )
+    }
+
+    override suspend fun getPokemonList(
+        offset: Int,
+        limit: Int,
+    ): Result<List<PokemonSummaryModel>> {
+        return handleRemote(
+            fetch = { dataSource.getPokemonList(limit = limit, offset = offset) },
+            toModel = { response ->
+                response.results.map { PokemonSummaryModel(name = it.name, url = it.url) }
+            },
         )
     }
 
