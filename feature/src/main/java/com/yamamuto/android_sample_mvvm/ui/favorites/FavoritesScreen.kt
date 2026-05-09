@@ -5,10 +5,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.domain.model.FavoriteModel
-import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
@@ -25,7 +26,7 @@ fun FavoritesScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AppScaffold(
-        title = { Text(Strings.Favorites.SCREEN_TITLE) },
+        title = { Text(stringResource(R.string.favorites_screen_title)) },
         onBack = onBack,
     ) { padding ->
         AppPullRefresh(
@@ -53,8 +54,8 @@ fun FavoritesScreen(
 @Composable
 private fun FavoritesEmpty() {
     EmptyContent(
-        message = Strings.Favorites.EMPTY_MESSAGE,
-        subMessage = Strings.Favorites.EMPTY_SUB_MESSAGE,
+        message = stringResource(R.string.favorites_empty_message),
+        subMessage = stringResource(R.string.favorites_empty_sub_message),
     )
 }
 

@@ -49,9 +49,15 @@ class PokemonDetailViewModel @Inject constructor(
     fun toggleFavorite() {
         val state = _uiState.value
         val fullDetail = state.content.getOrNull() ?: return
+        val wasFavorite = state.isFavorite
+
+        // 楽観的に UI を更新し、DB 書き込み失敗時はロールバックする。
+        _uiState.update { it.copy(isFavorite = !wasFavorite) }
         viewModelScope.launch {
-            toggleFavoriteUseCase(fullDetail.detail, state.isFavorite)
-            _uiState.update { it.copy(isFavorite = !state.isFavorite) }
+            val result = toggleFavoriteUseCase(fullDetail.detail, wasFavorite)
+            if (result.isFailure) {
+                _uiState.update { it.copy(isFavorite = wasFavorite) }
+            }
         }
     }
 

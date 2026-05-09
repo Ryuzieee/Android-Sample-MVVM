@@ -1,7 +1,6 @@
 package com.yamamuto.android_sample_mvvm.ui.util
 
 import com.yamamuto.android_sample_mvvm.domain.model.AppException
-import com.yamamuto.android_sample_mvvm.ui.Strings
 import timber.log.Timber
 
 /** [Result] を [UiState] に変換する拡張関数。 */
@@ -10,10 +9,7 @@ fun <T> Result<T>.toUiState(): UiState<T> {
         onSuccess = { UiState.Success(it) },
         onFailure = { e ->
             Timber.e(e)
-            UiState.Error(
-                message = e.message ?: Strings.Error.UNKNOWN_ERROR,
-                type = e.toErrorType(),
-            )
+            UiState.Error(type = e.toErrorType())
         },
     )
 }
@@ -23,6 +19,9 @@ fun Throwable.toErrorType(): ErrorType {
         is AppException.Network -> ErrorType.Network
         is AppException.SessionExpired -> ErrorType.SessionExpired
         is AppException.ForceUpdate -> ErrorType.ForceUpdate(storeUrl)
-        else -> ErrorType.General
+        is AppException.NotFound -> ErrorType.NotFound(query)
+        is AppException.Server -> ErrorType.Server(code)
+        is AppException.Unknown -> ErrorType.Unknown(cause?.message)
+        else -> ErrorType.Unknown(message)
     }
 }

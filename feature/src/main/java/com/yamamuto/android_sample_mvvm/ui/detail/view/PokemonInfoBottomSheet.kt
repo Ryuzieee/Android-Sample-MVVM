@@ -12,10 +12,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
-import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.domain.translation.PokemonTermLocalizer
 import com.yamamuto.android_sample_mvvm.ui.component.AppBottomSheet
 import com.yamamuto.android_sample_mvvm.ui.component.AppText
 
@@ -27,7 +29,7 @@ internal fun PokemonInfoBottomSheet(
 ) {
     AppBottomSheet(
         onDismiss = onDismiss,
-        title = Strings.Detail.BOTTOM_SHEET_TITLE,
+        title = stringResource(R.string.detail_bottom_sheet_title),
     ) {
         if (species != null) {
             AppText(
@@ -37,36 +39,41 @@ internal fun PokemonInfoBottomSheet(
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            InfoRow(Strings.Detail.LABEL_CATEGORY, species.genus)
+            InfoRow(stringResource(R.string.detail_label_category), species.genus)
             InfoRow(
-                Strings.Detail.LABEL_GENERATION,
-                Strings.Translation.generation(species.generation),
+                stringResource(R.string.detail_label_generation),
+                PokemonTermLocalizer.generation(species.generation),
             )
             species.habitat?.let {
                 InfoRow(
-                    Strings.Detail.LABEL_HABITAT,
-                    Strings.Translation.habitat(it),
+                    stringResource(R.string.detail_label_habitat),
+                    PokemonTermLocalizer.habitat(it),
                 )
             }
-            InfoRow(Strings.Detail.LABEL_CAPTURE_RATE, "${species.captureRate}")
+            InfoRow(stringResource(R.string.detail_label_capture_rate), "${species.captureRate}")
+            val separator = stringResource(R.string.detail_egg_group_separator)
             InfoRow(
-                Strings.Detail.LABEL_EGG_GROUP,
-                species.eggGroups.joinToString(Strings.Detail.EGG_GROUP_SEPARATOR) {
-                    Strings.Translation.eggGroup(it)
+                stringResource(R.string.detail_label_egg_group),
+                species.eggGroups.joinToString(separator) {
+                    PokemonTermLocalizer.eggGroup(it)
                 },
             )
             val genderText =
                 if (species.genderRate == -1) {
-                    Strings.Detail.LABEL_NO_GENDER
+                    stringResource(R.string.detail_label_no_gender)
                 } else {
-                    Strings.Detail.genderRatio(species.genderRate * 12.5, (8 - species.genderRate) * 12.5)
+                    stringResource(
+                        R.string.detail_gender_ratio_format,
+                        species.genderRate * 12.5,
+                        (8 - species.genderRate) * 12.5,
+                    )
                 }
-            InfoRow(Strings.Detail.LABEL_GENDER_RATIO, genderText)
+            InfoRow(stringResource(R.string.detail_label_gender_ratio), genderText)
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
 
         AppText(
-            text = Strings.Detail.LABEL_ABILITIES,
+            text = stringResource(R.string.detail_label_abilities),
             style = MaterialTheme.typography.titleSmall,
             bold = true,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -87,12 +94,12 @@ internal fun PokemonInfoBottomSheet(
                 if (ability.isHidden) {
                     AssistChip(
                         onClick = {},
-                        label = { AppText(Strings.Detail.LABEL_HIDDEN_ABILITY) },
+                        label = { AppText(stringResource(R.string.detail_label_hidden_ability)) },
                     )
                 }
             }
         }
-        InfoRow(Strings.Detail.LABEL_BASE_EXPERIENCE, "${detail.baseExperience}")
+        InfoRow(stringResource(R.string.detail_label_base_experience), "${detail.baseExperience}")
         Spacer(modifier = Modifier.height(8.dp))
     }
 }

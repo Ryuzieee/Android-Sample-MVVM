@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
+import com.yamamuto.android_sample_mvvm.ui.util.userMessage
 
 /**
  * [UiState] に応じて Idle / Loading / Error / Success を切り替える共通コンポーネント。
@@ -46,22 +47,17 @@ fun <T> UiStateContent(
         state is UiState.Error && cached != null -> {
             content(cached)
             if (!errorDismissed) {
-                ErrorOverlay(state = state, onRetry = onRetry, onDismiss = { errorDismissed = true })
+                ErrorOverlay(type = state.type, onRetry = onRetry, onDismiss = { errorDismissed = true })
             }
         }
 
         state is UiState.Loading -> LoadingIndicator(modifier = modifier)
 
         state is UiState.Error -> {
-            when (state.type) {
-                is ErrorType.General, is ErrorType.Network ->
-                    ErrorContent(
-                        message = state.message,
-                        onRetry = onRetry,
-                        errorType = state.type,
-                        modifier = modifier,
-                    )
-                else -> ErrorOverlay(state = state, onRetry = onRetry, onDismiss = {})
+            when (val type = state.type) {
+                ErrorType.SessionExpired -> SessionExpiredDialog()
+                is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = type.storeUrl)
+                else -> ErrorContent(type = type, onRetry = onRetry, modifier = modifier)
             }
         }
 
@@ -71,18 +67,13 @@ fun <T> UiStateContent(
 
 @Composable
 private fun ErrorOverlay(
-    state: UiState.Error,
+    type: ErrorType,
     onRetry: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    when (state.type) {
-        is ErrorType.SessionExpired -> SessionExpiredDialog()
-        is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = state.type.storeUrl)
-        is ErrorType.General, is ErrorType.Network ->
-            ErrorDialog(
-                message = state.message,
-                onDismiss = onDismiss,
-                onRetry = onRetry,
-            )
+    when (type) {
+        ErrorType.SessionExpired -> SessionExpiredDialog()
+        is ErrorType.ForceUpdate -> ForceUpdateDialog(storeUrl = type.storeUrl)
+        else -> ErrorDialog(message = type.userMessage(), onDismiss = onDismiss, onRetry = onRetry)
     }
 }

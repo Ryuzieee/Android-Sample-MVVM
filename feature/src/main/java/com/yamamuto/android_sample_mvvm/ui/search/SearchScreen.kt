@@ -12,11 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
 import com.yamamuto.android_sample_mvvm.ui.component.EmptyContent
 import com.yamamuto.android_sample_mvvm.ui.component.SearchTextField
@@ -35,7 +36,7 @@ fun SearchScreen(
             SearchTextField(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
-                placeholder = Strings.Search.SEARCH_PLACEHOLDER,
+                placeholder = stringResource(R.string.search_placeholder),
             )
         },
         onBack = onBack,
@@ -54,7 +55,7 @@ fun SearchScreen(
 @Composable
 private fun SearchIdle(padding: PaddingValues) {
     EmptyContent(
-        message = Strings.Search.SEARCH_IDLE_MESSAGE,
+        message = stringResource(R.string.search_idle_message),
         modifier = Modifier.padding(padding),
     )
 }

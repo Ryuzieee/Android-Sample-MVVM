@@ -1,20 +1,21 @@
 package com.yamamuto.android_sample_mvvm.domain.model
 
-import com.yamamuto.android_sample_mvvm.ui.Strings
+/**
+ * アプリ内で使用するエラー種別。
+ *
+ * メッセージはドメイン層では持たず、UI 層で [ErrorType] にマップしてから
+ * `core/ui/util/ErrorMessage.kt` の `userMessage` で表示文字列に解決する。
+ */
+sealed class AppException(cause: Throwable? = null) : Exception(cause) {
+    class Network(cause: Throwable) : AppException(cause)
 
-/** アプリ内で使用するエラー種別。 */
-sealed class AppException(message: String, cause: Throwable? = null) : Exception(message, cause) {
-    class Network(cause: Throwable) : AppException(Strings.Error.NETWORK_MESSAGE, cause)
+    class Server(val code: Int, cause: Throwable) : AppException(cause)
 
-    class Server(val code: Int, cause: Throwable) : AppException(Strings.Error.SERVER_ERROR_FORMAT.format(code), cause)
+    class NotFound(val query: String) : AppException()
 
-    class NotFound(query: String) : AppException(Strings.Error.notFound(query))
+    class SessionExpired : AppException()
 
-    class SessionExpired : AppException(Strings.Error.SESSION_EXPIRED)
+    class ForceUpdate(val storeUrl: String) : AppException()
 
-    class ForceUpdate(
-        val storeUrl: String,
-    ) : AppException(Strings.Error.FORCE_UPDATE)
-
-    class Unknown(cause: Throwable) : AppException(cause.message ?: Strings.Error.UNKNOWN_ERROR, cause)
+    class Unknown(cause: Throwable) : AppException(cause)
 }

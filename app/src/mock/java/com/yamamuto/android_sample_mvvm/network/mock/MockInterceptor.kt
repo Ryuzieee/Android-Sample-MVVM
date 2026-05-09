@@ -17,7 +17,8 @@ private const val MOCK_DELAY_MS = 300L
  * モックフレーバー用 OkHttp Interceptor。
  *
  * [MockScenarioHolder.current] に応じてモックレスポンスまたはエラーを返す。
- * IS_MOCK = false のビルドでは OkHttpClient に追加されないため、本番には影響しない。
+ * mock フレーバーソースセットにのみ存在するため、dev / prod ビルドには
+ * バンドルされない (本番影響なし)。
  */
 @Singleton
 class MockInterceptor @Inject constructor(

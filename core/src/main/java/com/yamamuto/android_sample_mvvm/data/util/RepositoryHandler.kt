@@ -48,10 +48,8 @@ suspend fun <D : Any, E : Any> handleLocal(
     query: suspend () -> E,
     toModel: (E) -> D,
 ): Result<D> {
-    return try {
-        Result.success(toModel(query()))
-    } catch (e: Exception) {
-        Result.failure(AppException.Unknown(e))
+    return appRunCatching {
+        toModel(query())
     }
 }
 

@@ -1,6 +1,7 @@
 package com.yamamuto.android_sample_mvvm.ui.detail
 
 import androidx.navigation.NavGraphBuilder
+import com.yamamuto.android_sample_mvvm.ui.navigation.Navigator
 import com.yamamuto.android_sample_mvvm.ui.navigation.pushScreenWithRoute
 import kotlinx.serialization.Serializable
 
@@ -11,14 +12,11 @@ data class PokemonDetailRoute(
 )
 
 /** ポケモン詳細画面のナビゲーション定義。 */
-fun NavGraphBuilder.pokemonDetailScreen(
-    onBack: () -> Unit,
-    onPokemonClick: (String) -> Unit,
-) {
+fun NavGraphBuilder.pokemonDetailScreen(navigator: Navigator) {
     pushScreenWithRoute<PokemonDetailRoute> {
         PokemonDetailScreen(
-            onBack = onBack,
-            onPokemonClick = onPokemonClick,
+            onBack = navigator::back,
+            onPokemonClick = { name -> navigator.navigate(PokemonDetailRoute(name)) },
         )
     }
 }
