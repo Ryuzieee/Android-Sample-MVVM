@@ -16,7 +16,6 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
-        buildConfigField("boolean", "IS_MOCK", "false")
     }
 
     buildFeatures {
@@ -45,11 +44,16 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".mock"
             versionNameSuffix = "-mock"
-            buildConfigField("boolean", "IS_MOCK", "true")
         }
         create("prod") {
             dimension = "environment"
         }
+    }
+
+    // dev / prod は同じ DI / Mock スタブを共有するため devProd ソースセットを参照する。
+    sourceSets {
+        getByName("dev") { java.srcDirs("src/devProd/java") }
+        getByName("prod") { java.srcDirs("src/devProd/java") }
     }
 }
 

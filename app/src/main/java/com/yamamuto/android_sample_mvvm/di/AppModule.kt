@@ -2,8 +2,6 @@ package com.yamamuto.android_sample_mvvm.di
 
 import com.yamamuto.android_sample_mvvm.BuildConfig
 import com.yamamuto.android_sample_mvvm.data.api.PokeApiService
-import com.yamamuto.android_sample_mvvm.network.ApiHeaderInterceptor
-import com.yamamuto.android_sample_mvvm.network.mock.MockInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,14 +9,18 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 private const val CONTENT_TYPE_JSON = "application/json"
 
-/** ネットワーク層の依存関係を定義する Hilt モジュール。 */
+/**
+ * ネットワーク層のうち、全フレーバー共通の依存関係を定義する Hilt モジュール。
+ *
+ * `OkHttpClient` の生成だけはフレーバーごとに差し替えたいので、
+ * `app/src/devProd/` または `app/src/mock/` 側のモジュールで提供する。
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -28,24 +30,6 @@ object AppModule {
         return Json {
             ignoreUnknownKeys = true
         }
-    }
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(
-        apiHeaderInterceptor: ApiHeaderInterceptor,
-        mockInterceptor: MockInterceptor,
-    ): OkHttpClient {
-        return OkHttpClient
-            .Builder()
-            .addInterceptor(apiHeaderInterceptor)
-            .apply {
-                if (BuildConfig.IS_MOCK) {
-                    addInterceptor(mockInterceptor)
-                }
-            }.addInterceptor(
-                HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC },
-            ).build()
     }
 
     @Provides
