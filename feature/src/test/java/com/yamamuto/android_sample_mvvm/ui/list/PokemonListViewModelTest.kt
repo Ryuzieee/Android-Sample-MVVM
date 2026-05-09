@@ -27,27 +27,31 @@ class PokemonListViewModelTest {
         return PokemonListViewModel(getPokemonList)
     }
 
+    private fun PokemonListUiState.items(): List<PokemonSummaryModel> =
+        (loadState as? UiState.Success)?.data ?: emptyList()
+
     @Test
     fun `初回読み込みでポケモン一覧を取得できる`() =
         runTest {
             coEvery { getPokemonList(offset = 0, limit = any()) } returns Result.success(fakePokemonList)
 
             val viewModel = createViewModel()
+            val state = viewModel.uiState.value
 
-            assertTrue(viewModel.uiState.value.loadState is UiState.Success)
-            assertEquals(fakePokemonList, viewModel.uiState.value.items)
+            assertTrue(state.loadState is UiState.Success)
+            assertEquals(fakePokemonList, state.items())
         }
 
     @Test
-    fun `空リストの場合はitemsが空になる`() =
+    fun `空リストの場合は空のSuccessになる`() =
         runTest {
             coEvery { getPokemonList(offset = 0, limit = any()) } returns Result.success(emptyList())
 
             val viewModel = createViewModel()
-
             val state = viewModel.uiState.value
+
             assertTrue(state.loadState is UiState.Success)
-            assertTrue(state.items.isEmpty())
+            assertTrue(state.items().isEmpty())
             assertFalse(state.hasMore)
         }
 
@@ -61,7 +65,7 @@ class PokemonListViewModelTest {
             val state = viewModel.uiState.value
 
             assertTrue(state.loadState is UiState.Error)
-            assertTrue(state.items.isEmpty())
+            assertTrue(state.items().isEmpty())
         }
 
     @Test
@@ -81,7 +85,7 @@ class PokemonListViewModelTest {
             val viewModel = createViewModel()
             viewModel.loadMore()
 
-            assertEquals(fullPage.size + fakePokemonList.size, viewModel.uiState.value.items.size)
+            assertEquals(fullPage.size + fakePokemonList.size, viewModel.uiState.value.items().size)
         }
 
     @Test
@@ -92,7 +96,8 @@ class PokemonListViewModelTest {
             val viewModel = createViewModel()
             viewModel.refresh()
 
-            assertEquals(fakePokemonList, viewModel.uiState.value.items)
-            assertFalse(viewModel.uiState.value.isRefreshing)
+            val state = viewModel.uiState.value
+            assertEquals(fakePokemonList, state.items())
+            assertFalse(state.isRefreshing)
         }
 }

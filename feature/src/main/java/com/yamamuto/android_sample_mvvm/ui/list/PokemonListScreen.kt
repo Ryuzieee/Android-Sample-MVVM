@@ -47,7 +47,7 @@ fun PokemonListScreen(
             state = uiState.loadState,
             onRetry = viewModel::refresh,
             modifier = Modifier.padding(padding),
-        ) {
+        ) { items ->
             AppPullRefresh(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = viewModel::refresh,
@@ -57,8 +57,8 @@ fun PokemonListScreen(
                     onLoadMore = viewModel::loadMore,
                     isLoadingMore = uiState.isLoadingMore,
                 ) {
-                    items(uiState.items.size) { index ->
-                        val pokemon = uiState.items[index]
+                    items(items.size) { index ->
+                        val pokemon = items[index]
                         PokemonCard(
                             name = pokemon.name,
                             id = pokemon.id,

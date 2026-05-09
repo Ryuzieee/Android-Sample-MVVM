@@ -24,65 +24,64 @@ class PokemonListViewModel @Inject constructor(
     val uiState: StateFlow<PokemonListUiState> = _uiState.asStateFlow()
 
     init {
-        loadInitial()
+        loadFirstPage(isRefresh = false)
     }
 
     fun refresh() {
-        _uiState.update { it.copy(isRefreshing = true) }
-        viewModelScope.launch {
-            val result = getPokemonList(offset = 0, limit = PAGE_SIZE)
-            result.fold(
-                onSuccess = { items ->
-                    _uiState.update {
-                        it.copy(
-                            items = items,
-                            loadState = UiState.Success(Unit),
-                            isRefreshing = false,
-                            hasMore = items.size >= PAGE_SIZE,
-                        )
-                    }
-                },
-                onFailure = {
-                    _uiState.update { state -> state.copy(isRefreshing = false) }
-                },
-            )
-        }
+        loadFirstPage(isRefresh = true)
     }
 
     fun loadMore() {
-        val current = _uiState.value
-        if (current.isLoadingMore || !current.hasMore) return
+        val state = _uiState.value
+        val current = state.loadState as? UiState.Success ?: return
+        if (state.isLoadingMore || !state.hasMore) return
 
         _uiState.update { it.copy(isLoadingMore = true) }
         viewModelScope.launch {
-            val result = getPokemonList(offset = current.items.size, limit = PAGE_SIZE)
-            result.fold(
+            getPokemonList(offset = current.data.size, limit = PAGE_SIZE).fold(
                 onSuccess = { items ->
                     _uiState.update {
                         it.copy(
-                            items = it.items + items,
+                            loadState = UiState.Success(current.data + items),
                             isLoadingMore = false,
                             hasMore = items.size >= PAGE_SIZE,
                         )
                     }
                 },
                 onFailure = {
-                    _uiState.update { state -> state.copy(isLoadingMore = false) }
+                    _uiState.update { it.copy(isLoadingMore = false) }
                 },
             )
         }
     }
 
-    private fun loadInitial() {
-        _uiState.update { it.copy(loadState = UiState.Loading) }
+    private fun loadFirstPage(isRefresh: Boolean) {
+        _uiState.update {
+            if (isRefresh) it.copy(isRefreshing = true) else it.copy(loadState = UiState.Loading)
+        }
         viewModelScope.launch {
             val result = getPokemonList(offset = 0, limit = PAGE_SIZE)
-            val loadState = result.map { }.toUiState()
-            _uiState.update {
-                it.copy(
-                    items = result.getOrDefault(emptyList()),
-                    loadState = loadState,
-                    hasMore = (result.getOrNull()?.size ?: 0) >= PAGE_SIZE,
+            _uiState.update { current ->
+                result.fold(
+                    onSuccess = { items ->
+                        current.copy(
+                            loadState = UiState.Success(items),
+                            isRefreshing = false,
+                            hasMore = items.size >= PAGE_SIZE,
+                        )
+                    },
+                    onFailure = {
+                        current.copy(
+                            // refresh 失敗時は既存の Success を維持し、初回失敗時のみ Error にする
+                            loadState =
+                                if (isRefresh && current.loadState is UiState.Success) {
+                                    current.loadState
+                                } else {
+                                    result.toUiState()
+                                },
+                            isRefreshing = false,
+                        )
+                    },
                 )
             }
         }
