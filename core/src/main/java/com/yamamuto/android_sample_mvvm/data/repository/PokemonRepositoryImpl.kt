@@ -6,6 +6,7 @@ import com.yamamuto.android_sample_mvvm.data.datasource.PokemonRemoteDataSource
 import com.yamamuto.android_sample_mvvm.data.local.dao.PokemonDao
 import com.yamamuto.android_sample_mvvm.data.mapper.toEntity
 import com.yamamuto.android_sample_mvvm.data.mapper.toModel
+import com.yamamuto.android_sample_mvvm.data.util.POKEMON_NAME_CACHE_LIMIT
 import com.yamamuto.android_sample_mvvm.data.util.handleRemote
 import com.yamamuto.android_sample_mvvm.data.util.handleWithCache
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
@@ -15,8 +16,6 @@ import com.yamamuto.android_sample_mvvm.domain.model.PokemonSummaryModel
 import com.yamamuto.android_sample_mvvm.domain.repository.PokemonRepository
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
-
-private const val POKEMON_LIST_LIMIT = 2000
 
 /** [PokemonRepository] の実装クラス。 */
 class PokemonRepositoryImpl @Inject constructor(
@@ -75,7 +74,7 @@ class PokemonRepositoryImpl @Inject constructor(
         return handleWithCache(
             load = { dao.getAllPokemonNames().takeIf { it.isNotEmpty() } },
             fetch = {
-                dataSource.getPokemonList(limit = POKEMON_LIST_LIMIT, offset = 0)
+                dataSource.getPokemonList(limit = POKEMON_NAME_CACHE_LIMIT, offset = 0)
             },
             toEntity = { it.toEntity() },
             toModel = { it.toModel(query) },
