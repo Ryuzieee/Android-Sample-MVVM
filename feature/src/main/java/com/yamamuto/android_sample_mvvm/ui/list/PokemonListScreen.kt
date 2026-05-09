@@ -8,9 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppLazyVerticalGrid
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
@@ -28,16 +29,16 @@ fun PokemonListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AppScaffold(
-        title = { Text(Strings.List.SCREEN_TITLE) },
+        title = { Text(stringResource(R.string.list_screen_title)) },
         actions = {
             AppIconButton(
                 Icons.Filled.Search,
-                Strings.List.SEARCH_DESCRIPTION,
+                stringResource(R.string.list_search_description),
                 onClick = onSearchClick,
             )
             AppIconButton(
                 Icons.Filled.Favorite,
-                Strings.List.FAVORITES_DESCRIPTION,
+                stringResource(R.string.list_favorites_description),
                 onClick = onFavoritesClick,
             )
         },

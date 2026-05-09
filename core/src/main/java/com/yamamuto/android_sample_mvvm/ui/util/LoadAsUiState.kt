@@ -9,10 +9,7 @@ fun <T> Result<T>.toUiState(): UiState<T> {
         onSuccess = { UiState.Success(it) },
         onFailure = { e ->
             Timber.e(e)
-            UiState.Error(
-                message = e.toUserMessage(),
-                type = e.toErrorType(),
-            )
+            UiState.Error(type = e.toErrorType())
         },
     )
 }
@@ -22,6 +19,9 @@ fun Throwable.toErrorType(): ErrorType {
         is AppException.Network -> ErrorType.Network
         is AppException.SessionExpired -> ErrorType.SessionExpired
         is AppException.ForceUpdate -> ErrorType.ForceUpdate(storeUrl)
-        else -> ErrorType.General
+        is AppException.NotFound -> ErrorType.NotFound(query)
+        is AppException.Server -> ErrorType.Server(code)
+        is AppException.Unknown -> ErrorType.Unknown(cause?.message)
+        else -> ErrorType.Unknown(message)
     }
 }

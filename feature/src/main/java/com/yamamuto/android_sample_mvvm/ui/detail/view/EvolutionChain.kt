@@ -12,10 +12,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
-import com.yamamuto.android_sample_mvvm.ui.Strings
 import com.yamamuto.android_sample_mvvm.ui.component.AppText
 
 @Composable
@@ -37,12 +38,12 @@ internal fun EvolutionChainRow(
             if (stage != stages.first()) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AppText(
-                        text = Strings.Detail.EVOLUTION_ARROW,
+                        text = stringResource(R.string.detail_evolution_arrow),
                         style = MaterialTheme.typography.titleLarge,
                     )
                     if (stage.minLevel != null) {
                         AppText(
-                            text = "${Strings.Detail.EVOLUTION_LEVEL_PREFIX}${stage.minLevel}",
+                            text = stringResource(R.string.detail_evolution_level_format, stage.minLevel),
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }

@@ -12,34 +12,34 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
+import com.yamamuto.android_sample_mvvm.ui.util.userMessage
 
 /** エラー表示とリトライボタンを備えた共通コンポーネント。 */
 @Composable
 fun ErrorContent(
-    message: String,
+    type: ErrorType,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    errorType: ErrorType = ErrorType.General,
 ) {
-    val isNetwork = errorType is ErrorType.Network
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AppText(
-            text = if (isNetwork) Strings.Error.NETWORK_MESSAGE else message,
+            text = type.userMessage(),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         )
-        if (isNetwork) {
+        if (type is ErrorType.Network) {
             AppText(
-                text = Strings.Error.NETWORK_SUB_MESSAGE,
+                text = stringResource(R.string.error_network_sub),
                 style = MaterialTheme.typography.bodySmall,
                 secondary = true,
                 modifier = Modifier.padding(top = 4.dp),
@@ -47,7 +47,7 @@ fun ErrorContent(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text(Strings.Common.RETRY)
+            Text(stringResource(R.string.common_retry))
         }
     }
 }

@@ -9,6 +9,7 @@ import com.yamamuto.android_sample_mvvm.domain.usecase.GetPokemonFullDetailUseCa
 import com.yamamuto.android_sample_mvvm.domain.usecase.ToggleFavoriteUseCase
 import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonDetail
+import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -79,7 +80,9 @@ class PokemonDetailViewModelTest {
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertTrue(state.content is UiState.Error)
-                assertEquals("Not found", (state.content as UiState.Error).message)
+                val type = (state.content as UiState.Error).type
+                assertTrue(type is ErrorType.Unknown)
+                assertEquals("Not found", (type as ErrorType.Unknown).rawMessage)
             }
         }
 

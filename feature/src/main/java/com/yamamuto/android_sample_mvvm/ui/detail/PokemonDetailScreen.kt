@@ -23,14 +23,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yamamuto.android_sample_mvvm.core.R
 import com.yamamuto.android_sample_mvvm.domain.model.EvolutionStageModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonDetailModel
 import com.yamamuto.android_sample_mvvm.domain.model.PokemonSpeciesModel
-import com.yamamuto.android_sample_mvvm.ui.Strings
+import com.yamamuto.android_sample_mvvm.domain.translation.PokemonTermLocalizer
 import com.yamamuto.android_sample_mvvm.ui.component.AppIconButton
 import com.yamamuto.android_sample_mvvm.ui.component.AppPullRefresh
 import com.yamamuto.android_sample_mvvm.ui.component.AppScaffold
@@ -65,16 +67,16 @@ fun PokemonDetailScreen(
         actions = {
             AppIconButton(
                 imageVector = Icons.Filled.Info,
-                contentDescription = Strings.Detail.INFO_BUTTON_DESCRIPTION,
+                contentDescription = stringResource(R.string.detail_info_button_description),
                 onClick = { showInfo = true },
             )
             AppIconButton(
                 imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                 contentDescription =
                     if (uiState.isFavorite) {
-                        Strings.Detail.REMOVE_FAVORITE_DESCRIPTION
+                        stringResource(R.string.detail_remove_favorite_description)
                     } else {
-                        Strings.Detail.ADD_FAVORITE_DESCRIPTION
+                        stringResource(R.string.detail_add_favorite_description)
                     },
                 onClick = viewModel::toggleFavorite,
                 tint = if (uiState.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
@@ -150,21 +152,26 @@ private fun PokemonDetailContent(
             detail.types.forEach { type ->
                 AssistChip(
                     onClick = {},
-                    label = { AppText(Strings.Translation.type(type)) },
+                    label = { AppText(PokemonTermLocalizer.type(type)) },
                     modifier = Modifier.padding(horizontal = 4.dp),
                 )
             }
         }
 
         AppText(
-            text = Strings.Detail.heightWeight(detail.height * 10, detail.weight / 10.0),
+            text =
+                stringResource(
+                    R.string.detail_height_weight_format,
+                    detail.height * 10,
+                    detail.weight / 10.0,
+                ),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
         if (evolutionChain.size > 1) {
             AppText(
-                text = Strings.Detail.SECTION_EVOLUTION,
+                text = stringResource(R.string.detail_section_evolution),
                 style = MaterialTheme.typography.titleMedium,
                 bold = true,
                 modifier =
@@ -181,7 +188,7 @@ private fun PokemonDetailContent(
         }
 
         AppText(
-            text = Strings.Detail.SECTION_BASE_STATS,
+            text = stringResource(R.string.detail_section_base_stats),
             style = MaterialTheme.typography.titleMedium,
             bold = true,
             modifier =
@@ -209,7 +216,7 @@ private fun StatRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppText(
-            text = Strings.Translation.stat(stat.name),
+            text = PokemonTermLocalizer.stat(stat.name),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.width(80.dp),
         )

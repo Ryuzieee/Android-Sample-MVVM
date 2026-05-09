@@ -8,13 +8,15 @@ sealed interface UiState<out T> {
 
     data class Success<T>(val data: T) : UiState<T>
 
-    data class Error(
-        val message: String,
-        val type: ErrorType = ErrorType.General,
-    ) : UiState<Nothing>
+    data class Error(val type: ErrorType) : UiState<Nothing>
 }
 
-/** [UiState.Error] の種別。 */
+/**
+ * [UiState.Error] の種別。
+ *
+ * 表示文字列はここでは持たず、UI 層の [ErrorType.userMessage] (ErrorMessage.kt) で
+ * stringResource を介して解決する。
+ */
 sealed interface ErrorType {
     data object General : ErrorType
 
@@ -23,6 +25,12 @@ sealed interface ErrorType {
     data object SessionExpired : ErrorType
 
     data class ForceUpdate(val storeUrl: String) : ErrorType
+
+    data class NotFound(val query: String) : ErrorType
+
+    data class Server(val code: Int) : ErrorType
+
+    data class Unknown(val rawMessage: String?) : ErrorType
 }
 
 /** Success のデータを返す。それ以外は null。 */

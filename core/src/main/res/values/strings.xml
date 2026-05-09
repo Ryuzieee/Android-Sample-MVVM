@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="common_retry">リトライ</string>
+    <string name="common_close">閉じる</string>
+    <string name="common_back">戻る</string>
+    <string name="common_error_title">エラー</string>
+
+    <!-- Error -->
+    <string name="error_network">ネットワークに接続できません</string>
+    <string name="error_network_sub">接続を確認してリトライしてください</string>
+    <string name="error_session_expired">セッションの有効期限が切れました。再度ログインしてください</string>
+    <string name="error_force_update">新しいバージョンが利用可能です。アップデートしてください</string>
+    <string name="error_server">サーバーエラー (%1$d)</string>
+    <string name="error_unknown">不明なエラーが発生しました</string>
+    <string name="error_not_found">「%1$s」に一致するポケモンは見つかりませんでした</string>
+
+    <!-- Dialog -->
+    <string name="dialog_session_expired_title">セッション切れ</string>
+    <string name="dialog_session_expired_message">セッションの有効期限が切れました。\n再度ログインしてください。</string>
+    <string name="dialog_session_expired_button">ログイン画面へ</string>
+    <string name="dialog_force_update_title">アップデートが必要です</string>
+    <string name="dialog_force_update_message">新しいバージョンが利用可能です。\nアプリをアップデートしてください。</string>
+    <string name="dialog_force_update_button">ストアを開く</string>
+
+    <!-- List Screen -->
+    <string name="list_screen_title">Pokédex</string>
+    <string name="list_search_description">検索</string>
+    <string name="list_favorites_description">お気に入り</string>
+
+    <!-- Detail Screen -->
+    <string name="detail_info_button_description">詳細情報を表示</string>
+    <string name="detail_remove_favorite_description">お気に入りから削除</string>
+    <string name="detail_add_favorite_description">お気に入りに追加</string>
+    <string name="detail_bottom_sheet_title">くわしい情報</string>
+    <string name="detail_label_category">分類</string>
+    <string name="detail_label_generation">世代</string>
+    <string name="detail_label_habitat">生息地</string>
+    <string name="detail_label_capture_rate">捕獲率</string>
+    <string name="detail_label_egg_group">タマゴグループ</string>
+    <string name="detail_label_gender_ratio">性別比率</string>
+    <string name="detail_label_no_gender">性別なし</string>
+    <string name="detail_label_abilities">とくせい</string>
+    <string name="detail_label_hidden_ability">かくれとくせい</string>
+    <string name="detail_label_base_experience">きそけいけんち</string>
+    <string name="detail_section_evolution">しんか</string>
+    <string name="detail_section_base_stats">しゅぞくち</string>
+    <string name="detail_egg_group_separator">、</string>
+    <string name="detail_evolution_arrow">→</string>
+    <string name="detail_evolution_level_format">Lv.%1$d</string>
+    <string name="detail_height_weight_format">たかさ: %1$d cm ・ おもさ: %2$.1f kg</string>
+    <string name="detail_gender_ratio_format">♀ %1$.1f%% / ♂ %2$.1f%%</string>
+
+    <!-- Search Screen -->
+    <string name="search_placeholder">ポケモン名を入力...</string>
+    <string name="search_idle_message">ポケモン名を入力してください</string>
+
+    <!-- Favorites Screen -->
+    <string name="favorites_screen_title">お気に入り</string>
+    <string name="favorites_empty_message">お気に入りがありません</string>
+    <string name="favorites_empty_sub_message">詳細画面のハートアイコンから追加できます</string>
+</resources>

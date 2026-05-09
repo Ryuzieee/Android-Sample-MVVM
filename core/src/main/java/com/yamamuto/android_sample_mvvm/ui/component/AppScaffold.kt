@@ -13,6 +13,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.yamamuto.android_sample_mvvm.core.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +35,10 @@ fun AppScaffold(
                 navigationIcon = {
                     if (onBack != null) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.common_back),
+                            )
                         }
                     }
                 },

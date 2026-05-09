@@ -6,7 +6,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.yamamuto.android_sample_mvvm.ui.Strings
+import androidx.compose.ui.res.stringResource
+import com.yamamuto.android_sample_mvvm.core.R
 
 /** コンテンツの上にオーバーレイ表示するエラーダイアログ。 */
 @Composable
@@ -17,16 +18,16 @@ fun ErrorDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { AppText(text = Strings.Common.ERROR_TITLE) },
+        title = { AppText(text = stringResource(R.string.common_error_title)) },
         text = { AppText(text = message) },
         confirmButton = {
             TextButton(onClick = onRetry) {
-                AppText(text = Strings.Common.RETRY)
+                AppText(text = stringResource(R.string.common_retry))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                AppText(text = Strings.Common.CLOSE)
+                AppText(text = stringResource(R.string.common_close))
             }
         },
     )
@@ -37,11 +38,11 @@ fun ErrorDialog(
 fun SessionExpiredDialog() {
     AlertDialog(
         onDismissRequest = { /* 閉じさせない */ },
-        title = { AppText(text = Strings.Dialog.SESSION_EXPIRED_TITLE) },
-        text = { AppText(text = Strings.Dialog.SESSION_EXPIRED_MESSAGE) },
+        title = { AppText(text = stringResource(R.string.dialog_session_expired_title)) },
+        text = { AppText(text = stringResource(R.string.dialog_session_expired_message)) },
         confirmButton = {
             TextButton(onClick = { /* TODO: ログイン画面へ遷移 */ }) {
-                AppText(text = Strings.Dialog.SESSION_EXPIRED_BUTTON)
+                AppText(text = stringResource(R.string.dialog_session_expired_button))
             }
         },
     )
@@ -53,13 +54,13 @@ fun ForceUpdateDialog(storeUrl: String) {
     val context = LocalContext.current
     AlertDialog(
         onDismissRequest = { /* 閉じさせない */ },
-        title = { AppText(text = Strings.Dialog.FORCE_UPDATE_TITLE) },
-        text = { AppText(text = Strings.Dialog.FORCE_UPDATE_MESSAGE) },
+        title = { AppText(text = stringResource(R.string.dialog_force_update_title)) },
+        text = { AppText(text = stringResource(R.string.dialog_force_update_message)) },
         confirmButton = {
             TextButton(
                 onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(storeUrl))) },
             ) {
-                AppText(text = Strings.Dialog.FORCE_UPDATE_BUTTON)
+                AppText(text = stringResource(R.string.dialog_force_update_button))
             }
         },
     )
