@@ -11,9 +11,7 @@ import com.yamamuto.android_sample_mvvm.testing.MainDispatcherRule
 import com.yamamuto.android_sample_mvvm.testing.TestFixtures.fakePokemonDetail
 import com.yamamuto.android_sample_mvvm.ui.util.ErrorType
 import com.yamamuto.android_sample_mvvm.ui.util.UiState
-import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -41,7 +39,7 @@ class PokemonDetailViewModelTest {
     @Before
     fun setUp() {
         coEvery { getIsFavoriteUseCase(any()) } returns Result.success(false)
-        coEvery { toggleFavoriteUseCase(any(), any()) } just Runs
+        coEvery { toggleFavoriteUseCase(any(), any()) } returns Result.success(Unit)
     }
 
     private fun createViewModel(pokemonName: String = "bulbasaur"): PokemonDetailViewModel {
@@ -136,6 +134,26 @@ class PokemonDetailViewModelTest {
                 assertTrue(awaitItem().isFavorite)
 
                 viewModel.toggleFavorite()
+                assertFalse(awaitItem().isFavorite)
+            }
+        }
+
+    @Test
+    fun `toggleFavorite失敗時にUI状態がロールバックされる`() =
+        runTest {
+            coEvery { getPokemonFullDetailUseCase("bulbasaur") } returns Result.success(fakeFullDetail)
+            coEvery { toggleFavoriteUseCase(any(), any()) } returns
+                Result.failure(AppException.Unknown(Exception("db error")))
+
+            val viewModel = createViewModel("bulbasaur")
+
+            viewModel.uiState.test {
+                assertFalse(awaitItem().isFavorite)
+
+                viewModel.toggleFavorite()
+                // 楽観的更新で一旦 true
+                assertTrue(awaitItem().isFavorite)
+                // ロールバックで false に戻る
                 assertFalse(awaitItem().isFavorite)
             }
         }

@@ -87,9 +87,34 @@ class FavoriteRepositoryImplTest {
                     stats = emptyList(),
                 )
 
-            repository.addFavorite(detail)
+            val result = repository.addFavorite(detail)
 
+            assertTrue(result.isSuccess)
             coVerify { dao.insertFavorite(match { it.id == 1 && it.name == "bulbasaur" }) }
+        }
+
+    @Test
+    fun `お気に入り追加時にDAOが例外を投げた場合Failureを返す`() =
+        runTest {
+            coEvery { dao.insertFavorite(any()) } throws RuntimeException("db error")
+
+            val detail =
+                PokemonDetailModel(
+                    id = 1,
+                    name = "bulbasaur",
+                    height = 7,
+                    weight = 69,
+                    baseExperience = 64,
+                    types = emptyList(),
+                    abilities = emptyList(),
+                    imageUrl = "url1",
+                    stats = emptyList(),
+                )
+
+            val result = repository.addFavorite(detail)
+
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is AppException.Unknown)
         }
 
     @Test
@@ -97,8 +122,9 @@ class FavoriteRepositoryImplTest {
         runTest {
             coEvery { dao.deleteFavorite(any()) } just Runs
 
-            repository.removeFavorite(1)
+            val result = repository.removeFavorite(1)
 
+            assertTrue(result.isSuccess)
             coVerify { dao.deleteFavorite(1) }
         }
 }

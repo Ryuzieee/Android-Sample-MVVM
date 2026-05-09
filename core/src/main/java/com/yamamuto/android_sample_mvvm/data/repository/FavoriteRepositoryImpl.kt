@@ -27,11 +27,17 @@ class FavoriteRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun addFavorite(detail: PokemonDetailModel) {
-        dao.insertFavorite(detail.toEntity())
+    override suspend fun addFavorite(detail: PokemonDetailModel): Result<Unit> {
+        return handleLocal(
+            query = { dao.insertFavorite(detail.toEntity()) },
+            toModel = { },
+        )
     }
 
-    override suspend fun removeFavorite(id: Int) {
-        dao.deleteFavorite(id)
+    override suspend fun removeFavorite(id: Int): Result<Unit> {
+        return handleLocal(
+            query = { dao.deleteFavorite(id) },
+            toModel = { },
+        )
     }
 }

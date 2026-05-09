@@ -11,7 +11,7 @@ interface FavoriteRepository {
 
     suspend fun isFavorite(id: Int): Result<Boolean>
 
-    suspend fun addFavorite(detail: PokemonDetailModel)
+    suspend fun addFavorite(detail: PokemonDetailModel): Result<Unit>
 
-    suspend fun removeFavorite(id: Int)
+    suspend fun removeFavorite(id: Int): Result<Unit>
 }
